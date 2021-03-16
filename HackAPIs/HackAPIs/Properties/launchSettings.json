@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "HackAPIs": {
+    "": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
