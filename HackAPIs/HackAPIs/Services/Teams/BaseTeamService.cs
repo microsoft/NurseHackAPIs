@@ -15,10 +15,9 @@ namespace HackAPIs.Services.Teams
 {
     public class BaseTeamService
     {
-         public static string NurseHackTeam = "abc0763c-f446-424c-ba5f-e374147c11a0"; // prod
-     //  public   static string NurseHackTeam = "8b3c1b2c-7281-41d5-b204-52cdd66d27b7"; // dev
-        //       public static string TeamDomain = "guru100.onmicrosoft.com"; // personal
-        public static string TeamDomain = "devupconf.org";
+         public static string NurseHackTeam = ""; 
+ 
+        public static string TeamDomain = "";
 
         protected enum HttpMethodType
         {
