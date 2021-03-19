@@ -24,6 +24,10 @@ namespace HackAPIs.Services.Db.Model
         public string ModifiedBy { get; set; }
         public string ADUserId { get; set; }
         public Boolean UserOptOut { get; set; } = false;
+        public Boolean MSFTOptIn { get; set; } = false;
+        public Boolean JNJOptIn { get; set; } = false;
+        public Boolean SONSIELOptIn { get; set; } = false;
+
         public virtual ICollection<tblUserSkillMatch> tblUserSkillMatch { get; set; }
         public virtual ICollection<tblTeamHackers> tblTeamHackers { get; set; }
 

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using HackAPIs.Services.Db.model;
 using HackAPIs.Services.Db.Model;
+using HackAPIs.Model.Db;
 
 namespace HackAPIs.Services.Db
 {
@@ -22,6 +23,9 @@ namespace HackAPIs.Services.Db
         public DbSet<tblTeams> tbl_Teams { get; set; }
         public DbSet<tblTeamSkillMatch> tbl_TeamSkillMatch { get; set; }
         public DbSet<tblUsers> tbl_Users { get; set; }
+        public DbSet<tblLog> tbl_Log { get; set; }
+        public DbSet<tblSurvey> tbl_Survey { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

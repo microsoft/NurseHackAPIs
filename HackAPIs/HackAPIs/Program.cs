@@ -1,68 +1,38 @@
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using HackAPIs.Services.Db;
-using HackAPIs.Services.Db.Data;
 using System;
 
-namespace HackAPIs 
+namespace HackAPIs
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            //         CreateHostBuilder(args).Build().Run();
-
-            var host = CreateHostBuilder(args).Build();
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var context = services.GetRequiredService<NurseHackContext>();
-                    DbInitializer.Initialize(context);
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while seeding the database.");
-                }
-            }
-
-            host.Run();
-
-            // Process Result.      
+            CreateHostBuilder(args).Build().Run();
         }
 
-        /*
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-                Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                webBuilder.ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    var settings = config.Build();
+             Host.CreateDefaultBuilder(args)
+                   .ConfigureAppConfiguration((context, config) =>
+                   {
+                       if (context.HostingEnvironment.IsProduction())
+                       {
+                           var builtConfig = config.Build();
+                           var secretClient = new SecretClient(new Uri($"https://{builtConfig["KeyVaultName"]}.vault.azure.net/"),
+                                                                    new DefaultAzureCredential());
+                           config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
 
-                    config.AddAzureAppConfiguration(options =>
-                    {
-                        options.Connect(settings["ConnectionStrings:AppConfig"])
-                                .ConfigureKeyVault(kv =>
-                                {
-                                    kv.SetCredential(new DefaultAzureCredential());
-                                });
-                    });
-                })
-                .UseStartup<Startup>());
-    }
-        */
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-              Host.CreateDefaultBuilder(args)
-                  .ConfigureWebHostDefaults(webBuilder =>
-                  {
-                      webBuilder.UseStartup<Startup>();
-                  });
+                       }
+                   })
+                   .ConfigureWebHostDefaults(webBuilder =>
+                   {
+                       webBuilder.UseStartup<Startup>();
+                   });
     }
 
 }

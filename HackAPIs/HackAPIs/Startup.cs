@@ -48,7 +48,7 @@ namespace HackAPIs
                                 });
             });
 
-            services.AddScoped<IDataRepositoy<tblSkills, Skills>, SkillDataManager>();
+            services.AddScoped<IDataRepositoy<tblSkills, Skills>,SkillDataManager>();
             services.AddScoped<IDataRepositoy<tblUsers, Users>, UserDataManager>();
             services.AddScoped<IDataRepositoy<tblTeams, Solutions>, SolutionDataManager>();
             services.AddScoped<IDataRepositoy<tblTeamHackers, TeamHackers>, TeamHackersDataManager>();
