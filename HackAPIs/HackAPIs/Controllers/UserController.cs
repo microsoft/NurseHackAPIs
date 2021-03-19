@@ -155,6 +155,19 @@ namespace HackAPIs.Controllers
             return Ok(userSkillMatch);
         }
 
+        [HttpPost("regmentor", Name = "GetMentorRole")]
+        public IActionResult GetMentorRole([FromBody] tblUsers tblUsers)
+        {
+            //var email = tblUsers.UserRegEmail;
+            //var user = _dataRepository.GetByColumn(1, "UserRegEmail", email);
+            //if (user == null)
+            //{
+            //    return Ok(new ErrorObj());
+
+            //}
+
+            return new OkObjectResult(new RegLink { UserRole = "I'm a mentor" });
+        }
         // POST: api/users/regemail
         [HttpPost("regemail", Name = "GetUserByRegEmail")]
         public IActionResult GetUserByRegEmail([FromBody] tblUsers tblUsers)
