@@ -12,11 +12,16 @@ using HackAPIs.Services.Db.model;
 using HackAPIs.Services.Db.Model;
 using HackAPIs.ViewModel.Db;
 using System;
+using HackAPIs.Model.Db;
 
 namespace HackAPIs 
 {
     public class Startup
     {
+
+        private string ConnStr = null;
+        private string ClientTeamEmbed = null;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,12 +34,15 @@ namespace HackAPIs
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //  services.AddControllers();
 
+
+            //  services.AddControllers();
+            ConnStr = Configuration["ConnStr"];
+            ClientTeamEmbed = Configuration["ClientTeamEmbed"];
 
 
             services.AddDbContext<NurseHackContext>(options =>
-                options.UseSqlServer("")
+                options.UseSqlServer(ConnStr)
                 .EnableSensitiveDataLogging());
             services.AddCors(options =>
             {
@@ -52,6 +60,8 @@ namespace HackAPIs
             services.AddScoped<IDataRepositoy<tblUsers, Users>, UserDataManager>();
             services.AddScoped<IDataRepositoy<tblTeams, Solutions>, SolutionDataManager>();
             services.AddScoped<IDataRepositoy<tblTeamHackers, TeamHackers>, TeamHackersDataManager>();
+            services.AddScoped<IDataRepositoy<tblLog, Log>, LogDataManager>();
+            services.AddScoped<IDataRepositoy<tblSurvey, Survey>, SurveyDataManager>();
 
             services.AddControllers();
 
@@ -82,7 +92,7 @@ namespace HackAPIs
                     context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
                     context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-                    context.Response.Headers.Add("ClientTeamEmbed", new[] { "caWU JvVGqXaH n9m7by" });
+                    context.Response.Headers.Add("ClientTeamEmbed", new[] { ClientTeamEmbed });
 
 
                 }
@@ -101,10 +111,10 @@ namespace HackAPIs
 
 
 
-                if (!header || (!val.Equals("")))
+                if (!header || (!val.Equals(ClientTeamEmbed)))
                 {
 
-                    if (!val.Contains("caWU JvVGqXaH n9m7by"))
+                    if (!val.Contains(ClientTeamEmbed))
                     {
                         context.Response.WriteAsync("Security validation failed. The API access is denied!");
                     }
