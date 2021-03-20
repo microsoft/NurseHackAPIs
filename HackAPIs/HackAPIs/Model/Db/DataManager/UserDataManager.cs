@@ -129,6 +129,14 @@ namespace HackAPIs.Model.Db.DataManager
                     entityToUpdate.UserTimeCommitment = entity.UserTimeCommitment;
                 if (entity.Active != null)
                     entityToUpdate.Active = entity.Active;
+                if (entity.MSFTOptIn != null)
+                    entityToUpdate.MSFTOptIn = entity.MSFTOptIn;
+                if (entity.JNJOptIn != null)
+                    entityToUpdate.JNJOptIn = entity.JNJOptIn;
+                if (entity.SONSIELOptIn != null)
+                    entityToUpdate.SONSIELOptIn = entity.SONSIELOptIn;
+
+
                 if (type == 1)
                 {
                     if (entity.ADUserId != null)
