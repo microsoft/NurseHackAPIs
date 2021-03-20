@@ -24,6 +24,7 @@ namespace HackAPIs.Controllers
         [HttpPost("code", Name = "ValidateCode")]
         public IActionResult ValidateCode([FromBody] RegLinks regLink)
         {
+            string errorMsg = "";
             string email = regLink.UsedByEmail;
             Guid code;
             bool isValidGuid = Guid.TryParse(regLink.UniqueCode.ToString(), out code);
@@ -31,16 +32,21 @@ namespace HackAPIs.Controllers
             if (isValidGuid)
             {
                 tblRegLink tblRegLink = ((RegLinkDataManager)_dataRepository).GetByCode(code);
-                if (!tblRegLink.IsUsed)
+                if(tblRegLink == null)
+                {
+                    errorMsg = "Provided code does not exist in the system.";
+                } else if (!tblRegLink.IsUsed)
                 {   tblRegLink finalEntity = new tblRegLink() { UsedByEmail = email };
 
                     _dataRepository.Update(tblRegLink, finalEntity, 0);
                     return new OkObjectResult(tblRegLink.UserRole);
+                } else
+                {
+                    errorMsg = "Code Already Used";
                 }
-                
             }
-
-            return Ok(new ErrorObj());
+            
+            return Ok(new ErrorObj { ReturnError = errorMsg });            
         }
        
     }
