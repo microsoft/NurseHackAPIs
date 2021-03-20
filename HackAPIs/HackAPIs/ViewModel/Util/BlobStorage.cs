@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HackAPIs.ViewModel
+namespace HackAPIs.ViewModel.Util
 {
     public class BlobStorage
     {

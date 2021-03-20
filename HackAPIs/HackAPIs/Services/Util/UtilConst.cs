@@ -20,5 +20,8 @@ namespace HackAPIs.Services.Util
         public static string MSTeam1 { get; set; }
         public static string MSTeam2 { get; set; }
         public static string MailChimpKey { get; set; }
+        public static string MailChimpURL { get; set; }
+        public static string MailChimpAudience { get; set; }
+        public static string MailChimpUser { get; set; }
     }
 }

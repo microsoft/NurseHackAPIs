@@ -51,6 +51,9 @@ namespace HackAPIs
             UtilConst.MSTeam1 = Configuration["MSTeam1"];
             UtilConst.MSTeam2 = Configuration["MSTeam2"];
             UtilConst.MailChimpKey = Configuration["MailChimpKey"];
+            UtilConst.MailChimpURL = Configuration["MailChimpURL"];
+            UtilConst.MailChimpAudience = Configuration["MailChimpAudience"];
+            UtilConst.MailChimpUser = Configuration["MailChimpUser"];
 
 
             services.AddDbContext<NurseHackContext>(options =>
