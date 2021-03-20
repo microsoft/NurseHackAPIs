@@ -65,11 +65,8 @@ namespace HackAPIs.Controllers
                 }
                 teamHackersEnumerator = tblTeamHackers.GetEnumerator();
 
-
-               
                 if (!isExist)
                 {
-
                     Users user = new Users();
                     user.UserId = oneUser.UserId;
                     user.UserDisplayName = oneUser.UserDisplayName;
@@ -80,7 +77,9 @@ namespace HackAPIs.Controllers
                     user.Active = oneUser.Active;
                     user.UserOptOut = user.UserOptOut;
                     if (user.Active)
+                    {
                         users.Add(user);
+                    }
 
                 }
                
@@ -155,22 +154,7 @@ namespace HackAPIs.Controllers
             return Ok(userSkillMatch);
         }
 
-        [HttpPost("regmentor", Name = "GetMentorRole")]
-        public IActionResult GetMentorRole([FromBody] RegLink regLink)
-        {
-            var email = regLink.UsedByEmail;
-            var code = regLink.UniqueCode;
-            //TODO: check if the code is used
-            // TODO: if code isn't used update record to have it used by email
-            // TODO and return role
-            if (email.Equals("s"))
-            {
-                //placeholder for if code is not yet used
-                return new OkObjectResult((new RegLink { UserRole = "Mentor" }).getShort());
-                
-            }
-            return Ok(new ErrorObj());
-        }
+      
 
         // POST: api/users/regemail
         [HttpPost("regemail", Name = "GetUserByRegEmail")]
