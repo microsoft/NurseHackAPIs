@@ -34,7 +34,7 @@ namespace HackAPIs.Services.Util
                 BlobStorage blobStorage = new BlobStorage { Connection = UtilConst.StorageConn, Container = UtilConst.Container, Blob = UtilConst.Blob };
                 string emailBody = blobStorageService.GetBlob(blobStorage);
 
-                emailBody = emailBody.Replace("{UserName}", userEmail.UserName);
+                emailBody = emailBody.Replace("{DisplayName}", userEmail.UserName);
                 emailBody = emailBody.Replace("{Title}", userEmail.Title);
                 emailBody = emailBody.Replace("{Url}", userEmail.URL);
                 emailBody = emailBody.Replace("{Description}", userEmail.Description);
