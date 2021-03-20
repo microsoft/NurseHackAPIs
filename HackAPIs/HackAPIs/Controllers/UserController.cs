@@ -166,7 +166,7 @@ namespace HackAPIs.Controllers
 
             //}
 
-            return new OkObjectResult(new RegLink { UserRole = "I'm a mentor" });
+            return new OkObjectResult((new RegLink { UserRole = "Mentor" }).getShort());
         }
         // POST: api/users/regemail
         [HttpPost("regemail", Name = "GetUserByRegEmail")]

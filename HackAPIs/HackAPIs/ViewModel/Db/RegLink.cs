@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.ViewModel.Db
 {
+    public class RegLinkShort
+    { 
+        public string UserRole { get; set; }
+    }
+
     public class RegLink
     {
         [Key]
@@ -16,5 +21,10 @@ namespace HackAPIs.ViewModel.Db
         public string IsUsed { get; set; }
         public string UserRole { get; set; }
 
+    public HackAPIs.ViewModel.Db.RegLinkShort getShort()
+    {
+        return new HackAPIs.ViewModel.Db.RegLinkShort { UserRole=this.UserRole };
     }
+}
+    
 }
