@@ -71,6 +71,7 @@ namespace HackAPIs
             services.AddScoped<IDataRepositoy<tblTeamHackers, TeamHackers>, TeamHackersDataManager>();
             services.AddScoped<IDataRepositoy<tblLog, Log>, LogDataManager>();
             services.AddScoped<IDataRepositoy<tblSurvey, Survey>, SurveyDataManager>();
+            services.AddScoped<IDataRepositoy<tblRegLink, RegLinks>, RegLinkDataManager>();
 
             services.AddControllers();
 

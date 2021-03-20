@@ -7,9 +7,6 @@ using HackAPIs.ViewModel.Db;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 
 namespace HackAPIs.Model.Db.DataManager
@@ -73,10 +70,11 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext.Entry(tblUsers)
                 .Collection(b => b.tblTeamHackers)
                 .Load();
+
             return tblUsers;
         }
 
-            public tblUsers GetByColumn(long id, string columnName,string columnValue)
+        public tblUsers GetByColumn(long id, string columnName,string columnValue)
         {
             tblUsers tblUsers = null;
             if (columnName.Equals("UserMSTeamsEmail"))
@@ -90,7 +88,8 @@ namespace HackAPIs.Model.Db.DataManager
                 tblUsers = _nurseHackContext.tbl_Users
                         .FirstOrDefault(b => b.UserRegEmail == columnValue);
             }
-                return tblUsers;
+
+            return tblUsers;
         }
 
         public Users GetDto(long id)

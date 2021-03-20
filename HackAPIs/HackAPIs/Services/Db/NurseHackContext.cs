@@ -25,6 +25,7 @@ namespace HackAPIs.Services.Db
         public DbSet<tblUsers> tbl_Users { get; set; }
         public DbSet<tblLog> tbl_Log { get; set; }
         public DbSet<tblSurvey> tbl_Survey { get; set; }
+        public DbSet<tblRegLink> tbl_RegLink { get;   set;  }
 
 
 
