@@ -156,18 +156,22 @@ namespace HackAPIs.Controllers
         }
 
         [HttpPost("regmentor", Name = "GetMentorRole")]
-        public IActionResult GetMentorRole([FromBody] tblUsers tblUsers)
+        public IActionResult GetMentorRole([FromBody] RegLink regLink)
         {
-            //var email = tblUsers.UserRegEmail;
-            //var user = _dataRepository.GetByColumn(1, "UserRegEmail", email);
-            //if (user == null)
-            //{
-            //    return Ok(new ErrorObj());
-
-            //}
-
-            return new OkObjectResult((new RegLink { UserRole = "Mentor" }).getShort());
+            var email = regLink.UsedByEmail;
+            var code = regLink.UniqueCode;
+            //TODO: check if the code is used
+            // TODO: if code isn't used update record to have it used by email
+            // TODO and return role
+            if (email.Equals("s"))
+            {
+                //placeholder for if code is not yet used
+                return new OkObjectResult((new RegLink { UserRole = "Mentor" }).getShort());
+                
+            }
+            return Ok(new ErrorObj());
         }
+
         // POST: api/users/regemail
         [HttpPost("regemail", Name = "GetUserByRegEmail")]
         public IActionResult GetUserByRegEmail([FromBody] tblUsers tblUsers)
