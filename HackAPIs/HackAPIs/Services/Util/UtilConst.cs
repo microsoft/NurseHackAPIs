@@ -17,5 +17,8 @@ namespace HackAPIs.Services.Util
         public static string StorageConn { set; get; }
         public static string Container { set; get; }
         public static string Blob { set; get; }
+        public static string MSTeam1 { get; set; }
+        public static string MSTeam2 { get; set; }
+        public static string MailChimpKey { get; set; }
     }
 }

@@ -48,6 +48,9 @@ namespace HackAPIs
             UtilConst.StorageConn = Configuration["EmailTemplateStorage"];
             UtilConst.Container = Configuration["EmailTemplateContainer"];
             UtilConst.Blob = Configuration["EmailTemplateBlob"];
+            UtilConst.MSTeam1 = Configuration["MSTeam1"];
+            UtilConst.MSTeam2 = Configuration["MSTeam2"];
+            UtilConst.MailChimpKey = Configuration["MailChimpKey"];
 
 
             services.AddDbContext<NurseHackContext>(options =>
