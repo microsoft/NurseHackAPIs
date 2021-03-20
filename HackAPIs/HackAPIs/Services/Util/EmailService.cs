@@ -21,6 +21,8 @@ namespace HackAPIs.Services.Util
             {
                 SmtpClient client = new SmtpClient(userEmail.SMTPAddress, userEmail.SMPTPort);
                 client.EnableSsl = true;
+                client.UseDefaultCredentials = false;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.Credentials = new NetworkCredential(userEmail.SMTPUser, userEmail.SMTPPassword);
 
                 MailAddress sender = new MailAddress(userEmail.FromAddress, userEmail.FromDisplayName);

@@ -11,6 +11,8 @@ using HackAPIs.Services.Db.Model;
 using HackAPIs.Services.Teams;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
+using HackAPIs.Services.Util;
+using HackAPIs.ViewModel.Email;
 
 namespace HackAPIs.Controllers
 {
@@ -248,6 +250,27 @@ namespace HackAPIs.Controllers
                     tblUsers.ADUserId = guest.ADUserId;
                     await teamService.UpdateMembers(guest.ADUserId, tblUsers.UserDisplayName);
 
+
+                    EmailService emailService = new EmailService();
+
+                    UserEmail userEmail = new UserEmail
+                    {
+                        UserName = tblUsers.UserDisplayName,
+                        Title = "NurseHack4Health",
+                        URL = "https://nursehack4health.org",
+                        Description = "New Registration",
+                        Subject = "Hello From HackAPI",
+                        State = "Test Message",
+                        FromAddress = UtilConst.SMTPFromAddress,
+                        ToAddress = guest.InvitedUserEmailAddress,
+                        SMTPAddress = UtilConst.SMTP,
+                        SMTPUser = UtilConst.SMTPUser,
+                        SMTPPassword = UtilConst.SMTPPassword,
+                        IsHtmlBody = true,
+                        FromDisplayName = "Email"
+                    };
+
+                    emailService.SendEmail(userEmail);
                     // Add to two teams, Dave will provdie the details
 
                     // Add to MailChimp audience

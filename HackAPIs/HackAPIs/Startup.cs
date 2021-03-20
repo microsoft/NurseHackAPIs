@@ -44,7 +44,7 @@ namespace HackAPIs
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
             UtilConst.SMTP = Configuration["EmailSMTPAddress"];
             UtilConst.SMTPPassword = Configuration["svc-NH4H-devupconf-org"];
-            UtilConst.SMTPUser = Configuration["SMTPUser"];
+            UtilConst.SMTPUser = Configuration["SMTPUser"]; 
             UtilConst.StorageConn = Configuration["EmailTemplateStorage"];
             UtilConst.Container = Configuration["EmailTemplateContainer"];
             UtilConst.Blob = Configuration["EmailTemplateBlob"];
