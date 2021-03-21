@@ -237,6 +237,8 @@ namespace HackAPIs.Controllers
                 member.MemberID = userToUpdate.ADUserId;
                 var usr = teamService.RemoveTeamMember(member);
                 type = 4;
+
+                // Unsubscribe
             }
             else if (userToUpdate.ADUserId == null)
             {
@@ -258,8 +260,8 @@ namespace HackAPIs.Controllers
                         UserName = tblUsers.UserDisplayName,
                         Title = "NurseHack4Health",
                         URL = "https://nursehack4health.org",
-                        Description = "New Registration",
-                        Subject = "Hello From HackAPI",
+                        Description = "Welcome to NurseHack4Health!",
+                        Subject = "Welcome to NurseHack4Health!",
                         State = "Test Message",
                         FromAddress = UtilConst.SMTPFromAddress,
                         ToAddress = guest.InvitedUserEmailAddress,
@@ -271,9 +273,10 @@ namespace HackAPIs.Controllers
                     };
 
                     emailService.SendEmail(userEmail);
-                    // Add to two teams, Dave will provdie the details
+                    
 
                     // Add to MailChimp audience
+           //         tblUsers.UserRole == "Hacker" then add to Mailchimp
                 }
                 catch (Exception ex)
                 {

@@ -42,5 +42,37 @@ namespace HackAPIs.Controllers
 
             return emailService.SendEmail(userEmail);
         }
+
+        [HttpGet("subscribe", Name = "MailChimp")]
+        public string MailChimp()
+        {
+            /*
+             BlobStorageService blobStorageService = new BlobStorageService();
+             BlobStorage blobStorage = new BlobStorage { Connection = UtilConst.StorageConn, Container = UtilConst.Container, Blob = UtilConst.Blob };
+             return blobStorageService.GetBlob(blobStorage);
+            */
+            MailChimpService mailChimpService = new MailChimpService();
+
+            UserEmail userEmail = new UserEmail
+            {
+                UserName = "Guru",
+                Title = "NurseHack4Health",
+                URL = "https://nursehack4health.org",
+                Description = "New Registration",
+                Subject = "Hello From HackAPI",
+                State = "Test Message",
+                FromAddress = UtilConst.SMTPFromAddress,
+                ToAddress = "gurub100@gmail.com",
+                SMTPAddress = UtilConst.SMTP,
+                SMTPUser = UtilConst.SMTPUser,
+                SMTPPassword = UtilConst.SMTPPassword,
+                IsHtmlBody = true,
+                FromDisplayName = "Email"
+            };
+
+            return "";
+
+//            return emailService.SendEmail(userEmail);
+        }
     }
 }
