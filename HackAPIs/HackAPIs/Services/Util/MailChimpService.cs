@@ -1,8 +1,10 @@
 ﻿using HackAPIs.ViewModel.Util;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HackAPIs.Services.Util
@@ -16,7 +18,7 @@ namespace HackAPIs.Services.Util
         }
 
         //   public bool HttpPost(string body, out HttpStatusCode statusCode, out string response)
-        public async Task<string> Send(MailChimp mailChimp)
+        public async Task<string> MemberSubcribe(MailChimp mailChimp)
         {
 
             HttpClient client = new HttpClient();
@@ -25,9 +27,11 @@ namespace HackAPIs.Services.Util
             String authHeaer = System.Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(mailChimp.User + ":" + mailChimp.Key));
             client.DefaultRequestHeaders.Add("Authorization", authenticationType.Basic + " " + authHeaer);
 
-            HttpResponseMessage res = await client.GetAsync(mailChimp.URL);
+        //    HttpResponseMessage res = await client.GetAsync(mailChimp.URL);
 
-            //        HttpResponseMessage res = client.PostAsync(url, new StringContent(body, Encoding.UTF8, "application/json")).Result;
+            string payload = JsonConvert.SerializeObject(mailChimp.MailChimpPayload);
+
+            HttpResponseMessage res = client.PostAsync(mailChimp.URL, new StringContent(payload, Encoding.UTF8, "application/json")).Result;
             client.Dispose();
             string response = await res.Content.ReadAsStringAsync();
 

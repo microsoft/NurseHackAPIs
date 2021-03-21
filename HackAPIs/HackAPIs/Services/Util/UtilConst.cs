@@ -10,6 +10,7 @@ namespace HackAPIs.Services.Util
         public static string Tenant { set; get; }
         public static string ClientId { set; get; }
         public static string ClientSecret { set; get; }
+        public static string TeamDomain { set; get; }
         public static string SMTPFromAddress { set; get; }
         public static string SMTPPassword { set; get; }
         public static string SMTP { set; get; }
@@ -23,5 +24,7 @@ namespace HackAPIs.Services.Util
         public static string MailChimpURL { get; set; }
         public static string MailChimpAudience { get; set; }
         public static string MailChimpUser { get; set; }
+        
+
     }
 }
