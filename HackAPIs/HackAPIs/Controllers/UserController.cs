@@ -13,6 +13,8 @@ using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using HackAPIs.Services.Util;
 using HackAPIs.ViewModel.Email;
+using HackAPIs.ViewModel.Util;
+using Newtonsoft.Json.Linq;
 
 namespace HackAPIs.Controllers
 {
@@ -252,31 +254,75 @@ namespace HackAPIs.Controllers
                     tblUsers.ADUserId = guest.ADUserId;
                     await teamService.UpdateMembers(guest.ADUserId, tblUsers.UserDisplayName);
 
-
-                    EmailService emailService = new EmailService();
-
-                    UserEmail userEmail = new UserEmail
+                    try
                     {
-                        UserName = tblUsers.UserDisplayName,
-                        Title = "NurseHack4Health",
-                        URL = "https://nursehack4health.org",
-                        Description = "Welcome to NurseHack4Health!",
-                        Subject = "Welcome to NurseHack4Health!",
-                        State = "Test Message",
-                        FromAddress = UtilConst.SMTPFromAddress,
-                        ToAddress = guest.InvitedUserEmailAddress,
-                        SMTPAddress = UtilConst.SMTP,
-                        SMTPUser = UtilConst.SMTPUser,
-                        SMTPPassword = UtilConst.SMTPPassword,
-                        IsHtmlBody = true,
-                        FromDisplayName = "Email"
-                    };
+                        EmailService emailService = new EmailService();
 
-                    emailService.SendEmail(userEmail);
+                        UserEmail userEmail = new UserEmail
+                        {
+                            UserName = tblUsers.UserDisplayName,
+                            Title = "NurseHack4Health",
+                            URL = "https://nursehack4health.org",
+                            Description = "Welcome to NurseHack4Health!",
+                            Subject = "Welcome to NurseHack4Health!",
+                            State = "Test Message",
+                            FromAddress = UtilConst.SMTPFromAddress,
+                            ToAddress = guest.InvitedUserEmailAddress,
+                            SMTPAddress = UtilConst.SMTP,
+                            SMTPUser = UtilConst.SMTPUser,
+                            SMTPPassword = UtilConst.SMTPPassword,
+                            IsHtmlBody = true,
+                            FromDisplayName = "Email"
+                        };
+
+                        emailService.SendEmail(userEmail);
+                    } catch (Exception ex)
+                    {
+
+                    }
+
                     
 
                     // Add to MailChimp audience
-           //         tblUsers.UserRole == "Hacker" then add to Mailchimp
+                    if (tblUsers.UserRole.Contains("Hacker"))
+                    {
+                        try
+                        {
+                            MailChimpService mailChimpService = new MailChimpService();
+
+                            MailChimp mailChimp = new MailChimp
+                            {
+                                Audience = UtilConst.MailChimpAudience,
+                                Key = UtilConst.MailChimpKey,
+                                URL = UtilConst.MailChimpURL,
+                                User = UtilConst.MailChimpUser,
+                                mailChimpPayload = new MailChimpPayload
+                                {
+                                    email_address = guest.InvitedUserEmailAddress,
+                                    status = "subscribed",
+                                    
+                                    merge_fields = new Fields
+                                    {
+                                        FNAME = tblUsers.UserDisplayName,
+                                        LNAME = tblUsers.UserDisplayName
+                                    }
+                                }
+
+                            };
+
+                            JObject jObject = await mailChimpService.UpdateMemberInList(mailChimp);
+                            tblUsers.MailchimpId = jObject["id"].ToString();
+
+
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+
+                    }
+           
                 }
                 catch (Exception ex)
                 {

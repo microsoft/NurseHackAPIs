@@ -12,7 +12,8 @@ namespace HackAPIs.ViewModel.Util
         public string Audience { set; get; }
         public string User { set; get; }
         public string Method { set; get; }
-        public string MailChimpPayload { set; get; }
+        public string UserID { set; get; }
+        public MailChimpPayload mailChimpPayload { set; get; }
         
     }
 }

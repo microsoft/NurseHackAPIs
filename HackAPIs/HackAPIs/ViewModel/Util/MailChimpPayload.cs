@@ -8,6 +8,7 @@ namespace HackAPIs.ViewModel.Util
     public class MailChimpPayload
     {
         public string email_address { get; set; }
+ //       public string status_if_new { get; set; }
         public string status { get; set; }
         public Fields merge_fields { get; set; }
 
@@ -15,7 +16,7 @@ namespace HackAPIs.ViewModel.Util
 
     public class Fields
     {
-        public string FName { get; set; }
-        public string LName { get; set; }
+        public string FNAME { get; set; }
+        public string LNAME { get; set; }
     }
 }

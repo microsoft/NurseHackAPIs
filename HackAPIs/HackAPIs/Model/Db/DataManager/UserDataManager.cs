@@ -134,6 +134,8 @@ namespace HackAPIs.Model.Db.DataManager
                     entityToUpdate.JNJOptIn = entity.JNJOptIn;
                 if (entity.SONSIELOptIn != null)
                     entityToUpdate.SONSIELOptIn = entity.SONSIELOptIn;
+                if (entity.MailchimpId != null)
+                    entityToUpdate.MailchimpId = entity.MailchimpId;
 
 
                 if (type == 1) // Updating the new Azure AD ID from the Azure AD

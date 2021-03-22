@@ -27,6 +27,7 @@ namespace HackAPIs.Services.Db.Model
         public Boolean MSFTOptIn { get; set; } = false;
         public Boolean JNJOptIn { get; set; } = false;
         public Boolean SONSIELOptIn { get; set; } = false;
+        public string MailchimpId { get; set; }
 
         public virtual ICollection<tblUserSkillMatch> tblUserSkillMatch { get; set; }
         public virtual ICollection<tblTeamHackers> tblTeamHackers { get; set; }

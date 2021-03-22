@@ -1,7 +1,10 @@
 ﻿using HackAPIs.Services.Util;
 using HackAPIs.ViewModel;
 using HackAPIs.ViewModel.Email;
+using HackAPIs.ViewModel.Util;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +47,7 @@ namespace HackAPIs.Controllers
         }
 
         [HttpGet("subscribe", Name = "MailChimp")]
-        public string MailChimp()
+        public async Task<string> MailChimp()
         {
             /*
              BlobStorageService blobStorageService = new BlobStorageService();
@@ -53,26 +56,36 @@ namespace HackAPIs.Controllers
             */
             MailChimpService mailChimpService = new MailChimpService();
 
-            UserEmail userEmail = new UserEmail
+            MailChimp mailChimp = new MailChimp
             {
-                UserName = "Guru",
-                Title = "NurseHack4Health",
-                URL = "https://nursehack4health.org",
-                Description = "New Registration",
-                Subject = "Hello From HackAPI",
-                State = "Test Message",
-                FromAddress = UtilConst.SMTPFromAddress,
-                ToAddress = "gurub100@gmail.com",
-                SMTPAddress = UtilConst.SMTP,
-                SMTPUser = UtilConst.SMTPUser,
-                SMTPPassword = UtilConst.SMTPPassword,
-                IsHtmlBody = true,
-                FromDisplayName = "Email"
+                Audience = UtilConst.MailChimpAudience,
+                Key = UtilConst.MailChimpKey,
+                URL = UtilConst.MailChimpURL,
+                User = UtilConst.MailChimpUser,
+                mailChimpPayload = new MailChimpPayload
+                {
+                    email_address = "gurub100@gmail.com",
+                    status = "subscribed",
+       //             status_if_new = "subscribed",
+                    merge_fields = new Fields
+                    {
+                        FNAME = "Raja",
+                        LNAME = "Rao"
+                    }
+                }
+
             };
 
-            return "";
+            JObject jObject =  await mailChimpService.UpdateMemberInList(mailChimp);
+            string id = jObject["id"].ToString();
 
-//            return emailService.SendEmail(userEmail);
+
+            //            return mailChimpService.GetMembers(mailChimp);
+            return id;
+
+            //       return mailChimpService.MemberSubcribe(mailChimp);
+            //            return emailService.SendEmail(userEmail);
         }
     }
+    
 }
