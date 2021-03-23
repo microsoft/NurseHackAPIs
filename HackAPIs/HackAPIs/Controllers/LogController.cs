@@ -64,7 +64,7 @@ namespace HackAPIs.Controllers
                 User = UtilConst.MailChimpUser,
                 mailChimpPayload = new MailChimpPayload
                 {
-                    email_address = "gurub100@gmail.com",
+                    email_address = "dupton2000@hotmail.com",
                     status = "subscribed",
        //             status_if_new = "subscribed",
                     merge_fields = new Fields
@@ -76,10 +76,11 @@ namespace HackAPIs.Controllers
 
             };
 
-            JObject jObject =  await mailChimpService.UpdateMemberInList(mailChimp);
-            string id = jObject["id"].ToString();
+            //            JObject jObject =  await mailChimpService.UpdateMemberInList(mailChimp);
+            //            string id = jObject["id"].ToString();
 
-
+            string id = await mailChimpService.InvokeMailChimp("dupton2000@hotmail.com", "Dave",
+                             "Dave Hotmail","", "subscribed", 1);
             //            return mailChimpService.GetMembers(mailChimp);
             return id;
 

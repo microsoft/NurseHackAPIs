@@ -55,7 +55,7 @@ namespace HackAPIs.Services.Util
         public async Task<JObject> UpdateMemberInList(MailChimp mailChimp)
         {
             JObject jsonObject = null;
-            ApiExt = "lists/" + mailChimp.Audience + "/members/"+ "2a4ad92a10830b0872818a3a625550c6";
+            ApiExt = "lists/" + mailChimp.Audience + "/members/"+ mailChimp.UserID;
             HttpClient client = new HttpClient();
             client = new HttpClient();
 
@@ -97,7 +97,7 @@ namespace HackAPIs.Services.Util
             return jsonObject;
         }
 
-        public async Task<string> InvokeMailChimp(string email, string FName, string LName, string memberStatus, int type)
+        public async Task<string> InvokeMailChimp(string email, string FName, string LName, string mailChimpId, string memberStatus, int type)
         {
             string id = "";
             JObject jObject = null;
@@ -111,6 +111,7 @@ namespace HackAPIs.Services.Util
                     Key = UtilConst.MailChimpKey,
                     URL = UtilConst.MailChimpURL,
                     User = UtilConst.MailChimpUser,
+                    UserID = mailChimpId,
                     mailChimpPayload = new MailChimpPayload
                     {
                         email_address = email,

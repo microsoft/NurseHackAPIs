@@ -248,7 +248,7 @@ namespace HackAPIs.Controllers
                 {
                     MailChimpService mailChimpService = new MailChimpService();
                     mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                        tblUsers.UserDisplayName, "unsubcribed", 2);
+                        tblUsers.UserDisplayName, userToUpdate.MailchimpId, "unsubscribed", 2);
                     tblUsers.MailchimpId = mailChimpId;
 
                 }
@@ -283,8 +283,8 @@ namespace HackAPIs.Controllers
                     if (tblUsers.UserRole.Contains("Hacker"))
                     {
                         MailChimpService mailChimpService = new MailChimpService();
-                        mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                            tblUsers.UserDisplayName, "subcribed", 1);
+                        mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName.Substring(0,tblUsers.UserDisplayName.IndexOf(" ")),
+                            tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed", 1);
                         tblUsers.MailchimpId = mailChimpId;
 
                     }
