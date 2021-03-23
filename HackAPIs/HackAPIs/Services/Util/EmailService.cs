@@ -77,5 +77,37 @@ namespace HackAPIs.Services.Util
             }
             mailSent = true;
         }
+
+        public void InvokeEmail(string email, string userName)
+        {
+
+            try
+            {
+                
+
+                UserEmail userEmail = new UserEmail
+                {
+                    UserName = userName,
+                    Title = "NurseHack4Health",
+                    URL = "https://nursehack4health.org",
+                    Description = "Welcome to NurseHack4Health!",
+                    Subject = "Welcome to NurseHack4Health!",
+                    State = "Test Message",
+                    FromAddress = UtilConst.SMTPFromAddress,
+                    ToAddress = email,
+                    SMTPAddress = UtilConst.SMTP,
+                    SMTPUser = UtilConst.SMTPUser,
+                    SMTPPassword = UtilConst.SMTPPassword,
+                    IsHtmlBody = true,
+                    FromDisplayName = "Email"
+                };
+
+                SendEmail(userEmail);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
     }
 }

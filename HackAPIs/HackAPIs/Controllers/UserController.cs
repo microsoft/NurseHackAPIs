@@ -216,6 +216,8 @@ namespace HackAPIs.Controllers
         public async Task<IActionResult> Put(int id, [FromBody] tblUsers tblUsers)
         {
             int type = 1;
+            string mailChimpId = "";
+
             if (tblUsers == null)
             {
                 return BadRequest("User is null.");
@@ -240,7 +242,16 @@ namespace HackAPIs.Controllers
                 var usr = teamService.RemoveTeamMember(member);
                 type = 4;
 
-                // Unsubscribe
+
+
+                if (tblUsers.UserRole.Contains("Hacker"))
+                {
+                    MailChimpService mailChimpService = new MailChimpService();
+                    mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                        tblUsers.UserDisplayName, "unsubcribed", 2);
+                    tblUsers.MailchimpId = mailChimpId;
+
+                }
             }
             else if (userToUpdate.ADUserId == null)
             {
@@ -258,24 +269,9 @@ namespace HackAPIs.Controllers
                     {
                         EmailService emailService = new EmailService();
 
-                        UserEmail userEmail = new UserEmail
-                        {
-                            UserName = tblUsers.UserDisplayName,
-                            Title = "NurseHack4Health",
-                            URL = "https://nursehack4health.org",
-                            Description = "Welcome to NurseHack4Health!",
-                            Subject = "Welcome to NurseHack4Health!",
-                            State = "Test Message",
-                            FromAddress = UtilConst.SMTPFromAddress,
-                            ToAddress = guest.InvitedUserEmailAddress,
-                            SMTPAddress = UtilConst.SMTP,
-                            SMTPUser = UtilConst.SMTPUser,
-                            SMTPPassword = UtilConst.SMTPPassword,
-                            IsHtmlBody = true,
-                            FromDisplayName = "Email"
-                        };
+                        emailService.InvokeEmail(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName);
 
-                        emailService.SendEmail(userEmail);
+                        
                     } catch (Exception ex)
                     {
 
@@ -286,47 +282,17 @@ namespace HackAPIs.Controllers
                     // Add to MailChimp audience
                     if (tblUsers.UserRole.Contains("Hacker"))
                     {
-                        try
-                        {
-                            MailChimpService mailChimpService = new MailChimpService();
-
-                            MailChimp mailChimp = new MailChimp
-                            {
-                                Audience = UtilConst.MailChimpAudience,
-                                Key = UtilConst.MailChimpKey,
-                                URL = UtilConst.MailChimpURL,
-                                User = UtilConst.MailChimpUser,
-                                mailChimpPayload = new MailChimpPayload
-                                {
-                                    email_address = guest.InvitedUserEmailAddress,
-                                    status = "subscribed",
-                                    
-                                    merge_fields = new Fields
-                                    {
-                                        FNAME = tblUsers.UserDisplayName,
-                                        LNAME = tblUsers.UserDisplayName
-                                    }
-                                }
-
-                            };
-
-                            JObject jObject = await mailChimpService.UpdateMemberInList(mailChimp);
-                            tblUsers.MailchimpId = jObject["id"].ToString();
-
-
-
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
+                        MailChimpService mailChimpService = new MailChimpService();
+                        mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                            tblUsers.UserDisplayName, "subcribed", 1);
+                        tblUsers.MailchimpId = mailChimpId;
 
                     }
            
                 }
                 catch (Exception ex)
                 {
-
+                    
                 }
             }
             _dataRepository.Update(userToUpdate, tblUsers, type);

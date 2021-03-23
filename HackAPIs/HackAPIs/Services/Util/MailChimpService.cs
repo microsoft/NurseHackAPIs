@@ -19,6 +19,14 @@ namespace HackAPIs.Services.Util
             NTLM
         }
 
+        public enum AudienceMemberType
+        {
+            New,
+            Update,
+            subscribed,
+            unsubscribed
+        }
+
         //   public bool HttpPost(string body, out HttpStatusCode statusCode, out string response)
         public async Task<JObject> AddMemberToList(MailChimp mailChimp)
         {
@@ -87,6 +95,52 @@ namespace HackAPIs.Services.Util
 
             //     HttpStatusCode statusCode = res.StatusCode;
             return jsonObject;
+        }
+
+        public async Task<string> InvokeMailChimp(string email, string FName, string LName, string memberStatus, int type)
+        {
+            string id = "";
+            JObject jObject = null;
+            try
+            {
+                MailChimpService mailChimpService = new MailChimpService();
+
+                MailChimp mailChimp = new MailChimp
+                {
+                    Audience = UtilConst.MailChimpAudience,
+                    Key = UtilConst.MailChimpKey,
+                    URL = UtilConst.MailChimpURL,
+                    User = UtilConst.MailChimpUser,
+                    mailChimpPayload = new MailChimpPayload
+                    {
+                        email_address = email,
+                        status = memberStatus,
+
+                        merge_fields = new Fields
+                        {
+                            FNAME = FName,
+                            LNAME = LName
+                        }
+                    }
+
+                };
+
+                if (type == 1)
+                    jObject = await mailChimpService.AddMemberToList(mailChimp);
+                else if (type == 2)
+                    jObject = await mailChimpService.UpdateMemberInList(mailChimp);
+
+                id = jObject["id"].ToString();
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return id;
         }
     }
 }
