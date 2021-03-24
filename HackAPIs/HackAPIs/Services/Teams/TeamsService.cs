@@ -180,11 +180,11 @@ namespace HackAPIs.Services.Teams
             teamMember.TeamID = NurseHackTeam1;
             string urlExt = "v1.0/groups/" + teamMember.TeamID + "/members/"+teamMember.MemberID+"/$ref";
             JObject json = await RunAsync(urlExt, HttpMethodType.Delete, null);
-
+            /*
             teamMember.TeamID = NurseHackTeam2;
             urlExt = "v1.0/groups/" + teamMember.TeamID + "/members/" + teamMember.MemberID + "/$ref";
             json = await RunAsync(urlExt, HttpMethodType.Delete, null);
-
+            */
             return json;
         }
 

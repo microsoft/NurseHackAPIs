@@ -21,7 +21,8 @@ namespace HackAPIs.Model.Db.DataManager
 
         public void Add(tblSurvey entity)
         {
-            throw new NotImplementedException();
+            _nurseHackContext.tbl_Survey.Add(entity);
+            _nurseHackContext.SaveChanges();
         }
 
         public void Delete(tblSurvey entity)
