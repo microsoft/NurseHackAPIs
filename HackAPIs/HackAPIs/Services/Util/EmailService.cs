@@ -99,7 +99,7 @@ namespace HackAPIs.Services.Util
                     SMTPUser = UtilConst.SMTPUser,
                     SMTPPassword = UtilConst.SMTPPassword,
                     IsHtmlBody = true,
-                    FromDisplayName = "Email"
+                    FromDisplayName = "NurseHack4Health"
                 };
 
                 SendEmail(userEmail);
