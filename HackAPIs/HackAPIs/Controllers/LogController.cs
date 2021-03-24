@@ -1,5 +1,8 @@
-﻿using HackAPIs.Services.Util;
+﻿using HackAPIs.Model.Db;
+using HackAPIs.Model.Db.Repository;
+using HackAPIs.Services.Util;
 using HackAPIs.ViewModel;
+using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Email;
 using HackAPIs.ViewModel.Util;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +19,16 @@ namespace HackAPIs.Controllers
     [ApiController]
     public class LogController : Controller
     {
+        private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
+
+        public LogController(IDataRepositoy<tblLog, Log> dataRepositoyLog)
+        {
+           
+
+            _dataRepositoryLog = dataRepositoyLog;
+           
+        }
+
         [HttpGet("blob", Name = "GetBlobFile")]
         public string Index()
         {
@@ -86,6 +99,23 @@ namespace HackAPIs.Controllers
 
             //       return mailChimpService.MemberSubcribe(mailChimp);
             //            return emailService.SendEmail(userEmail);
+        }
+
+        [HttpPost("save", Name = "save")]
+        public async Task<string> log()
+        {
+
+            tblLog log = new tblLog
+            {
+                Label = "100",
+                Description = "User",
+                CreationDate = DateTime.Now,
+                UpdateDate = DateTime.Now
+            };
+            _dataRepositoryLog.Add(log);
+            return "success";
+
+      
         }
     }
     

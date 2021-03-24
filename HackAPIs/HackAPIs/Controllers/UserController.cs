@@ -15,6 +15,7 @@ using HackAPIs.Services.Util;
 using HackAPIs.ViewModel.Email;
 using HackAPIs.ViewModel.Util;
 using Newtonsoft.Json.Linq;
+using HackAPIs.Model.Db;
 
 namespace HackAPIs.Controllers
 {
@@ -23,12 +24,15 @@ namespace HackAPIs.Controllers
     public class UserController : Controller
     {
         private readonly IDataRepositoy<tblUsers, Users> _dataRepository;
+        private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
 
         private readonly IDataRepositoy<tblTeamHackers, TeamHackers> _teamHackersdataRepository;
         public UserController(IDataRepositoy<tblUsers, Users> dataRepositoy,
-            IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository)
+            IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository,
+            IDataRepositoy<tblLog, Log> dataRepositoyLog)
         {
             _dataRepository = dataRepositoy;
+            _dataRepositoryLog = dataRepositoyLog;
             _teamHackersdataRepository = teamHackersdataRepository;
         }
 
@@ -228,7 +232,7 @@ namespace HackAPIs.Controllers
             {
                 return NotFound("The User record couldn't be found.");
             }
-
+            Log(id+"", "Record Exist");
             if (!ModelState.IsValid)
             {
                 return BadRequest();
@@ -236,6 +240,7 @@ namespace HackAPIs.Controllers
 
             if (!tblUsers.Active)
             {
+                Log(id + "", "Inactivation of user is requested");
                 TeamsService teamService = new TeamsService(_dataRepository);
                 TeamMember member = new TeamMember();
                 member.MemberID = userToUpdate.ADUserId;
@@ -250,6 +255,7 @@ namespace HackAPIs.Controllers
                     mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
                         tblUsers.UserDisplayName, userToUpdate.MailchimpId, "unsubscribed", 2);
                     tblUsers.MailchimpId = mailChimpId;
+                    Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: "+mailChimpId);
 
                 }
             }
@@ -257,6 +263,7 @@ namespace HackAPIs.Controllers
             {
                 try
                 {
+                    Log(id + "", "Azure AD is Null");
                     TeamsService teamService = new TeamsService(_dataRepository);
                     GuestUser guest = new GuestUser();
                     guest.InvitedUserEmailAddress = tblUsers.UserMSTeamsEmail;
@@ -264,14 +271,16 @@ namespace HackAPIs.Controllers
                     guest = await teamService.InviteGuestUser(guest);
                     tblUsers.ADUserId = guest.ADUserId;
                     await teamService.UpdateMembers(guest.ADUserId, tblUsers.UserDisplayName);
+                    Log(id + "", "Added Azure ID"+guest.ADUserId);
 
                     try
                     {
                         EmailService emailService = new EmailService();
 
                         emailService.InvokeEmail(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName);
+                        Log(id + "", "Email was sent to : "+ tblUsers.UserMSTeamsEmail);
 
-                        
+
                     } catch (Exception ex)
                     {
 
@@ -286,6 +295,7 @@ namespace HackAPIs.Controllers
                         mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName.Substring(0,tblUsers.UserDisplayName.IndexOf(" ")),
                             tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed", 1);
                         tblUsers.MailchimpId = mailChimpId;
+                        Log(id + "", "Subscribed to MailChimp with ID: "+mailChimpId);
 
                     }
            
@@ -296,6 +306,7 @@ namespace HackAPIs.Controllers
                 }
             }
             _dataRepository.Update(userToUpdate, tblUsers, type);
+            Log(id + "", "Completed the update of the record.");
             return Ok("Success");
         }
 
@@ -362,6 +373,18 @@ namespace HackAPIs.Controllers
            return Ok(user);
        }
        */
+       
+        private void Log(string id, string type)
+        {
+            tblLog log = new tblLog
+            {
+                Label = id,
+                Description = type,
+                CreationDate = DateTime.Now,
+                UpdateDate = DateTime.Now
+            };
+            _dataRepositoryLog.Add(log);
+        }
 
     }
 }
