@@ -240,24 +240,35 @@ namespace HackAPIs.Controllers
 
             if (!tblUsers.Active)
             {
-                Log(id + "", "Inactivation of user is requested");
-                TeamsService teamService = new TeamsService(_dataRepository);
-                TeamMember member = new TeamMember();
-                member.MemberID = userToUpdate.ADUserId;
-                var usr = teamService.RemoveTeamMember(member);
-                type = 4;
-
-
-
-                if (tblUsers.UserRole.Contains("Hacker"))
+                try
                 {
-                    MailChimpService mailChimpService = new MailChimpService();
-                    mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                        tblUsers.UserDisplayName, userToUpdate.MailchimpId, "unsubscribed", 2);
-                    tblUsers.MailchimpId = mailChimpId;
-                    Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: "+mailChimpId);
+                    Log(id + "", "Inactivation of user is requested");
+                    TeamsService teamService = new TeamsService(_dataRepository);
+                    TeamMember member = new TeamMember();
+                    member.MemberID = userToUpdate.ADUserId;
+                    var usr = teamService.RemoveTeamMember(member);
+                } catch (Exception ex)
+                {
+
 
                 }
+
+                type = 4;
+
+                try
+                {
+
+                    if (tblUsers.UserRole.Contains("Hacker"))
+                    {
+                        MailChimpService mailChimpService = new MailChimpService();
+                        mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                            tblUsers.UserDisplayName, userToUpdate.MailchimpId, "unsubscribed", 2);
+                        tblUsers.MailchimpId = mailChimpId;
+                        Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: " + mailChimpId);
+
+                    }
+                } catch (Exception ex)
+                { }
             }
             else if (userToUpdate.ADUserId == null)
             {
@@ -286,16 +297,31 @@ namespace HackAPIs.Controllers
 
                     }
 
-                    
-
-                    // Add to MailChimp audience
-                    if (tblUsers.UserRole.Contains("Hacker"))
+                    try
                     {
-                        MailChimpService mailChimpService = new MailChimpService();
-                        mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName.Substring(0,tblUsers.UserDisplayName.IndexOf(" ")),
-                            tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed", 1);
-                        tblUsers.MailchimpId = mailChimpId;
-                        Log(id + "", "Subscribed to MailChimp with ID: "+mailChimpId);
+
+                        // Add to MailChimp audience
+                        if (tblUsers.UserRole.Contains("Hacker"))
+                        {
+                            MailChimpService mailChimpService = new MailChimpService();
+
+                            if (userToUpdate.MailchimpId != null || !userToUpdate.MailchimpId.Equals(""))
+                            {
+                                mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                           tblUsers.UserDisplayName, userToUpdate.MailchimpId, "subscribed", 2);
+                            }
+                            else
+                            {
+
+                                mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName.Substring(0, tblUsers.UserDisplayName.IndexOf(" ")),
+                                    tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed", 1);
+                                tblUsers.MailchimpId = mailChimpId;
+                            }
+                            Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);
+
+                        }
+                    } catch (Exception ex)
+                    {
 
                     }
            
