@@ -305,7 +305,7 @@ namespace HackAPIs.Controllers
                         {
                             MailChimpService mailChimpService = new MailChimpService();
 
-                            if (userToUpdate.MailchimpId != null || !userToUpdate.MailchimpId.Equals(""))
+                            if (userToUpdate.MailchimpId != null )
                             {
                                 mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
                            tblUsers.UserDisplayName, userToUpdate.MailchimpId, "subscribed", 2);
@@ -313,8 +313,9 @@ namespace HackAPIs.Controllers
                             else
                             {
 
-                                mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName.Substring(0, tblUsers.UserDisplayName.IndexOf(" ")),
-                                    tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed", 1);
+                                //               mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName.Substring(0, tblUsers.UserDisplayName.IndexOf(" ")),
+                                mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                                 tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed", 1);
                                 tblUsers.MailchimpId = mailChimpId;
                             }
                             Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);
