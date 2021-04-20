@@ -22,6 +22,6 @@ namespace HackAPIs.ViewModel.Db
         public DateTime ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
         public Boolean UserOptOut { get; set; } = false;
-
+        public string GitHubId { get; set; }
     }
 }

@@ -103,7 +103,7 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext.SaveChanges();
         }
 
-        public void Update(tblUsers entityToUpdate, tblUsers entity,int type)
+        public void Update(tblUsers entityToUpdate, tblUsers entity, int type)
         {
             if (type == 0)
             {
@@ -111,7 +111,7 @@ namespace HackAPIs.Model.Db.DataManager
                     .Single(b => b.UserId == entityToUpdate.UserId);
                 entityToUpdate.ADUserId = entity.ADUserId;
             }
-           if (type == 1 || type == 4) 
+            if (type == 1 || type == 4)
             {
                 entityToUpdate = _nurseHackContext.tbl_Users
                     .Single(b => b.UserId == entityToUpdate.UserId);
@@ -148,7 +148,7 @@ namespace HackAPIs.Model.Db.DataManager
                     entityToUpdate.UserOptOut = entity.UserOptOut;
                 if (entity.MySkills != null)
                     entityToUpdate.MySkills = entity.MySkills;
-                   entityToUpdate.ModifiedDate = DateTime.Now;
+                entityToUpdate.ModifiedDate = DateTime.Now;
 
 
             }
@@ -158,7 +158,7 @@ namespace HackAPIs.Model.Db.DataManager
                     .Include(a => a.tblUserSkillMatch)
                     .Single(b => b.UserId == entityToUpdate.UserId);
 
-                
+
 
                 var deletedSkills = entityToUpdate.tblUserSkillMatch.Except(entity.tblUserSkillMatch).ToList();
                 var addedSkills = entity.tblUserSkillMatch.Except(entityToUpdate.tblUserSkillMatch).ToList();
@@ -180,7 +180,7 @@ namespace HackAPIs.Model.Db.DataManager
                     }
 
                 }
-                
+
             }
             else if (type == 3) // User Solutions
             {
@@ -206,6 +206,12 @@ namespace HackAPIs.Model.Db.DataManager
 
                     }
                 }
+            }
+            else if (type == 5) // Github id
+            {
+                entityToUpdate = _nurseHackContext.tbl_Users
+                    .Single(b => b.UserId == entityToUpdate.UserId);
+                entityToUpdate.GitHubId = entity.GitHubId;
             }
                 _nurseHackContext.SaveChanges();
                     

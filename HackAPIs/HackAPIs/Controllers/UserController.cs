@@ -310,6 +310,29 @@ namespace HackAPIs.Controllers
             return Ok("Success");
         }
 
+        [HttpPut("github/{id}")]
+        public IActionResult GitHubUserId(int id, [FromBody] tblUsers tblUsers)
+        {
+            if (tblUsers == null)
+            {
+                return BadRequest("User is null.");
+            }
+
+            var userToUpdate = _dataRepository.Get(id, 1);
+            if (userToUpdate == null)
+            {
+                return NotFound("The User record couldn't be found.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            _dataRepository.Update(userToUpdate, tblUsers, 5);
+            return Ok("Success");
+        }
+
         /*
        // GET: api/users/5
        [HttpGet("{id}", Name = "GetUser")]
