@@ -1,4 +1,5 @@
-﻿using Microsoft.Identity.Client;
+﻿using HackAPIs.Services.Util;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -15,9 +16,10 @@ namespace HackAPIs.Services.Teams
 {
     public class BaseTeamService
     {
-         public static string NurseHackTeam = ""; 
- 
-        public static string TeamDomain = "";
+        public static string NurseHackTeam1 = UtilConst.MSTeam1;
+        public static string NurseHackTeam2 = UtilConst.MSTeam2;
+
+        public static string TeamDomain = UtilConst.TeamDomain;
 
         protected enum HttpMethodType
         {

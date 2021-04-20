@@ -19,7 +19,8 @@ namespace HackAPIs.Model.Db.DataManager
 
         public void Add(tblLog entity)
         {
-            throw new NotImplementedException();
+            _nurseHackContext.tbl_Log.Add(entity);
+            _nurseHackContext.SaveChanges();
         }
 
         public void Delete(tblLog entity)

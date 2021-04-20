@@ -1,4 +1,5 @@
 ﻿
+using HackAPIs.Services.Util;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
@@ -29,13 +30,13 @@ namespace HackAPIs.Services.Teams
         /// - or 'organizations' (for a multi-tenant application)
         /// </summary>
 
-        public string Tenant { get; set; } = "";
+        public string Tenant { get; set; } = UtilConst.Tenant;
 
         /// <summary>
         /// Guid used by the application to uniquely identify itself to Azure AD
         /// </summary>
  
-        public string ClientId { get; set; } = "";
+        public string ClientId { get; set; } = UtilConst.ClientId;
 
         /// <summary>
         /// URL of the authority
@@ -57,7 +58,7 @@ namespace HackAPIs.Services.Teams
         /// (and identified by the CertificateName property belows)
         /// <remarks> 
 
-        public string ClientSecret { get; set; } = "";
+        public string ClientSecret { get; set; } = UtilConst.ClientSecret;
 
         /// <summary>
         /// Name of a certificate in the user certificate store

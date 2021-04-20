@@ -85,8 +85,11 @@ namespace HackAPIs.Services.Teams
                 
                 TeamMember member = new TeamMember();
                 member.UserID = invitedUserId;
-                member.TeamID = NurseHackTeam;
+                member.TeamID = NurseHackTeam1;
                 json = await AddTeamMember(member);
+                member.TeamID = NurseHackTeam2;
+                json = await AddTeamMember(member);
+
             } catch (Exception ex)
             {
                 
@@ -174,9 +177,14 @@ namespace HackAPIs.Services.Teams
 
         public async Task<JObject> RemoveTeamMember(TeamMember teamMember)
         {
-            teamMember.TeamID = NurseHackTeam;
+            teamMember.TeamID = NurseHackTeam1;
             string urlExt = "v1.0/groups/" + teamMember.TeamID + "/members/"+teamMember.MemberID+"/$ref";
             JObject json = await RunAsync(urlExt, HttpMethodType.Delete, null);
+            /*
+            teamMember.TeamID = NurseHackTeam2;
+            urlExt = "v1.0/groups/" + teamMember.TeamID + "/members/" + teamMember.MemberID + "/$ref";
+            json = await RunAsync(urlExt, HttpMethodType.Delete, null);
+            */
             return json;
         }
 
@@ -218,7 +226,7 @@ namespace HackAPIs.Services.Teams
        */
         public async Task<TeamChannel> CreateTeamChannel(TeamChannel teamChannel)
         {
-            teamChannel.TeamID = NurseHackTeam;
+            teamChannel.TeamID = NurseHackTeam1;
             string urlExt = "beta/teams/" + teamChannel.TeamID + "/channels";
 
             Hashtable postPayload = new Hashtable();

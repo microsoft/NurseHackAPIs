@@ -13,6 +13,7 @@ using HackAPIs.Services.Db.Model;
 using HackAPIs.ViewModel.Db;
 using System;
 using HackAPIs.Model.Db;
+using HackAPIs.Services.Util;
 
 namespace HackAPIs 
 {
@@ -21,6 +22,7 @@ namespace HackAPIs
 
         private string ConnStr = null;
         private string ClientTeamEmbed = null;
+        
 
         public Startup(IConfiguration configuration)
         {
@@ -39,6 +41,23 @@ namespace HackAPIs
             //  services.AddControllers();
             ConnStr = Configuration["ConnStr"];
             ClientTeamEmbed = Configuration["ClientTeamEmbed"];
+            UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
+            UtilConst.SMTP = Configuration["EmailSMTPAddress"];
+            UtilConst.SMTPPassword = Configuration["svc-NH4H-devupconf-org"];
+            UtilConst.SMTPUser = Configuration["SMTPUser"]; 
+            UtilConst.StorageConn = Configuration["EmailTemplateStorage"];
+            UtilConst.Container = Configuration["EmailTemplateContainer"];
+            UtilConst.Blob = Configuration["EmailTemplateBlob"];
+            UtilConst.MSTeam1 = Configuration["MSTeam1"];
+            UtilConst.MSTeam2 = Configuration["MSTeam2"];
+            UtilConst.MailChimpKey = Configuration["MailChimpKey"];
+            UtilConst.MailChimpURL = Configuration["MailChimpURL"];
+            UtilConst.MailChimpAudience = Configuration["MailChimpAudience"];
+            UtilConst.MailChimpUser = Configuration["MailChimpUser"];
+            UtilConst.ClientId = Configuration["ClientId"];
+            UtilConst.ClientSecret = Configuration["ClientSecret"];
+            UtilConst.Tenant = Configuration["Tenant"];
+            UtilConst.TeamDomain = Configuration["TeamDomain"];
 
 
             services.AddDbContext<NurseHackContext>(options =>

@@ -12,7 +12,7 @@ namespace HackAPIs.Controllers
     //Controller
     public class DbController : Controller
     {
-        private readonly ILogger<TeamsController> _logger;
+     //   private readonly ILogger<TeamsController> _logger;
         private readonly NurseHackContext _dbContext;
 
         public DbController(NurseHackContext dbcontext)

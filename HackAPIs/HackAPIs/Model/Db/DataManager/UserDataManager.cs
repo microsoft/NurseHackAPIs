@@ -34,7 +34,7 @@ namespace HackAPIs.Model.Db.DataManager
                 tblUsers = _nurseHackContext.tbl_Users
                     .SingleOrDefault(b => b.UserId == id);
             } 
-            else if (type == 3)
+            else if (type == 3) // User and Skills
             {
                 tblUsers = _nurseHackContext.tbl_Users
                    .SingleOrDefault(b => b.UserId == id);
@@ -46,7 +46,7 @@ namespace HackAPIs.Model.Db.DataManager
                     .Collection(b => b.tblUserSkillMatch)
                     .Load();
             }
-            else if (type == 2)
+            else if (type == 2) // User and Solutions
             {
                 tblUsers = _nurseHackContext.tbl_Users
                   .SingleOrDefault(b => b.UserId == id);
@@ -134,13 +134,15 @@ namespace HackAPIs.Model.Db.DataManager
                     entityToUpdate.JNJOptIn = entity.JNJOptIn;
                 if (entity.SONSIELOptIn != null)
                     entityToUpdate.SONSIELOptIn = entity.SONSIELOptIn;
+                if (entity.MailchimpId != null)
+                    entityToUpdate.MailchimpId = entity.MailchimpId;
 
 
-                if (type == 1)
+                if (type == 1) // Updating the new Azure AD ID from the Azure AD
                 {
                     if (entity.ADUserId != null)
                         entityToUpdate.ADUserId = entity.ADUserId;
-                } else if (type == 4)
+                } else if (type == 4) // Updating the existing Azure AD ID from the Azure AD
                 {
                     entityToUpdate.ADUserId = entity.ADUserId;
                 }
