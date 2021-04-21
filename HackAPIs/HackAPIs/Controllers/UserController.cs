@@ -44,6 +44,18 @@ namespace HackAPIs.Controllers
             return Ok(tblUsers);
         }
 
+        [HttpGet("githubid/{id}")]
+        public IActionResult GetGitHubId(long id){
+            var user = _dataRepository.Get(id, 1);
+            
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            return Ok(new tblUsers { GitHubId = user.GitHubId });
+        }
+
         // GET: api/users
         [HttpGet("solutions/nousers", Name = "GetUserNoSolutions")]
         public IActionResult GetUserNoSolutions()
