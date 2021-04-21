@@ -214,6 +214,7 @@ namespace HackAPIs.Model.Db.DataManager
                 entityToUpdate = _nurseHackContext.tbl_Users
                     .Single(b => b.UserId == entityToUpdate.UserId);
                 entityToUpdate.GitHubId = entity.GitHubId;
+                entityToUpdate.GitHubUser = entity.GitHubUser;
             }
                 _nurseHackContext.SaveChanges();
                     
