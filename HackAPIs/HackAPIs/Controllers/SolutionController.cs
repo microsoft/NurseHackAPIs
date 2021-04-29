@@ -225,7 +225,7 @@ namespace HackAPIs.Controllers
                         {
 
             }
-
+            */
             _dataRepository.Add(tblTeams);
 
             return Ok(tblTeams);
