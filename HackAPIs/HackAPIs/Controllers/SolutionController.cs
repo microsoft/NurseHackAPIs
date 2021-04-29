@@ -208,25 +208,29 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            var teampre = "Team-";
-            tblTeams.TeamName = teampre + tblTeams.TeamName;
 
-           
+            ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
+            /*
+                        var teampre = "Team-";
+                        tblTeams.TeamName = teampre + tblTeams.TeamName;                    
 
-            try
-            {
-                TeamsService teamsService = new TeamsService();
-                TeamChannel teamChannel = new TeamChannel();
-                teamChannel.ChannelName = tblTeams.TeamName;
-                teamChannel.ChannelDescription = tblTeams.TeamDescription;
-                teamChannel = await teamsService.CreateTeamChannel(teamChannel);
-                tblTeams.MSTeamsChannel = teamChannel.ChannelWebURL;
-            } catch (Exception ex)
-            {
+                        try
+                        {
+                            TeamsService teamsService = new TeamsService();
+                            TeamChannel teamChannel = new TeamChannel();
+                            teamChannel.ChannelName = tblTeams.TeamName;
+                            teamChannel.ChannelDescription = tblTeams.TeamDescription;
+                            teamChannel = await teamsService.CreateTeamChannel(teamChannel);
+                            tblTeams.MSTeamsChannel = teamChannel.ChannelWebURL;
+                        } catch (Exception ex)
+                        {
 
             }
-            tblTeams.CreatedDate = DateTime.Now;
+            */
+            ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
             tblTeams.Active = true;
+            tblTeams.CreatedDate = DateTime.Now;
+
             _dataRepository.Add(tblTeams);
 
             return Ok(tblTeams);
