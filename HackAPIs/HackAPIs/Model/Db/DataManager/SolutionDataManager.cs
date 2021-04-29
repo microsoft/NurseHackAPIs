@@ -98,6 +98,9 @@ namespace HackAPIs.Model.Db.DataManager
 
         public void Update(tblTeams entityToUpdate, tblTeams entity, int type)
         {
+            /*
+             * Type 1 = PUT /solutions/$teamid (modify team)
+             */
             if (type == 1)
             {
                 entityToUpdate = _nurseHackContext.tbl_Teams
@@ -115,6 +118,8 @@ namespace HackAPIs.Model.Db.DataManager
                 entityToUpdate.MSLabSPNObjectId = entity.MSLabSPNObjectId;
                 entityToUpdate.MSLabSPNDisplayName = entity.MSLabSPNDisplayName;
                 entityToUpdate.MSLabSPNKey = entity.MSLabSPNKey;
+                entityToUpdate.ModifiedDate = entity.ModifiedDate;
+                entityToUpdate.ModifiedBy = entity.ModifiedBy;
                 entityToUpdate.Active = entity.Active;
                 entityToUpdate.ChallengeName = entity.ChallengeName;
                 entityToUpdate.SkillsWanted = entity.SkillsWanted;

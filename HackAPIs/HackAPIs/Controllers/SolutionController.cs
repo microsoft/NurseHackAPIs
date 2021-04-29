@@ -20,7 +20,12 @@ namespace HackAPIs.Controllers
         private readonly IDataRepositoy<tblTeams, Solutions> _dataRepository;
 
         private readonly IDataRepositoy<tblSkills, Skills> _skilldataRepository;
-
+        private DateTime getEasternTime()
+        {
+            var timeUtc = DateTime.UtcNow;
+            TimeZoneInfo easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            return(TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone));
+        }
         public SolutionController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
             IDataRepositoy<tblSkills, Skills> skilldataRepositoy)
         {
@@ -224,7 +229,7 @@ namespace HackAPIs.Controllers
             {
 
             }
-
+            tblTeams.CreatedDate = getEasternTime();
             _dataRepository.Add(tblTeams);
 
             return Ok(tblTeams);
@@ -249,7 +254,7 @@ namespace HackAPIs.Controllers
             {
                 return BadRequest();
             }
-            
+            tblTeams.ModifiedDate = getEasternTime();
             _dataRepository.Update(solutionToUpdate, tblTeams, 1);
             return Ok("Success");
         }
