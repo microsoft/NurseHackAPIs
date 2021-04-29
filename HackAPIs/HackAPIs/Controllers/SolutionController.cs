@@ -31,7 +31,8 @@ namespace HackAPIs.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var tblTeams = _dataRepository.GetAll();
+            var tblTeams = _dataRepository.GetAll()
+                .Where(a => a.Active);
 
 
               return Ok(tblTeams);
@@ -224,7 +225,8 @@ namespace HackAPIs.Controllers
             {
 
             }
-            tblTeams.CreatedDate = DateTime.Now; 
+            tblTeams.CreatedDate = DateTime.Now;
+            tblTeams.Active = true;
             _dataRepository.Add(tblTeams);
 
             return Ok(tblTeams);
