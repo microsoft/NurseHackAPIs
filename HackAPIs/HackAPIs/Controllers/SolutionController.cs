@@ -23,7 +23,16 @@ namespace HackAPIs.Controllers
         private DateTime getEasternTime()
         {
             var timeUtc = DateTime.UtcNow;
-            TimeZoneInfo easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+            TimeZoneInfo easternZone = null;
+            if (isWindows)
+            {
+                easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            }
+            else
+            {
+                easternZone = TimeZoneInfo.FindSystemTimeZoneById("US Eastern Standard Time");
+            }
             return(TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone));
         }
         public SolutionController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
@@ -229,7 +238,7 @@ namespace HackAPIs.Controllers
             {
 
             }
-            tblTeams.CreatedDate = getEasternTime();
+            //tblTeams.CreatedDate = getEasternTime();
             _dataRepository.Add(tblTeams);
 
             return Ok(tblTeams);
@@ -254,7 +263,7 @@ namespace HackAPIs.Controllers
             {
                 return BadRequest();
             }
-            tblTeams.ModifiedDate = getEasternTime();
+            //tblTeams.ModifiedDate = getEasternTime();
             _dataRepository.Update(solutionToUpdate, tblTeams, 1);
             return Ok("Success");
         }
