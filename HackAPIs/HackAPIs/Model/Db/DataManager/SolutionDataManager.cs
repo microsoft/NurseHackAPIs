@@ -92,12 +92,16 @@ namespace HackAPIs.Model.Db.DataManager
         
         public void Add(tblTeams entity)
         {
+            entity.CreatedDate = DateTime.Now;
             _nurseHackContext.tbl_Teams.Add(entity);
             _nurseHackContext.SaveChanges();
         }
 
         public void Update(tblTeams entityToUpdate, tblTeams entity, int type)
         {
+            /**
+             * type 1 = PUT /solutions/$teamid (edit a team)
+             */
             if (type == 1)
             {
                 entityToUpdate = _nurseHackContext.tbl_Teams
@@ -115,6 +119,8 @@ namespace HackAPIs.Model.Db.DataManager
                 entityToUpdate.MSLabSPNObjectId = entity.MSLabSPNObjectId;
                 entityToUpdate.MSLabSPNDisplayName = entity.MSLabSPNDisplayName;
                 entityToUpdate.MSLabSPNKey = entity.MSLabSPNKey;
+                entityToUpdate.ModifiedBy = entity.ModifiedBy;
+                entityToUpdate.ModifiedDate = DateTime.Now;
                 entityToUpdate.Active = entity.Active;
                 entityToUpdate.ChallengeName = entity.ChallengeName;
                 entityToUpdate.SkillsWanted = entity.SkillsWanted;
