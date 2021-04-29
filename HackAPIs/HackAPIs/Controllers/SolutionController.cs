@@ -20,7 +20,7 @@ namespace HackAPIs.Controllers
         private readonly IDataRepositoy<tblTeams, Solutions> _dataRepository;
 
         private readonly IDataRepositoy<tblSkills, Skills> _skilldataRepository;
-
+       
         public SolutionController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
             IDataRepositoy<tblSkills, Skills> skilldataRepositoy)
         {
@@ -224,8 +224,8 @@ namespace HackAPIs.Controllers
                         } catch (Exception ex)
                         {
 
-                        }
-            */
+            }
+
             _dataRepository.Add(tblTeams);
 
             return Ok(tblTeams);
@@ -250,7 +250,7 @@ namespace HackAPIs.Controllers
             {
                 return BadRequest();
             }
-            
+            tblTeams.ModifiedDate = DateTime.Now;
             _dataRepository.Update(solutionToUpdate, tblTeams, 1);
             return Ok("Success");
         }

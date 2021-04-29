@@ -105,6 +105,11 @@ namespace HackAPIs.Model.Db.DataManager
 
         public void Update(tblUsers entityToUpdate, tblUsers entity, int type)
         {
+            /**
+             * Type 2 = PUT /user/skills/$userid (editing user's skills)
+             * Type 3 = PUT /user/solution/$userid (adding/removing solution teams from a user)
+             * Type 4 = PUT /user/github/$userid (add's a user's github id and username to the user object)
+             */
             if (type == 0)
             {
                 entityToUpdate = _nurseHackContext.tbl_Users
