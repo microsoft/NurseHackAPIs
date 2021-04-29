@@ -11,5 +11,6 @@ namespace HackAPIs.ViewModel.Db
        
         public int UserId { get; set; }
         public virtual ArrayList TeamId { get; set; }
+        public int IsLead { get; set; }
     }
 }

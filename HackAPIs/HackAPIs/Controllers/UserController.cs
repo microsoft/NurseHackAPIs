@@ -137,14 +137,15 @@ namespace HackAPIs.Controllers
 
             ArrayList SolutionList = new ArrayList();
             IEnumerator enumerator = tblUsers.tblTeamHackers.GetEnumerator();
+            int islead = 0;
             while (enumerator.MoveNext())
             {
                 tblTeamHackers solution = (tblTeamHackers)enumerator.Current;
-
+                islead = solution.IsLead;
                 SolutionList.Add(solution.TeamId);
             }
             userTeams.TeamId = SolutionList;
-
+            userTeams.IsLead = islead;
             return Ok(userTeams);
         }
 
