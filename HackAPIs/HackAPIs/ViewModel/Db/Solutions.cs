@@ -29,6 +29,8 @@ namespace HackAPIs.ViewModel.Db
         public string CreatedBy { get; set; }
         public DateTime ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
+        public string GitHubRepoId { get; set; }
+        public string GitHubTeamId { get; set; }
         public virtual ICollection<SolutionSkills> SolutionSkills { get; set; }
         public virtual ICollection<SolutionHackers> SolutionHackers { get; set; }
 

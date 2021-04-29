@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HackAPIs.Services.Db.model
+namespace HackAPIs.Db.Model
 {
     public partial class tblTeamHackers
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace HackAPIs.Services.Db.Model
+namespace HackAPIs.Db.Model
 {
     public partial class tblRegLink
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Threading.Tasks;
 
-namespace HackAPIs.Services.Db.Model
+namespace HackAPIs.Db.Model
 {
     public partial class tblTeams
     {
@@ -31,6 +31,10 @@ namespace HackAPIs.Services.Db.Model
         public string CreatedBy { get; set; }
         public DateTime ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
+
+        public string GitHubRepoId { get; set; }
+        public string GitHubTeamId { get; set; }
+
         public virtual ICollection<tblTeamSkillMatch> tblTeamSkillMatch { get; set; }
         public virtual ICollection<tblTeamHackers> tblTeamHackers { get; set; }
 
