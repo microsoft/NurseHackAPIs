@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using HackAPIs.Model.Db.Repository;
-using HackAPIs.Services.Db.Model;
+using HackAPIs.Db.Model;
 using HackAPIs.Services.Teams;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;

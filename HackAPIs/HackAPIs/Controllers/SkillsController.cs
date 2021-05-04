@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HackAPIs.Model.Db.Repository;
-using HackAPIs.Services.Db.Model;
+using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
 
 namespace HackAPIs.Controllers

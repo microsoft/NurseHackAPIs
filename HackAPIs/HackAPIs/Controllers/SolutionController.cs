@@ -5,11 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HackAPIs.Model.Db.Repository;
-using HackAPIs.Services.Db.model;
-using HackAPIs.Services.Db.Model;
+using HackAPIs.Db.Model;
 using HackAPIs.Services.Teams;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
+using HackAPIs.ViewModel.Util;
+using HackAPIs.Services.Util;
 
 namespace HackAPIs.Controllers
 {
@@ -20,6 +21,11 @@ namespace HackAPIs.Controllers
         private readonly IDataRepositoy<tblTeams, Solutions> _dataRepository;
 
         private readonly IDataRepositoy<tblSkills, Skills> _skilldataRepository;
+        
+        private readonly IDataRepositoy<tblUsers, Users> _userDataRepository;
+
+        private readonly GitHubService _githubService;
+
         private DateTime getEasternTime()
         {
             var timeUtc = DateTime.UtcNow;
@@ -27,22 +33,21 @@ namespace HackAPIs.Controllers
             return(TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone));
         }
         public SolutionController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
-            IDataRepositoy<tblSkills, Skills> skilldataRepositoy)
+            IDataRepositoy<tblSkills, Skills> skilldataRepositoy,
+            IDataRepositoy<tblUsers, Users> userDataRepository)
         {
             _dataRepository = dataRepositoy;
             _skilldataRepository = skilldataRepositoy;
+            _userDataRepository = userDataRepository;
+            _githubService = new GitHubService();
         }
         // GET: api/solutions
         [HttpGet]
         public IActionResult Get()
         {
             var tblTeams = _dataRepository.GetAll();
-
-
-              return Ok(tblTeams);
-            
+            return Ok(tblTeams);
         }
-
 
         // GET: api/solutions
         [HttpGet("hackers", Name = "GetSolutionsHackers")]
@@ -148,10 +153,6 @@ namespace HackAPIs.Controllers
             }
             solutionSkills.SkillId = SkillsList;
 
-
-
-
-
             return Ok(solutionSkills);
         }
 
@@ -200,7 +201,7 @@ namespace HackAPIs.Controllers
 
         // POST: api/solutions
         [HttpPost]
-        public async Task<IActionResult>  Post([FromBody] tblTeams tblTeams)
+        public async Task<IActionResult> Post([FromBody] tblTeams tblTeams)
         {
             if (tblTeams is null)
             {
@@ -215,8 +216,6 @@ namespace HackAPIs.Controllers
             var teampre = "Team-";
             tblTeams.TeamName = teampre + tblTeams.TeamName;
 
-           
-
             try
             {
                 TeamsService teamsService = new TeamsService();
@@ -225,16 +224,25 @@ namespace HackAPIs.Controllers
                 teamChannel.ChannelDescription = tblTeams.TeamDescription;
                 teamChannel = await teamsService.CreateTeamChannel(teamChannel);
                 tblTeams.MSTeamsChannel = teamChannel.ChannelWebURL;
+                                
             } catch (Exception ex)
             {
 
             }
+
+            var github_ids = CreateGitHubTeam(tblTeams.TeamName, tblTeams.TeamDescription);
+           
+            tblTeams.GitHubTeamId = github_ids.TeamId;
+            tblTeams.GitHubRepoId = github_ids.RepoId;
             tblTeams.CreatedDate = getEasternTime();
+
             _dataRepository.Add(tblTeams);
+
+            AddUserToGHTeam(tblTeams.CreatedBy, tblTeams.TeamName, github_ids.TeamId);
 
             return Ok(tblTeams);
         }
-
+        
         // PUT: api/solutions/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] tblTeams tblTeams)
@@ -308,5 +316,15 @@ namespace HackAPIs.Controllers
             return Ok("Success");
         }
 
+        private Github CreateGitHubTeam(string teamName, string teamDesc)
+        {
+            return _githubService.CreateRepoAndTeam(teamName, teamDesc);
+        }
+
+        private void AddUserToGHTeam(string createdBy, string teamName, int teamId)
+        {
+            var user = _userDataRepository.GetByColumn(1, "UserRegEmail", createdBy);
+            _githubService.AddUser(user.GitHubUser, user.GitHubId, teamId, teamName);
+        }
     }
 }

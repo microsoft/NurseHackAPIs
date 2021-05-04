@@ -24,15 +24,19 @@ namespace HackAPIs.Controllers
     {
         private readonly IDataRepositoy<tblUsers, Users> _dataRepository;
         private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
-
+        private readonly GitHubService _gitHubService;
         private readonly IDataRepositoy<tblTeamHackers, TeamHackers> _teamHackersdataRepository;
+
         public UserController(IDataRepositoy<tblUsers, Users> dataRepositoy,
             IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository,
-            IDataRepositoy<tblLog, Log> dataRepositoyLog)
+            IDataRepositoy<tblLog, Log> dataRepositoyLog,
+            GitHubService gitHubService)
         {
             _dataRepository = dataRepositoy;
             _dataRepositoryLog = dataRepositoyLog;
             _teamHackersdataRepository = teamHackersdataRepository;
+            _gitHubService = gitHubService;
+
         }
 
         // GET: api/users
@@ -375,7 +379,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/users/5
         [HttpPut("solutions/{id}")]
-        public IActionResult UserTeams(int id, [FromBody] tblUsers tblUsers)
+        public IActionResult UserTeams(int id, [FromBody] tblUsers tblUsers, [FromQuery] string teamName, [FromQuery] int isFromCreate)
         {
             if (tblUsers == null)
             {
@@ -394,6 +398,13 @@ namespace HackAPIs.Controllers
             }
 
             _dataRepository.Update(userToUpdate, tblUsers, 3);
+
+            // Leaving the Team && determining whether this is being called from new team creation. This stops from calling GH api twice
+            if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)
+            {
+                AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, tblUsers.tblTeamHackers.First().TeamId, teamName);
+            } 
+
             return Ok("Success");
         }
 
@@ -417,6 +428,7 @@ namespace HackAPIs.Controllers
             }
 
             _dataRepository.Update(userToUpdate, tblUsers, 5);
+
             return Ok("Success");
         }
 
@@ -447,5 +459,9 @@ namespace HackAPIs.Controllers
             _dataRepositoryLog.Add(log);
         }
 
+        private void AddToGHTeam(string ghuser, long ghuserid, int teamid, string teamname)
+        {
+            _gitHubService.AddUser(ghuser, ghuserid, teamid, teamname);
+        }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Services.Db;
-using HackAPIs.Services.Db.Model;
+using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
 using System;
 using System.Collections.Generic;

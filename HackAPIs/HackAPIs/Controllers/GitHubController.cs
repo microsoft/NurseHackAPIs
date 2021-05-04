@@ -1,4 +1,4 @@
-﻿using HackAPIs.Model.Db;
+﻿using HackAPIs.Db.Model;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.ViewModel.Db;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +14,12 @@ namespace HackAPIs.Controllers
     public class GitHubController : Controller
     {
         private readonly IDataRepositoy<tblTeams, Solutions> _dataRepository;
-        //private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
 
         private readonly IDataRepositoy<tblTeamHackers, TeamHackers> _teamHackersdataRepository;
-        public UserController(IDataRepositoy<tblUsers, Users> dataRepositoy,
-            IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository,
-            IDataRepositoy<tblLog, Log> dataRepositoyLog)
+        public GitHubController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
+            IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository)
         {
             _dataRepository = dataRepositoy;
-            _dataRepositoryLog = dataRepositoyLog;
             _teamHackersdataRepository = teamHackersdataRepository;
         }
         public IActionResult Index()

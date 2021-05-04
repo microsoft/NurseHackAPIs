@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using HackAPIs.Model.Db.Repository;
-using HackAPIs.Services.Db.Model;
+using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using System;

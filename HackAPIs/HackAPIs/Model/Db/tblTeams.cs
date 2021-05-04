@@ -1,4 +1,4 @@
-﻿using HackAPIs.Services.Db.model;
+﻿using HackAPIs.Db.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -32,8 +32,8 @@ namespace HackAPIs.Db.Model
         public DateTime ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
 
-        public string GitHubRepoId { get; set; }
-        public string GitHubTeamId { get; set; }
+        public int GitHubRepoId { get; set; }
+        public int GitHubTeamId { get; set; }
 
         public virtual ICollection<tblTeamSkillMatch> tblTeamSkillMatch { get; set; }
         public virtual ICollection<tblTeamHackers> tblTeamHackers { get; set; }

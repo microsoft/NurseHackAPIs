@@ -1,4 +1,4 @@
-﻿using HackAPIs.Services.Db.Model;
+﻿using HackAPIs.Db.Model;
 using System.Collections.Generic;
 
 namespace HackAPIs.Model.Db.Repository

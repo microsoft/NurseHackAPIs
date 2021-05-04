@@ -1,6 +1,6 @@
 ﻿using HackAPIs.Model.Db.Repository;
 using HackAPIs.Services.Db;
-using HackAPIs.Services.Db.Model;
+using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Db.Mapper;
 using System;

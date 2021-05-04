@@ -1,4 +1,4 @@
-﻿using HackAPIs.Services.Db.model;
+﻿using HackAPIs.Db.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

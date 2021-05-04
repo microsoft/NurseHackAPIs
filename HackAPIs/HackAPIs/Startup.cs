@@ -8,8 +8,7 @@ using Microsoft.Extensions.Hosting;
 using HackAPIs.Model.Db.DataManager;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Services.Db;
-using HackAPIs.Services.Db.model;
-using HackAPIs.Services.Db.Model;
+using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
 using System;
 using HackAPIs.Model.Db;
@@ -82,6 +81,7 @@ namespace HackAPIs
             services.AddScoped<IDataRepositoy<tblLog, Log>, LogDataManager>();
             services.AddScoped<IDataRepositoy<tblSurvey, Survey>, SurveyDataManager>();
             services.AddScoped<IDataRepositoy<tblRegLink, RegLinks>, RegLinkDataManager>();
+            services.AddScoped<GitHubService>();
 
             services.AddControllers();
 
