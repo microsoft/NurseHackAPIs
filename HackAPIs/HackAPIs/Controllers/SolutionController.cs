@@ -20,12 +20,15 @@ namespace HackAPIs.Controllers
         private readonly IDataRepositoy<tblTeams, Solutions> _dataRepository;
 
         private readonly IDataRepositoy<tblSkills, Skills> _skilldataRepository;
-       
+
+        private readonly IDataRepositoy<tblUsers, Users> _userdataRepository;
+
         public SolutionController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
-            IDataRepositoy<tblSkills, Skills> skilldataRepositoy)
+            IDataRepositoy<tblSkills, Skills> skilldataRepositoy, IDataRepositoy<tblUsers, Users> userdataRepository)
         {
             _dataRepository = dataRepositoy;
             _skilldataRepository = skilldataRepositoy;
+            _userdataRepository = userdataRepository;
         }
         // GET: api/solutions
         [HttpGet]
@@ -39,8 +42,22 @@ namespace HackAPIs.Controllers
             
         }
 
+        // GET: api/solutions/5
+        [HttpGet("{id}", Name = "GetSolution")]
+        public IActionResult Get(int id)
+        {
+            var tblTeams = _dataRepository.Get(id, 1);
+            if (tblTeams == null)
+            {
+                return NotFound("Solution not found.");
+            }
 
-        // GET: api/solutions
+
+
+            return Ok(tblTeams);
+        }
+
+        // GET: api/solutions/hackers
         [HttpGet("hackers", Name = "GetSolutionsHackers")]
         public IActionResult GetSolutionsHackers()
         {
@@ -59,15 +76,17 @@ namespace HackAPIs.Controllers
                 solutionHackers.TeamName = oneTeam.TeamName;
 
                 ArrayList HackerList = new ArrayList();
+                List<HackerExpanded> hackers= new List<HackerExpanded>();
                 IEnumerator enumerator = oneTeam.tblTeamHackers.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
                     tblTeamHackers hacker = (tblTeamHackers)enumerator.Current;
-
+                    tblUsers user = _userdataRepository.Get(hacker.UserId, 1);
+                    hackers.Add(new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead });
                     HackerList.Add(hacker.UserId);
                 }
                 solutionHackers.UserID = HackerList;
-
+                solutionHackers.Hackers = hackers;
                 solutionList.Add(solutionHackers);
 
             }
@@ -76,22 +95,9 @@ namespace HackAPIs.Controllers
             return Ok(solutionList);
         }
 
-        // GET: api/solutions/5
-        [HttpGet("{id}", Name = "GetSolution")]
-        public IActionResult Get(int id)
-        {
-            var tblTeams = _dataRepository.Get(id,1);
-            if (tblTeams == null)
-            {
-                return NotFound("Solution not found.");
-            }
 
-           
 
-            return Ok(tblTeams);
-        }
-
-        // GET: api/solutions/5
+        // GET: api/solutions/hackers/5
         [HttpGet("hackers/{id}", Name = "GetSolutionHackers")]
         public IActionResult GetSolutionHackers(long id)
         {
@@ -104,16 +110,19 @@ namespace HackAPIs.Controllers
             SolutionHackers solutionHackers = new SolutionHackers();
             solutionHackers.TeamId = tblTeams.TeamId;
             solutionHackers.TeamName = tblTeams.TeamName;
-
+            List<HackerExpanded> hackers = new List<HackerExpanded>();
             ArrayList HackerList = new ArrayList();
             IEnumerator enumerator = tblTeams.tblTeamHackers.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 tblTeamHackers hacker = (tblTeamHackers)enumerator.Current;
-
                 HackerList.Add(hacker.UserId);
+                tblUsers user = (tblUsers)_userdataRepository.Get(hacker.UserId,1);
+                HackerExpanded thisHacker = new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead };
+                hackers.Add(thisHacker);
             }
             solutionHackers.UserID = HackerList;
+            solutionHackers.Hackers = hackers;
 
             
 
@@ -165,7 +174,6 @@ namespace HackAPIs.Controllers
             SolutionHackersSkills SolutionHackersSkills = new SolutionHackersSkills();
             SolutionHackersSkills.TeamId = tblTeams.TeamId;
             SolutionHackersSkills.TeamName = tblTeams.TeamName;
-
             ArrayList SkillsList = new ArrayList();
             IEnumerator enumerator = tblTeams.tblTeamSkillMatch.GetEnumerator();
             while (enumerator.MoveNext())
