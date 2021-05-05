@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.ViewModel.Db
 {
+    public class HackerExpanded
+    {
+        public string name { get; set; }
+        public int islead { get; set; }
+    }
     public class SolutionHackers
     {
         [Key]
@@ -14,5 +19,6 @@ namespace HackAPIs.ViewModel.Db
         public string TeamName { get; set; }
 
         public virtual ArrayList UserID { get; set; }
+        public virtual List<HackerExpanded> Hackers { get; set; }
     }
 }

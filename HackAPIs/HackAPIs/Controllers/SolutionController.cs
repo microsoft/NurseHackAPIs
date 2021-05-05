@@ -34,22 +34,42 @@ namespace HackAPIs.Controllers
         }
         public SolutionController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
             IDataRepositoy<tblSkills, Skills> skilldataRepositoy,
-            IDataRepositoy<tblUsers, Users> userDataRepository)
+            IDataRepositoy<tblUsers, Users> userDataRepository,
+            GitHubService gitHubService)
         {
             _dataRepository = dataRepositoy;
             _skilldataRepository = skilldataRepositoy;
             _userDataRepository = userDataRepository;
-            _githubService = new GitHubService();
+            _githubService = gitHubService;
         }
         // GET: api/solutions
         [HttpGet]
         public IActionResult Get()
         {
-            var tblTeams = _dataRepository.GetAll();
+            var tblTeams = _dataRepository.GetAll()
+                .Where(a => a.Active);
+
+
+              return Ok(tblTeams);
+            
+        }
+
+        // GET: api/solutions/5
+        [HttpGet("{id}", Name = "GetSolution")]
+        public IActionResult Get(int id)
+        {
+            var tblTeams = _dataRepository.Get(id, 1);
+            if (tblTeams == null)
+            {
+                return NotFound("Solution not found.");
+            }
+
+
+
             return Ok(tblTeams);
         }
 
-        // GET: api/solutions
+        // GET: api/solutions/hackers
         [HttpGet("hackers", Name = "GetSolutionsHackers")]
         public IActionResult GetSolutionsHackers()
         {
@@ -68,15 +88,17 @@ namespace HackAPIs.Controllers
                 solutionHackers.TeamName = oneTeam.TeamName;
 
                 ArrayList HackerList = new ArrayList();
+                List<HackerExpanded> hackers= new List<HackerExpanded>();
                 IEnumerator enumerator = oneTeam.tblTeamHackers.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
                     tblTeamHackers hacker = (tblTeamHackers)enumerator.Current;
-
+                    tblUsers user = _userDataRepository.Get(hacker.UserId, 1);
+                    hackers.Add(new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead });
                     HackerList.Add(hacker.UserId);
                 }
                 solutionHackers.UserID = HackerList;
-
+                solutionHackers.Hackers = hackers;
                 solutionList.Add(solutionHackers);
 
             }
@@ -85,22 +107,9 @@ namespace HackAPIs.Controllers
             return Ok(solutionList);
         }
 
-        // GET: api/solutions/5
-        [HttpGet("{id}", Name = "GetSolution")]
-        public IActionResult Get(int id)
-        {
-            var tblTeams = _dataRepository.Get(id,1);
-            if (tblTeams == null)
-            {
-                return NotFound("Solution not found.");
-            }
 
-           
 
-            return Ok(tblTeams);
-        }
-
-        // GET: api/solutions/5
+        // GET: api/solutions/hackers/5
         [HttpGet("hackers/{id}", Name = "GetSolutionHackers")]
         public IActionResult GetSolutionHackers(long id)
         {
@@ -113,16 +122,19 @@ namespace HackAPIs.Controllers
             SolutionHackers solutionHackers = new SolutionHackers();
             solutionHackers.TeamId = tblTeams.TeamId;
             solutionHackers.TeamName = tblTeams.TeamName;
-
+            List<HackerExpanded> hackers = new List<HackerExpanded>();
             ArrayList HackerList = new ArrayList();
             IEnumerator enumerator = tblTeams.tblTeamHackers.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 tblTeamHackers hacker = (tblTeamHackers)enumerator.Current;
-
                 HackerList.Add(hacker.UserId);
+                tblUsers user = (tblUsers)_userDataRepository.Get(hacker.UserId,1);
+                HackerExpanded thisHacker = new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead };
+                hackers.Add(thisHacker);
             }
             solutionHackers.UserID = HackerList;
+            solutionHackers.Hackers = hackers;
 
             
 
@@ -170,7 +182,6 @@ namespace HackAPIs.Controllers
             SolutionHackersSkills SolutionHackersSkills = new SolutionHackersSkills();
             SolutionHackersSkills.TeamId = tblTeams.TeamId;
             SolutionHackersSkills.TeamName = tblTeams.TeamName;
-
             ArrayList SkillsList = new ArrayList();
             IEnumerator enumerator = tblTeams.tblTeamSkillMatch.GetEnumerator();
             while (enumerator.MoveNext())
@@ -213,26 +224,6 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
-            /*
-                        var teampre = "Team-";
-                        tblTeams.TeamName = teampre + tblTeams.TeamName;                    
-
-                        try
-                        {
-                            TeamsService teamsService = new TeamsService();
-                            TeamChannel teamChannel = new TeamChannel();
-                            teamChannel.ChannelName = tblTeams.TeamName;
-                            teamChannel.ChannelDescription = tblTeams.TeamDescription;
-                            teamChannel = await teamsService.CreateTeamChannel(teamChannel);
-                            tblTeams.MSTeamsChannel = teamChannel.ChannelWebURL;
-                        } catch (Exception ex)
-                        {
-
-            }
-            */
-            ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
-
             var github_ids = CreateGitHubTeam(tblTeams.TeamName, tblTeams.TeamDescription);
 
             tblTeams.GitHubTeamId = github_ids.TeamId;
@@ -266,7 +257,8 @@ namespace HackAPIs.Controllers
             {
                 return BadRequest();
             }
-            tblTeams.ModifiedDate = getEasternTime();
+            tblTeams.ModifiedDate = DateTime.Now;
+            tblTeams.Active = true;
             _dataRepository.Update(solutionToUpdate, tblTeams, 1);
             return Ok("Success");
         }
