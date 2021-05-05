@@ -16,7 +16,7 @@ namespace HackAPIs.Services.Util
         // TODO: Make 'NurseHack4Health' dynamic
         const string GITHUBURL = "https://api.github.com/orgs/NurseHack4Health/";
         const string ORG = "NurseHack4Health";
-        const string TOKEN = "Token ba2f70406a857c6e2c704a0bc621a4c4f6db718e";
+        const string TOKEN = "Token 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";
         const string USERAGENT = "WhiteZeus";
 
         private Github githubObj = new Github();
@@ -44,9 +44,9 @@ namespace HackAPIs.Services.Util
 
                 // Team ID
                 githubObj.TeamId = Int32.Parse(jsonObject["id"].ToString());
-            } catch
+            } catch (Exception ex)
             {
-                throw new GitHubException();
+                throw new GitHubException(ex.Message);
             }
 
         }
@@ -65,9 +65,9 @@ namespace HackAPIs.Services.Util
                 client.Dispose();
                 jsonObject = await DeserializeResponse(res);
                 githubObj.RepoId = Int32.Parse(jsonObject["id"].ToString());
-            } catch
+            } catch (Exception ex)
             {
-                throw new GitHubException();
+                throw new GitHubException(ex.Message);
             }
         }
 
@@ -166,6 +166,7 @@ namespace HackAPIs.Services.Util
 
             public GitHubException(string message) : base(message)
             {
+                Console.WriteLine(message);
             }
 
             public GitHubException(string message, Exception innerException) : base(message, innerException)

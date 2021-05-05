@@ -403,7 +403,7 @@ namespace HackAPIs.Controllers
             if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)
             {
                 AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, tblUsers.tblTeamHackers.First().TeamId, teamName);
-            } 
+            }
 
             return Ok("Success");
         }
