@@ -16,7 +16,7 @@ namespace HackAPIs.Services.Util
         // TODO: Make 'NurseHack4Health' dynamic
         const string GITHUBURL = "https://api.github.com/orgs/NurseHack4Health/";
         const string ORG = "NurseHack4Health";
-        const string TOKEN = "Token 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";
+        const string TOKEN = "Token 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";
         const string USERAGENT = "WhiteZeus";
 
         private Github githubObj = new Github();
