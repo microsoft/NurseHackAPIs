@@ -24,6 +24,7 @@ namespace HackAPIs.Services.Util
         public static string MailChimpURL { get; set; }
         public static string MailChimpAudience { get; set; }
         public static string MailChimpUser { get; set; }
+        public static string GitHubToken { get; set; }
         
 
     }

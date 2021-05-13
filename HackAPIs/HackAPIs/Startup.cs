@@ -57,6 +57,7 @@ namespace HackAPIs
             UtilConst.ClientSecret = Configuration["ClientSecret"];
             UtilConst.Tenant = Configuration["Tenant"];
             UtilConst.TeamDomain = Configuration["TeamDomain"];
+            UtilConst.GitHubToken = Configuration["GitHubToken"];
 
 
             services.AddDbContext<NurseHackContext>(options =>
