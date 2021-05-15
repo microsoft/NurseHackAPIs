@@ -26,15 +26,18 @@ namespace HackAPIs.Controllers
         private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
         private readonly GitHubService _gitHubService;
         private readonly IDataRepositoy<tblTeamHackers, TeamHackers> _teamHackersdataRepository;
+        private readonly IDataRepositoy<tblTeams, Solutions> _teamDataRepository;
 
         public UserController(IDataRepositoy<tblUsers, Users> dataRepositoy,
             IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository,
+            IDataRepositoy<tblTeams, Solutions> teamDataRepository,
             IDataRepositoy<tblLog, Log> dataRepositoyLog,
             GitHubService gitHubService)
         {
             _dataRepository = dataRepositoy;
             _dataRepositoryLog = dataRepositoyLog;
             _teamHackersdataRepository = teamHackersdataRepository;
+            _teamDataRepository = teamDataRepository;
             _gitHubService = gitHubService;
 
         }
@@ -403,7 +406,8 @@ namespace HackAPIs.Controllers
             // Leaving the Team && determining whether this is being called from new team creation. This stops from calling GH api twice
             if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)
             {
-                AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, tblUsers.tblTeamHackers.First().TeamId, teamName);
+                var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, 1);
+                AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
             }
 
             return Ok("Success");

@@ -82,7 +82,7 @@ namespace HackAPIs.Services.Util
             {
                 if (userIsInOrg)
                 {
-                    string payload = JsonConvert.SerializeObject(new GitHubUserPayload { team_slug = ghslug, username = gitHubUser });
+                    string payload = JsonConvert.SerializeObject(new GitHubUserPayload { team_slug = ghslug, username = gitHubUser, role = "member"});
                     HttpResponseMessage res = client.PutAsync(GITHUBURL + "teams/" + ghslug + "/memberships/" + gitHubUser, new StringContent(payload, Encoding.UTF8, "application/json")).Result;
                 }
                 else
