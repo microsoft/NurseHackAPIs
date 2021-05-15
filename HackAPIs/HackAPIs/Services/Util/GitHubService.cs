@@ -16,7 +16,6 @@ namespace HackAPIs.Services.Util
         // TODO: Make 'NurseHack4Health' dynamic
         const string GITHUBURL = "https://api.github.com/orgs/NurseHack4Health/";
         const string ORG = "NurseHack4Health";
-        const string TOKEN = "Token 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";
         const string USERAGENT = "WhiteZeus";
 
         private Github githubObj = new Github();
@@ -146,7 +145,7 @@ namespace HackAPIs.Services.Util
         private HttpClient CreateHttpClient()
         {
             HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", TOKEN);
+            client.DefaultRequestHeaders.Add("Authorization", UtilConst.GitHubToken);
             client.DefaultRequestHeaders.Add("User-Agent", USERAGENT);
             return client;
         }
