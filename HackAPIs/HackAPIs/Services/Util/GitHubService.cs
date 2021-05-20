@@ -98,25 +98,6 @@ namespace HackAPIs.Services.Util
             client.Dispose();
         }
 
-        //public async void AddUserToExistingTeam(string teamName, string gitHubUser)
-        //{
-        //    var client = CreateHttpClient();
-        //    string payload = JsonConvert.SerializeObject(new GitHubExistingUserPayload { team_slug = teamName, username = gitHubUser });
-        //    HttpResponseMessage res = client.PutAsync(GITHUBURL + "teams/" + teamName + "/memberships/" + gitHubUser, new StringContent(payload, Encoding.UTF8, "application/json")).Result;
-        //    JObject jObject = await DeserializeResponse(res);
-        //}
-
-        //public async void AddUserToANewTeam (long gitHubUserId, int teamId)
-        //{
-        //    int[] teamIds = { teamId };
-
-        //    var client = CreateHttpClient();
-        //    client.DefaultRequestHeaders.Add("Authorization", TOKEN);
-        //    client.DefaultRequestHeaders.Add("User-Agent", USERAGENT);
-        //    string payload = JsonConvert.SerializeObject(new GitHubUserPayload { team_ids = teamIds, invitee_id = gitHubUserId });
-        //    HttpResponseMessage res = client.PostAsync(GITHUBURL + "invitations", new StringContent(payload, Encoding.UTF8, "application/json")).Result;
-        //}
-
         private async Task<bool> FindUserInOrg(string githubUser, string org)
         {
             JObject jsonObject;
