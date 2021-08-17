@@ -13,6 +13,8 @@ using HackAPIs.ViewModel.Db;
 using System;
 using HackAPIs.Model.Db;
 using HackAPIs.Services.Util;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 
 namespace HackAPIs 
 {
@@ -20,8 +22,6 @@ namespace HackAPIs
     {
 
         private string ConnStr = null;
-        private string ClientTeamEmbed = null;
-        
 
         public Startup(IConfiguration configuration)
         {
@@ -35,11 +35,11 @@ namespace HackAPIs
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
             //  services.AddControllers();
             ConnStr = Configuration["ConnStr"];
-            ClientTeamEmbed = Configuration["ClientTeamEmbed"];
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
             UtilConst.SMTP = Configuration["EmailSMTPAddress"];
             UtilConst.SMTPPassword = Configuration["svc-NH4H-devupconf-org"];
@@ -88,7 +88,6 @@ namespace HackAPIs
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,12 +112,8 @@ namespace HackAPIs
                     context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
                     context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-                    context.Response.Headers.Add("ClientTeamEmbed", new[] { ClientTeamEmbed });
-
-
                 }
                 //Options
-
 
                 var headerKeys = headerList.Keys;
 
@@ -127,26 +122,8 @@ namespace HackAPIs
                     //   context.Response.Headers.Add(key, headerList[key].ToString());
                 }
 
-                Boolean header = context.Request.Headers.ContainsKey("ClientTeamEmbed");
-                var val = context.Request.Headers["ClientTeamEmbed"].ToString();
-
-
-
-                if (!header || (!val.Equals(ClientTeamEmbed)))
-                {
-
-                    if (!val.Contains(ClientTeamEmbed))
-                    {
-                        context.Response.WriteAsync("Security validation failed. The API access is denied!");
-                    }
-
-                }
-                else
-                {
-
                     await next();
-                }
-
+                
             });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -168,6 +145,7 @@ namespace HackAPIs
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseCors(MyAllowSpecificOrigins);

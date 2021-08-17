@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/skills")]
     [ApiController]
     public class SkillsController : Controller

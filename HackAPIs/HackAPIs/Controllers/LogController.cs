@@ -5,6 +5,7 @@ using HackAPIs.ViewModel;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Email;
 using HackAPIs.ViewModel.Util;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/Log")]
     [ApiController]
     public class LogController : Controller

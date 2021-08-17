@@ -15,9 +15,11 @@ using HackAPIs.ViewModel.Email;
 using HackAPIs.ViewModel.Util;
 using Newtonsoft.Json.Linq;
 using HackAPIs.Model.Db;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/users")]
     [ApiController]
     public class UserController : Controller

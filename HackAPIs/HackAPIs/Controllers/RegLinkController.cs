@@ -7,9 +7,11 @@ using HackAPIs.Services.Teams;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using HackAPIs.Model.Db.DataManager;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/reglink")]
     [ApiController]
     public class RegLinkController : Controller

@@ -11,9 +11,11 @@ using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using HackAPIs.ViewModel.Util;
 using HackAPIs.Services.Util;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/solutions")]
     [ApiController]
     public class SolutionController : Controller

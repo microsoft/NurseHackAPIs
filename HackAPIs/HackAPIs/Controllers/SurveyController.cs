@@ -1,6 +1,7 @@
 ﻿using HackAPIs.Model.Db;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.ViewModel.Db;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/survey")]
     [ApiController]
     public class SurveyController : Controller
