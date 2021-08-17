@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class SkillDataManager : IDataRepositoy<tblSkills, Skills>
+    public class SkillDataManager : IDataRepositoy<TblSkills, Skills>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -19,13 +19,13 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext = nurseHackContext;
         }
 
-        public IEnumerable<tblSkills> GetAll()
+        public IEnumerable<TblSkills> GetAll()
         {
             return _nurseHackContext.tbl_Skills
                 .ToList();
         }
 
-        public tblSkills Get(long id, int type)
+        public TblSkills Get(long id, int type)
         {
             var tblSkills = _nurseHackContext.tbl_Skills
                 .SingleOrDefault(b => b.SkillId == id);
@@ -45,13 +45,13 @@ namespace HackAPIs.Model.Db.DataManager
             
         }
 
-        public void Add(tblSkills entity)
+        public void Add(TblSkills entity)
         {
             _nurseHackContext.tbl_Skills.Add(entity);
             _nurseHackContext.SaveChanges();
         }
 
-        public void Update(tblSkills entityToUpdate, tblSkills entity, int type)
+        public void Update(TblSkills entityToUpdate, TblSkills entity, int type)
         {
             entityToUpdate = _nurseHackContext.tbl_Skills
                 .Single(b => b.SkillId == entityToUpdate.SkillId);
@@ -62,19 +62,19 @@ namespace HackAPIs.Model.Db.DataManager
 
         }
 
-        public void Delete(tblSkills entity)
+        public void Delete(TblSkills entity)
         {
             throw new System.NotImplementedException();
         }
 
   
 
-        public tblSkills GetByColumn(long id, string columnName, string colunmValue)
+        public TblSkills GetByColumn(long id, string columnName, string colunmValue)
         {
             throw new System.NotImplementedException();
         }
 
-        public tblSkills GetByObject(tblSkills entity)
+        public TblSkills GetByObject(TblSkills entity)
         {
             throw new NotImplementedException();
         }

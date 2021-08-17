@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class LogDataManager : IDataRepositoy<tblLog, Log>
+    public class LogDataManager : IDataRepositoy<TblLog, Log>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -17,33 +17,33 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext = nurseHackContext;
         }
 
-        public void Add(tblLog entity)
+        public void Add(TblLog entity)
         {
             _nurseHackContext.tbl_Log.Add(entity);
             _nurseHackContext.SaveChanges();
         }
 
-        public void Delete(tblLog entity)
+        public void Delete(TblLog entity)
         {
             throw new NotImplementedException();
         }
 
-        public tblLog Get(long id, int type)
+        public TblLog Get(long id, int type)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<tblLog> GetAll()
+        public IEnumerable<TblLog> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public tblLog GetByColumn(long id, string columnName, string colunmValue)
+        public TblLog GetByColumn(long id, string columnName, string colunmValue)
         {
             throw new NotImplementedException();
         }
 
-        public tblLog GetByObject(tblLog entity)
+        public TblLog GetByObject(TblLog entity)
         {
             throw new NotImplementedException();
         }
@@ -53,7 +53,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public void Update(tblLog entityToUpdate, tblLog entity, int type)
+        public void Update(TblLog entityToUpdate, TblLog entity, int type)
         {
             throw new NotImplementedException();
         }

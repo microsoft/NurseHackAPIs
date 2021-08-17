@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class SolutionDataManager : IDataRepositoy<tblTeams, Solutions>
+    public class SolutionDataManager : IDataRepositoy<TblTeams, Solutions>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -20,16 +20,16 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext = nurseHackContext;
         }
 
-        public IEnumerable<tblTeams> GetAll()
+        public IEnumerable<TblTeams> GetAll()
         {
             return _nurseHackContext.tbl_Teams
                 .ToList();
         }
 
-        public tblTeams Get(long id,int type)
+        public TblTeams Get(long id,int type)
         {
             _nurseHackContext.ChangeTracker.LazyLoadingEnabled = false;
-            tblTeams tblTeams = null;
+            TblTeams tblTeams = null;
             if (type == 1)
             {
                 tblTeams = _nurseHackContext.tbl_Teams
@@ -89,13 +89,13 @@ namespace HackAPIs.Model.Db.DataManager
         }
 
         
-        public void Add(tblTeams entity)
+        public void Add(TblTeams entity)
         {
             _nurseHackContext.tbl_Teams.Add(entity);
             _nurseHackContext.SaveChanges();
         }
 
-        public void Update(tblTeams entityToUpdate, tblTeams entity, int type)
+        public void Update(TblTeams entityToUpdate, TblTeams entity, int type)
         {
             /*
              * Type 1 = PUT /solutions/$teamid (modify team)
@@ -185,17 +185,17 @@ namespace HackAPIs.Model.Db.DataManager
 
         }
 
-        public void Delete(tblTeams entity)
+        public void Delete(TblTeams entity)
         {
             throw new System.NotImplementedException();
         }
 
-        public tblTeams GetByColumn(long id, string columnName, string colunmValue)
+        public TblTeams GetByColumn(long id, string columnName, string colunmValue)
         {
             throw new System.NotImplementedException();
         }
 
-        public tblTeams GetByObject(tblTeams entity)
+        public TblTeams GetByObject(TblTeams entity)
         {
             throw new NotImplementedException();
         }

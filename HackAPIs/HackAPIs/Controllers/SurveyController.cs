@@ -15,9 +15,9 @@ namespace HackAPIs.Controllers
     [ApiController]
     public class SurveyController : Controller
     {
-        private readonly IDataRepositoy<tblSurvey, Survey> _dataRepository;
+        private readonly IDataRepositoy<TblSurvey, Survey> _dataRepository;
 
-        public SurveyController(IDataRepositoy<tblSurvey, Survey> dataRepositoy)
+        public SurveyController(IDataRepositoy<TblSurvey, Survey> dataRepositoy)
         {
             _dataRepository = dataRepositoy;
         }
@@ -55,7 +55,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            tblSurvey tblSurvey = new tblSurvey()
+            TblSurvey tblSurvey = new TblSurvey()
             {
                  UserId = survey.UserId,
                  Company = survey.Company,

@@ -8,7 +8,7 @@ namespace HackAPIs.ViewModel.Db.Mapper
 {
     public static class SkillsDTOMapper
     {
-        public static Skills MapToDto(tblSkills tblSkills)
+        public static Skills MapToDto(TblSkills tblSkills)
         {
             return new Skills()
             {

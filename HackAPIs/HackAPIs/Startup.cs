@@ -75,13 +75,13 @@ namespace HackAPIs
                                 });
             });
 
-            services.AddScoped<IDataRepositoy<tblSkills, Skills>,SkillDataManager>();
-            services.AddScoped<IDataRepositoy<tblUsers, Users>, UserDataManager>();
-            services.AddScoped<IDataRepositoy<tblTeams, Solutions>, SolutionDataManager>();
-            services.AddScoped<IDataRepositoy<tblTeamHackers, TeamHackers>, TeamHackersDataManager>();
-            services.AddScoped<IDataRepositoy<tblLog, Log>, LogDataManager>();
-            services.AddScoped<IDataRepositoy<tblSurvey, Survey>, SurveyDataManager>();
-            services.AddScoped<IDataRepositoy<tblRegLink, RegLinks>, RegLinkDataManager>();
+            services.AddScoped<IDataRepositoy<TblSkills, Skills>,SkillDataManager>();
+            services.AddScoped<IDataRepositoy<TblUsers, Users>, UserDataManager>();
+            services.AddScoped<IDataRepositoy<TblTeams, Solutions>, SolutionDataManager>();
+            services.AddScoped<IDataRepositoy<TblTeamHackers, TeamHackers>, TeamHackersDataManager>();
+            services.AddScoped<IDataRepositoy<TblLog, Log>, LogDataManager>();
+            services.AddScoped<IDataRepositoy<TblSurvey, Survey>, SurveyDataManager>();
+            services.AddScoped<IDataRepositoy<TblRegLink, RegLinks>, RegLinkDataManager>();
             services.AddScoped<GitHubService>();
 
             services.AddControllers();

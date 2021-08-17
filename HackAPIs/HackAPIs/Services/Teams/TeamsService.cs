@@ -18,13 +18,13 @@ namespace HackAPIs.Services.Teams
     {
      
 
-        private readonly IDataRepositoy<tblUsers, Users> _dataRepository;
+        private readonly IDataRepositoy<TblUsers, Users> _dataRepository;
 
         public TeamsService()
         {
 
         }
-        public TeamsService(IDataRepositoy<tblUsers, Users> dataRepositoy)
+        public TeamsService(IDataRepositoy<TblUsers, Users> dataRepositoy)
         {
             _dataRepository = dataRepositoy;
         }

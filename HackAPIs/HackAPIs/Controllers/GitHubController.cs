@@ -15,11 +15,11 @@ namespace HackAPIs.Controllers
     [ApiController]
     public class GitHubController : Controller
     {
-        private readonly IDataRepositoy<tblTeams, Solutions> _dataRepository;
+        private readonly IDataRepositoy<TblTeams, Solutions> _dataRepository;
 
-        private readonly IDataRepositoy<tblTeamHackers, TeamHackers> _teamHackersdataRepository;
-        public GitHubController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
-            IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository)
+        private readonly IDataRepositoy<TblTeamHackers, TeamHackers> _teamHackersdataRepository;
+        public GitHubController(IDataRepositoy<TblTeams, Solutions> dataRepositoy,
+            IDataRepositoy<TblTeamHackers, TeamHackers> teamHackersdataRepository)
         {
             _dataRepository = dataRepositoy;
             _teamHackersdataRepository = teamHackersdataRepository;

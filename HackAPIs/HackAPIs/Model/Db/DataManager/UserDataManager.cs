@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class UserDataManager : IDataRepositoy<tblUsers,Users>
+    public class UserDataManager : IDataRepositoy<TblUsers,Users>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -20,15 +20,15 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext = nurseHackContext;
         }
 
-        public IEnumerable<tblUsers> GetAll()
+        public IEnumerable<TblUsers> GetAll()
         {
             return _nurseHackContext.tbl_Users
                 .ToList();
         }
 
-        public tblUsers Get(long id, int type)
+        public TblUsers Get(long id, int type)
         {
-            tblUsers tblUsers = null;
+            TblUsers tblUsers = null;
             if (type == 1)
             {
                 tblUsers = _nurseHackContext.tbl_Users
@@ -61,7 +61,7 @@ namespace HackAPIs.Model.Db.DataManager
             return tblUsers;
         }
 
-        public tblUsers GetByObject(tblUsers tblUsers)
+        public TblUsers GetByObject(TblUsers tblUsers)
         {
             if (tblUsers == null)
             {
@@ -74,9 +74,9 @@ namespace HackAPIs.Model.Db.DataManager
             return tblUsers;
         }
 
-        public tblUsers GetByColumn(long id, string columnName,string columnValue)
+        public TblUsers GetByColumn(long id, string columnName,string columnValue)
         {
-            tblUsers tblUsers = null;
+            TblUsers tblUsers = null;
             if (columnName.Equals("UserMSTeamsEmail"))
             {
                 //  .SingleOrDefault(b => b.UserMSTeamsEmail == columnValue);
@@ -97,13 +97,13 @@ namespace HackAPIs.Model.Db.DataManager
             throw new System.NotImplementedException();
         }
 
-        public void Add(tblUsers entity)
+        public void Add(TblUsers entity)
         {
             _nurseHackContext.tbl_Users.Add(entity);
             _nurseHackContext.SaveChanges();
         }
 
-        public void Update(tblUsers entityToUpdate, tblUsers entity, int type)
+        public void Update(TblUsers entityToUpdate, TblUsers entity, int type)
         {
             /**
              * Type 2 = PUT /user/skills/$userid (editing user's skills)
@@ -225,7 +225,7 @@ namespace HackAPIs.Model.Db.DataManager
                     
         }
 
-        public void Delete(tblUsers entity)
+        public void Delete(TblUsers entity)
         {
             throw new System.NotImplementedException();
         }

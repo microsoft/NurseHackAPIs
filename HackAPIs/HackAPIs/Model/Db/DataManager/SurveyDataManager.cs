@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class SurveyDataManager : IDataRepositoy<tblSurvey, Survey>
+    public class SurveyDataManager : IDataRepositoy<TblSurvey, Survey>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -19,33 +19,33 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext = nurseHackContext;
         }
 
-        public void Add(tblSurvey entity)
+        public void Add(TblSurvey entity)
         {
             _nurseHackContext.tbl_Survey.Add(entity);
             _nurseHackContext.SaveChanges();
         }
 
-        public void Delete(tblSurvey entity)
+        public void Delete(TblSurvey entity)
         {
             throw new NotImplementedException();
         }
 
-        public tblSurvey Get(long id, int type)
+        public TblSurvey Get(long id, int type)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<tblSurvey> GetAll()
+        public IEnumerable<TblSurvey> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public tblSurvey GetByColumn(long id, string columnName, string colunmValue)
+        public TblSurvey GetByColumn(long id, string columnName, string colunmValue)
         {
             throw new NotImplementedException();
         }
 
-        public tblSurvey GetByObject(tblSurvey entity)
+        public TblSurvey GetByObject(TblSurvey entity)
         {
             throw new NotImplementedException();
         }
@@ -55,7 +55,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public void Update(tblSurvey entityToUpdate, tblSurvey entity, int type)
+        public void Update(TblSurvey entityToUpdate, TblSurvey entity, int type)
         {
             throw new NotImplementedException();
         }

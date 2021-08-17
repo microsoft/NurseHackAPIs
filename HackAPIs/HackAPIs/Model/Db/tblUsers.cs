@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Db.Model
 {
-    public partial class tblUsers
+    public partial class TblUsers
     {
         [Key]
         public int UserId { get; set; }
@@ -31,13 +31,13 @@ namespace HackAPIs.Db.Model
         public long GitHubId { get; set; }
         public string MailchimpId { get; set; }
 
-        public virtual ICollection<tblUserSkillMatch> tblUserSkillMatch { get; set; }
-        public virtual ICollection<tblTeamHackers> tblTeamHackers { get; set; }
+        public virtual ICollection<TblUserSkillMatch> tblUserSkillMatch { get; set; }
+        public virtual ICollection<TblTeamHackers> tblTeamHackers { get; set; }
 
-        public tblUsers()
+        public TblUsers()
         {
-            tblUserSkillMatch = new HashSet<tblUserSkillMatch>();
-            tblTeamHackers = new HashSet<tblTeamHackers>();
+            tblUserSkillMatch = new HashSet<TblUserSkillMatch>();
+            tblTeamHackers = new HashSet<TblTeamHackers>();
         }
 
     }

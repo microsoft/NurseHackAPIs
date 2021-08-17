@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Db.Model
 {
-    public partial class tblTeamSkillMatch
+    public partial class TblTeamSkillMatch
     {
         [Key]
         public int TeamId { get; set; }
-        public virtual tblTeams tblTeams { get; set; }
+        public virtual TblTeams tblTeams { get; set; }
         [Key]
         public int SkillId { get; set; }
-        public virtual tblSkills tblSkills { get; set; }
+        public virtual TblSkills tblSkills { get; set; }
     }
 }

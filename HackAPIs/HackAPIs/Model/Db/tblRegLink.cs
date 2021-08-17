@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HackAPIs.Db.Model
 {
-    public partial class tblRegLink
+    public partial class TblRegLink
     {
         [Key]
         public int RegLinkId { get; set; }

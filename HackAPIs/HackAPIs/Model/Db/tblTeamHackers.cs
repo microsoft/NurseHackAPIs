@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Db.Model
 {
-    public partial class tblTeamHackers
+    public partial class TblTeamHackers
     {
         [Key]
         public int TeamId { get; set; }
@@ -15,7 +15,7 @@ namespace HackAPIs.Db.Model
         public int IsLead { get; set; }
        
 
-        public virtual tblUsers tblUsers { get; set; }
-        public virtual tblTeams tblTeams { get; set; }
+        public virtual TblUsers tblUsers { get; set; }
+        public virtual TblTeams tblTeams { get; set; }
     }
 }
