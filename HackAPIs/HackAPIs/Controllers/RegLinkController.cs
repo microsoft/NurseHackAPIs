@@ -14,6 +14,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/reglink")]
     [ApiController]
+    [Authorize]
     public class RegLinkController : Controller
     {
         private readonly IDataRepositoy<TblRegLink, RegLinks> _dataRepository;

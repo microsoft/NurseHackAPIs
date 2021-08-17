@@ -18,6 +18,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/solutions")]
     [ApiController]
+    [Authorize]
     public class SolutionController : Controller
     {
         private readonly IDataRepositoy<TblTeams, Solutions> _dataRepository;

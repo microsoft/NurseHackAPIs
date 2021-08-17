@@ -13,6 +13,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route ("/api/GitHub")]
     [ApiController]
+    [Authorize]
     public class GitHubController : Controller
     {
         private readonly IDataRepositoy<TblTeams, Solutions> _dataRepository;

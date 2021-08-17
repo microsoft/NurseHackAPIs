@@ -13,6 +13,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/skills")]
     [ApiController]
+    [Authorize]
     public class SkillsController : Controller
     {
         private readonly IDataRepositoy<TblSkills, Skills> _dataRepository;

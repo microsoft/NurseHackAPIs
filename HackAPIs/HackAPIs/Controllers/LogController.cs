@@ -19,6 +19,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/Log")]
     [ApiController]
+    [Authorize]
     public class LogController : Controller
     {
         private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;

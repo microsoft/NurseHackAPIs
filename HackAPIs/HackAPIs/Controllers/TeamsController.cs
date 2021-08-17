@@ -14,6 +14,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/teams")]
     [ApiController]
+    [Authorize]
     public class TeamsController : ControllerBase
     {
 

@@ -4,16 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Db.Model;
 using HackAPIs.Services.Teams;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using HackAPIs.Services.Util;
-using HackAPIs.ViewModel.Email;
-using HackAPIs.ViewModel.Util;
-using Newtonsoft.Json.Linq;
 using HackAPIs.Model.Db;
 using Microsoft.AspNetCore.Authorization;
 
@@ -22,6 +18,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/users")]
     [ApiController]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IDataRepositoy<TblUsers, Users> _dataRepository;

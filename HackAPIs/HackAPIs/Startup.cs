@@ -13,8 +13,8 @@ using HackAPIs.ViewModel.Db;
 using System;
 using HackAPIs.Model.Db;
 using HackAPIs.Services.Util;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace HackAPIs 
 {
@@ -29,8 +29,6 @@ namespace HackAPIs
         }
 
         public IConfiguration Configuration { get; }
-
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -61,19 +59,7 @@ namespace HackAPIs
 
 
             services.AddDbContext<NurseHackContext>(options =>
-                options.UseSqlServer(ConnStr)
-                .EnableSensitiveDataLogging());
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                builder =>
-                                {
-                                    builder.WithOrigins("*")
-                                    .AllowAnyOrigin()
-                                    .AllowAnyHeader()
-                                    .AllowAnyMethod();
-                                });
-            });
+                options.UseSqlServer(ConnStr));
 
             services.AddScoped<IDataRepositoy<TblSkills, Skills>,SkillDataManager>();
             services.AddScoped<IDataRepositoy<TblUsers, Users>, UserDataManager>();
@@ -98,36 +84,7 @@ namespace HackAPIs
                 app.UseDeveloperExceptionPage();
             }
 
-            app.Use(async (context, next) =>
-            {
-                //    var headerList = context.Request.Headers;
-                IHeaderDictionary headerList = context.Request.Headers;
-
-                // Options
-
-                if (context.Request.Method == "OPTIONS")
-                {
-
-                    context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept, ClientTeamEmbed" });
-                    context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
-                    context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
-
-                }
-                //Options
-
-                var headerKeys = headerList.Keys;
-
-                foreach (var key in headerKeys)
-                {
-                    //   context.Response.Headers.Add(key, headerList[key].ToString());
-                }
-
-                    await next();
-                
-            });
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-
             app.UseSwagger(c =>
             {
                 c.SerializeAsV2 = true;
@@ -140,7 +97,6 @@ namespace HackAPIs
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -148,7 +104,7 @@ namespace HackAPIs
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

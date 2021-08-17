@@ -13,6 +13,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/survey")]
     [ApiController]
+    [Authorize]
     public class SurveyController : Controller
     {
         private readonly IDataRepositoy<TblSurvey, Survey> _dataRepository;
