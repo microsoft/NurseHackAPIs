@@ -21,9 +21,9 @@ namespace HackAPIs.Controllers
     [ApiController]
     public class LogController : Controller
     {
-        private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
+        private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;
 
-        public LogController(IDataRepositoy<tblLog, Log> dataRepositoyLog)
+        public LogController(IDataRepositoy<TblLog, Log> dataRepositoyLog)
         {
            
 
@@ -107,7 +107,7 @@ namespace HackAPIs.Controllers
         public async Task<string> log()
         {
 
-            tblLog log = new tblLog
+            TblLog log = new TblLog
             {
                 Label = "100",
                 Description = "User",

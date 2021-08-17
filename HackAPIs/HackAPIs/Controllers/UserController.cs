@@ -25,7 +25,7 @@ namespace HackAPIs.Controllers
     public class UserController : Controller
     {
         private readonly IDataRepositoy<TblUsers, Users> _dataRepository;
-        private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
+        private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;
         private readonly GitHubService _gitHubService;
         private readonly IDataRepositoy<TblTeamHackers, TeamHackers> _teamHackersdataRepository;
         private readonly IDataRepositoy<TblTeams, Solutions> _teamDataRepository;
@@ -33,7 +33,7 @@ namespace HackAPIs.Controllers
         public UserController(IDataRepositoy<TblUsers, Users> dataRepositoy,
             IDataRepositoy<TblTeamHackers, TeamHackers> teamHackersdataRepository,
             IDataRepositoy<TblTeams, Solutions> teamDataRepository,
-            IDataRepositoy<tblLog, Log> dataRepositoyLog,
+            IDataRepositoy<TblLog, Log> dataRepositoyLog,
             GitHubService gitHubService)
         {
             _dataRepository = dataRepositoy;
@@ -456,7 +456,7 @@ namespace HackAPIs.Controllers
        
         private void Log(string id, string type)
         {
-            tblLog log = new tblLog
+            TblLog log = new TblLog
             {
                 Label = id,
                 Description = type,
