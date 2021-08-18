@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HackAPIs.Model.Db
 {
-    public class tblLog
+    public class TblLog
     {
         [Key]
         public int ID { get; set; }

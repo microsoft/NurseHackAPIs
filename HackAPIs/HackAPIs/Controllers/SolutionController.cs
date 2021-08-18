@@ -11,18 +11,21 @@ using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using HackAPIs.ViewModel.Util;
 using HackAPIs.Services.Util;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/solutions")]
     [ApiController]
+    [Authorize]
     public class SolutionController : Controller
     {
-        private readonly IDataRepositoy<tblTeams, Solutions> _dataRepository;
+        private readonly IDataRepositoy<TblTeams, Solutions> _dataRepository;
 
-        private readonly IDataRepositoy<tblSkills, Skills> _skilldataRepository;
+        private readonly IDataRepositoy<TblSkills, Skills> _skilldataRepository;
         
-        private readonly IDataRepositoy<tblUsers, Users> _userDataRepository;
+        private readonly IDataRepositoy<TblUsers, Users> _userDataRepository;
 
         private readonly GitHubService _githubService;
 
@@ -32,9 +35,9 @@ namespace HackAPIs.Controllers
             TimeZoneInfo easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
             return(TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone));
         }
-        public SolutionController(IDataRepositoy<tblTeams, Solutions> dataRepositoy,
-            IDataRepositoy<tblSkills, Skills> skilldataRepositoy,
-            IDataRepositoy<tblUsers, Users> userDataRepository,
+        public SolutionController(IDataRepositoy<TblTeams, Solutions> dataRepositoy,
+            IDataRepositoy<TblSkills, Skills> skilldataRepositoy,
+            IDataRepositoy<TblUsers, Users> userDataRepository,
             GitHubService gitHubService)
         {
             _dataRepository = dataRepositoy;
@@ -80,8 +83,8 @@ namespace HackAPIs.Controllers
 
             while (teamEnumerator.MoveNext())
             {
-                tblTeams tblTeam = (tblTeams)teamEnumerator.Current;
-                tblTeams oneTeam = _dataRepository.Get(tblTeam.TeamId, 2);
+                TblTeams tblTeam = (TblTeams)teamEnumerator.Current;
+                TblTeams oneTeam = _dataRepository.Get(tblTeam.TeamId, 2);
 
                 SolutionHackers solutionHackers = new SolutionHackers();
                 solutionHackers.TeamId = oneTeam.TeamId;
@@ -92,8 +95,8 @@ namespace HackAPIs.Controllers
                 IEnumerator enumerator = oneTeam.tblTeamHackers.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    tblTeamHackers hacker = (tblTeamHackers)enumerator.Current;
-                    tblUsers user = _userDataRepository.Get(hacker.UserId, 1);
+                    TblTeamHackers hacker = (TblTeamHackers)enumerator.Current;
+                    TblUsers user = _userDataRepository.Get(hacker.UserId, 1);
                     hackers.Add(new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead });
                     HackerList.Add(hacker.UserId);
                 }
@@ -127,9 +130,9 @@ namespace HackAPIs.Controllers
             IEnumerator enumerator = tblTeams.tblTeamHackers.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                tblTeamHackers hacker = (tblTeamHackers)enumerator.Current;
+                TblTeamHackers hacker = (TblTeamHackers)enumerator.Current;
                 HackerList.Add(hacker.UserId);
-                tblUsers user = (tblUsers)_userDataRepository.Get(hacker.UserId,1);
+                TblUsers user = (TblUsers)_userDataRepository.Get(hacker.UserId,1);
                 HackerExpanded thisHacker = new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead };
                 hackers.Add(thisHacker);
             }
@@ -159,7 +162,7 @@ namespace HackAPIs.Controllers
             IEnumerator enumerator = tblTeams.tblTeamSkillMatch.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                tblTeamSkillMatch skills = (tblTeamSkillMatch)enumerator.Current;
+                TblTeamSkillMatch skills = (TblTeamSkillMatch)enumerator.Current;
 
                 SkillsList.Add(skills.SkillId);
             }
@@ -186,7 +189,7 @@ namespace HackAPIs.Controllers
             IEnumerator enumerator = tblTeams.tblTeamSkillMatch.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                tblTeamSkillMatch skills = (tblTeamSkillMatch)enumerator.Current;
+                TblTeamSkillMatch skills = (TblTeamSkillMatch)enumerator.Current;
 
                 Skills SkillsDTO = _skilldataRepository.GetDto(skills.SkillId);
                 //    SkillsList.Add(skills.SkillId);
@@ -199,7 +202,7 @@ namespace HackAPIs.Controllers
             
             while (enumerator.MoveNext())
             {
-                tblTeamHackers hacker = (tblTeamHackers)enumerator.Current;
+                TblTeamHackers hacker = (TblTeamHackers)enumerator.Current;
                 HackerList.Add(hacker.UserId);
             }
             SolutionHackersSkills.UserID = HackerList;
@@ -212,7 +215,7 @@ namespace HackAPIs.Controllers
 
         // POST: api/solutions
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] tblTeams tblTeams)
+        public async Task<IActionResult> Post([FromBody] TblTeams tblTeams)
         {
             if (tblTeams is null)
             {
@@ -260,7 +263,7 @@ namespace HackAPIs.Controllers
         
         // PUT: api/solutions/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] tblTeams tblTeams)
+        public IActionResult Put(int id, [FromBody] TblTeams tblTeams)
         {
             if (tblTeams == null)
             {
@@ -286,7 +289,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/solutions/skills/5
         [HttpPut("skills/{id}")]
-        public IActionResult SolutionSkills(int id, [FromBody] tblTeams tblTeams)
+        public IActionResult SolutionSkills(int id, [FromBody] TblTeams tblTeams)
         {
             if (tblTeams == null)
             {
@@ -310,7 +313,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/solutions/users/5
         [HttpPut("hackers/{id}")]
-        public IActionResult SolutionUsers(int id, [FromBody] tblTeams tblTeams)
+        public IActionResult SolutionUsers(int id, [FromBody] TblTeams tblTeams)
         {
             if (tblTeams == null)
             {

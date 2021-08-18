@@ -13,6 +13,8 @@ using HackAPIs.ViewModel.Db;
 using System;
 using HackAPIs.Model.Db;
 using HackAPIs.Services.Util;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace HackAPIs 
 {
@@ -20,8 +22,6 @@ namespace HackAPIs
     {
 
         private string ConnStr = null;
-        private string ClientTeamEmbed = null;
-        
 
         public Startup(IConfiguration configuration)
         {
@@ -30,16 +30,13 @@ namespace HackAPIs
 
         public IConfiguration Configuration { get; }
 
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
-
-            //  services.AddControllers();
-            ConnStr = Configuration["ConnStr"];
-            ClientTeamEmbed = Configuration["ClientTeamEmbed"];
+            // TODO: This is literally the worst :(
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
             UtilConst.SMTP = Configuration["EmailSMTPAddress"];
             UtilConst.SMTPPassword = Configuration["svc-NH4H-devupconf-org"];
@@ -58,37 +55,24 @@ namespace HackAPIs
             UtilConst.Tenant = Configuration["Tenant"];
             UtilConst.TeamDomain = Configuration["TeamDomain"];
             UtilConst.GitHubToken = Configuration["GitHubToken"];
-
+            // end worst code ever
 
             services.AddDbContext<NurseHackContext>(options =>
-                options.UseSqlServer(ConnStr)
-                .EnableSensitiveDataLogging());
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                builder =>
-                                {
-                                    builder.WithOrigins("*")
-                                    .AllowAnyOrigin()
-                                    .AllowAnyHeader()
-                                    .AllowAnyMethod();
-                                });
-            });
+                options.UseSqlServer(Configuration["ConnStr"]));
 
-            services.AddScoped<IDataRepositoy<tblSkills, Skills>,SkillDataManager>();
-            services.AddScoped<IDataRepositoy<tblUsers, Users>, UserDataManager>();
-            services.AddScoped<IDataRepositoy<tblTeams, Solutions>, SolutionDataManager>();
-            services.AddScoped<IDataRepositoy<tblTeamHackers, TeamHackers>, TeamHackersDataManager>();
-            services.AddScoped<IDataRepositoy<tblLog, Log>, LogDataManager>();
-            services.AddScoped<IDataRepositoy<tblSurvey, Survey>, SurveyDataManager>();
-            services.AddScoped<IDataRepositoy<tblRegLink, RegLinks>, RegLinkDataManager>();
+            services.AddScoped<IDataRepositoy<TblSkills, Skills>,SkillDataManager>();
+            services.AddScoped<IDataRepositoy<TblUsers, Users>, UserDataManager>();
+            services.AddScoped<IDataRepositoy<TblTeams, Solutions>, SolutionDataManager>();
+            services.AddScoped<IDataRepositoy<TblTeamHackers, TeamHackers>, TeamHackersDataManager>();
+            services.AddScoped<IDataRepositoy<TblLog, Log>, LogDataManager>();
+            services.AddScoped<IDataRepositoy<TblSurvey, Survey>, SurveyDataManager>();
+            services.AddScoped<IDataRepositoy<TblRegLink, RegLinks>, RegLinkDataManager>();
             services.AddScoped<GitHubService>();
 
             services.AddControllers();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,58 +83,7 @@ namespace HackAPIs
                 app.UseDeveloperExceptionPage();
             }
 
-            app.Use(async (context, next) =>
-            {
-                //    var headerList = context.Request.Headers;
-                IHeaderDictionary headerList = context.Request.Headers;
-
-                // Options
-
-                if (context.Request.Method == "OPTIONS")
-                {
-
-                    context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept, ClientTeamEmbed" });
-                    context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
-                    context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
-
-                    context.Response.Headers.Add("ClientTeamEmbed", new[] { ClientTeamEmbed });
-
-
-                }
-                //Options
-
-
-                var headerKeys = headerList.Keys;
-
-                foreach (var key in headerKeys)
-                {
-                    //   context.Response.Headers.Add(key, headerList[key].ToString());
-                }
-
-                Boolean header = context.Request.Headers.ContainsKey("ClientTeamEmbed");
-                var val = context.Request.Headers["ClientTeamEmbed"].ToString();
-
-
-
-                if (!header || (!val.Equals(ClientTeamEmbed)))
-                {
-
-                    if (!val.Contains(ClientTeamEmbed))
-                    {
-                        context.Response.WriteAsync("Security validation failed. The API access is denied!");
-                    }
-
-                }
-                else
-                {
-
-                    await next();
-                }
-
-            });
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-
             app.UseSwagger(c =>
             {
                 c.SerializeAsV2 = true;
@@ -163,14 +96,14 @@ namespace HackAPIs
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

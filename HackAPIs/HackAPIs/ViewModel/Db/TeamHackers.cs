@@ -15,7 +15,7 @@ namespace HackAPIs.ViewModel.Db
         public int IsLead { get; set; }
 
 
-        public virtual tblUsers tblUsers { get; set; }
-        public virtual tblTeams tblTeams { get; set; }
+        public virtual TblUsers tblUsers { get; set; }
+        public virtual TblTeams tblTeams { get; set; }
     }
 }

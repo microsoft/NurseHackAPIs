@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using HackAPIs.Services.Db;
 using HackAPIs.ViewModel.Teams;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     //Controller
     public class DbController : Controller
     {

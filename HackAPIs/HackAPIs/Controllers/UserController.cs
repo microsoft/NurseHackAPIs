@@ -4,34 +4,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Db.Model;
 using HackAPIs.Services.Teams;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using HackAPIs.Services.Util;
-using HackAPIs.ViewModel.Email;
-using HackAPIs.ViewModel.Util;
-using Newtonsoft.Json.Linq;
 using HackAPIs.Model.Db;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/users")]
     [ApiController]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
-        private readonly IDataRepositoy<tblUsers, Users> _dataRepository;
-        private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
+        private readonly IDataRepositoy<TblUsers, Users> _dataRepository;
+        private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;
         private readonly GitHubService _gitHubService;
-        private readonly IDataRepositoy<tblTeamHackers, TeamHackers> _teamHackersdataRepository;
-        private readonly IDataRepositoy<tblTeams, Solutions> _teamDataRepository;
+        private readonly IDataRepositoy<TblTeamHackers, TeamHackers> _teamHackersdataRepository;
+        private readonly IDataRepositoy<TblTeams, Solutions> _teamDataRepository;
 
-        public UserController(IDataRepositoy<tblUsers, Users> dataRepositoy,
-            IDataRepositoy<tblTeamHackers, TeamHackers> teamHackersdataRepository,
-            IDataRepositoy<tblTeams, Solutions> teamDataRepository,
-            IDataRepositoy<tblLog, Log> dataRepositoyLog,
+        public UserController(IDataRepositoy<TblUsers, Users> dataRepositoy,
+            IDataRepositoy<TblTeamHackers, TeamHackers> teamHackersdataRepository,
+            IDataRepositoy<TblTeams, Solutions> teamDataRepository,
+            IDataRepositoy<TblLog, Log> dataRepositoyLog,
             GitHubService gitHubService)
         {
             _dataRepository = dataRepositoy;
@@ -59,7 +57,7 @@ namespace HackAPIs.Controllers
                 return NotFound("User not found.");
             }
 
-            return Ok(new tblUsers { GitHubId = user.GitHubId });
+            return Ok(new TblUsers { GitHubId = user.GitHubId });
         }
 
         // GET: api/users
@@ -78,12 +76,12 @@ namespace HackAPIs.Controllers
                 
             while (usersEnumerator.MoveNext())
             {
-                tblUsers oneUser = (tblUsers)usersEnumerator.Current;
+                TblUsers oneUser = (TblUsers)usersEnumerator.Current;
                 
                 Boolean isExist = false;
                 while (teamHackersEnumerator.MoveNext())
                 {
-                    tblTeamHackers oneTeamHacker = (tblTeamHackers)teamHackersEnumerator.Current;
+                    TblTeamHackers oneTeamHacker = (TblTeamHackers)teamHackersEnumerator.Current;
                     if (oneTeamHacker.UserId == oneUser.UserId)
                     {
                         isExist = true;
@@ -146,7 +144,7 @@ namespace HackAPIs.Controllers
             int islead = 0;
             while (enumerator.MoveNext())
             {
-                tblTeamHackers solution = (tblTeamHackers)enumerator.Current;
+                TblTeamHackers solution = (TblTeamHackers)enumerator.Current;
                 islead = solution.IsLead;
                 SolutionList.Add(solution.TeamId);
             }
@@ -172,7 +170,7 @@ namespace HackAPIs.Controllers
             IEnumerator enumerator = tblUsers.tblUserSkillMatch.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                tblUserSkillMatch skills = (tblUserSkillMatch)enumerator.Current;
+                TblUserSkillMatch skills = (TblUserSkillMatch)enumerator.Current;
 
                 SkillsList.Add(skills.SkillId);
             }
@@ -185,7 +183,7 @@ namespace HackAPIs.Controllers
 
         // POST: api/users/regemail
         [HttpPost("regemail", Name = "GetUserByRegEmail")]
-        public IActionResult GetUserByRegEmail([FromBody] tblUsers tblUsers)
+        public IActionResult GetUserByRegEmail([FromBody] TblUsers tblUsers)
         {
             var email = tblUsers.UserRegEmail;
             var user = _dataRepository.GetByColumn(1, "UserRegEmail", email);
@@ -200,7 +198,7 @@ namespace HackAPIs.Controllers
 
         // POST: api/users/msemail
         [HttpPost("msemail", Name = "GetUserByMSEmail")]
-        public IActionResult GetUserByMSEmail([FromBody] tblUsers tblUsers)
+        public IActionResult GetUserByMSEmail([FromBody] TblUsers tblUsers)
         {
             var email = tblUsers.UserMSTeamsEmail;
             var user = _dataRepository.GetByColumn(1, "UserMSTeamsEmail", email);
@@ -215,7 +213,7 @@ namespace HackAPIs.Controllers
 
         // POST: api/users
         [HttpPost]
-        public IActionResult Post([FromBody] tblUsers tblUsers)
+        public IActionResult Post([FromBody] TblUsers tblUsers)
         {
             if (tblUsers is null)
             {
@@ -236,7 +234,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] tblUsers tblUsers)
+        public async Task<IActionResult> Put(int id, [FromBody] TblUsers tblUsers)
         {
             int type = 1;
             string mailChimpId = "";
@@ -359,7 +357,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/users/5
         [HttpPut("skills/{id}")]
-        public IActionResult UserSkills(int id, [FromBody] tblUsers tblUsers)
+        public IActionResult UserSkills(int id, [FromBody] TblUsers tblUsers)
         {
             if (tblUsers == null)
             {
@@ -383,7 +381,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/users/5
         [HttpPut("solutions/{id}")]
-        public IActionResult UserTeams(int id, [FromBody] tblUsers tblUsers, [FromQuery] string teamName, [FromQuery] int isFromCreate)
+        public IActionResult UserTeams(int id, [FromBody] TblUsers tblUsers, [FromQuery] string teamName, [FromQuery] int isFromCreate)
         {
             if (tblUsers == null)
             {
@@ -414,7 +412,7 @@ namespace HackAPIs.Controllers
         }
 
         [HttpPut("github/{id}")]
-        public IActionResult GitHubUserId(int id, [FromBody] tblUsers tblUsers)
+        public IActionResult GitHubUserId(int id, [FromBody] TblUsers tblUsers)
         {
             if (tblUsers == null)
             {
@@ -454,7 +452,7 @@ namespace HackAPIs.Controllers
        
         private void Log(string id, string type)
         {
-            tblLog log = new tblLog
+            TblLog log = new TblLog
             {
                 Label = id,
                 Description = type,

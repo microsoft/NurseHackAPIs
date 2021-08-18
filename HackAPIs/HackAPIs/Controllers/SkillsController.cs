@@ -6,16 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/skills")]
     [ApiController]
+    [Authorize]
     public class SkillsController : Controller
     {
-        private readonly IDataRepositoy<tblSkills, Skills> _dataRepository;
+        private readonly IDataRepositoy<TblSkills, Skills> _dataRepository;
 
-        public SkillsController(IDataRepositoy<tblSkills,Skills> dataRepositoy)
+        public SkillsController(IDataRepositoy<TblSkills,Skills> dataRepositoy)
         {
             _dataRepository = dataRepositoy;
         }
@@ -54,7 +57,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            tblSkills tblSkills = new tblSkills()
+            TblSkills tblSkills = new TblSkills()
             {
                 SkillId = skills.SkillId,
                 SkillName = skills.SkillName
@@ -84,7 +87,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            tblSkills tblSkills = new tblSkills()
+            TblSkills tblSkills = new TblSkills()
             {
                 SkillId = skills.SkillId,
                 SkillName = skills.SkillName

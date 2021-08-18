@@ -5,6 +5,7 @@ using HackAPIs.ViewModel;
 using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Email;
 using HackAPIs.ViewModel.Util;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,13 +16,15 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/Log")]
     [ApiController]
+    [Authorize]
     public class LogController : Controller
     {
-        private readonly IDataRepositoy<tblLog, Log> _dataRepositoryLog;
+        private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;
 
-        public LogController(IDataRepositoy<tblLog, Log> dataRepositoyLog)
+        public LogController(IDataRepositoy<TblLog, Log> dataRepositoyLog)
         {
            
 
@@ -105,7 +108,7 @@ namespace HackAPIs.Controllers
         public async Task<string> log()
         {
 
-            tblLog log = new tblLog
+            TblLog log = new TblLog
             {
                 Label = "100",
                 Description = "User",

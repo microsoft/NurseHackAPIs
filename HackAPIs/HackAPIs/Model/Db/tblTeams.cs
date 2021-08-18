@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Db.Model
 {
-    public partial class tblTeams
+    public partial class TblTeams
     {
         [Key] 
         public int TeamId { get; set; }
@@ -35,13 +35,13 @@ namespace HackAPIs.Db.Model
         public int GitHubRepoId { get; set; }
         public int GitHubTeamId { get; set; }
 
-        public virtual ICollection<tblTeamSkillMatch> tblTeamSkillMatch { get; set; }
-        public virtual ICollection<tblTeamHackers> tblTeamHackers { get; set; }
+        public virtual ICollection<TblTeamSkillMatch> tblTeamSkillMatch { get; set; }
+        public virtual ICollection<TblTeamHackers> tblTeamHackers { get; set; }
 
-        public tblTeams()
+        public TblTeams()
         {
-            tblTeamSkillMatch = new HashSet<tblTeamSkillMatch>();
-            tblTeamHackers = new HashSet<tblTeamHackers>();
+            tblTeamSkillMatch = new HashSet<TblTeamSkillMatch>();
+            tblTeamHackers = new HashSet<TblTeamHackers>();
         }
 
     }

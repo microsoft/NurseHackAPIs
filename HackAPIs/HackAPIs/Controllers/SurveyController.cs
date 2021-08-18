@@ -1,21 +1,20 @@
 ﻿using HackAPIs.Model.Db;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.ViewModel.Db;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/survey")]
     [ApiController]
-    public class SurveyController : Controller
+    [Authorize]
+    public class SurveyController : ControllerBase
     {
-        private readonly IDataRepositoy<tblSurvey, Survey> _dataRepository;
+        private readonly IDataRepositoy<TblSurvey, Survey> _dataRepository;
 
-        public SurveyController(IDataRepositoy<tblSurvey, Survey> dataRepositoy)
+        public SurveyController(IDataRepositoy<TblSurvey, Survey> dataRepositoy)
         {
             _dataRepository = dataRepositoy;
         }
@@ -53,7 +52,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            tblSurvey tblSurvey = new tblSurvey()
+            TblSurvey tblSurvey = new TblSurvey()
             {
                  UserId = survey.UserId,
                  Company = survey.Company,

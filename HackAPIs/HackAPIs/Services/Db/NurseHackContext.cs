@@ -16,23 +16,23 @@ namespace HackAPIs.Services.Db
            
         }
        
-        public DbSet<tblSkills> tbl_Skills { get; set; }
-        public DbSet<tblUserSkillMatch> tbl_UserSkillMatch { get; set; }
-        public DbSet<tblTeamHackers> tbl_TeamHackers { get; set; }
-        public DbSet<tblTeams> tbl_Teams { get; set; }
-        public DbSet<tblTeamSkillMatch> tbl_TeamSkillMatch { get; set; }
-        public DbSet<tblUsers> tbl_Users { get; set; }
-        public DbSet<tblLog> tbl_Log { get; set; }
-        public DbSet<tblSurvey> tbl_Survey { get; set; }
-        public DbSet<tblRegLink> tbl_RegLink { get;   set;  }
+        public DbSet<TblSkills> tbl_Skills { get; set; }
+        public DbSet<TblUserSkillMatch> tbl_UserSkillMatch { get; set; }
+        public DbSet<TblTeamHackers> tbl_TeamHackers { get; set; }
+        public DbSet<TblTeams> tbl_Teams { get; set; }
+        public DbSet<TblTeamSkillMatch> tbl_TeamSkillMatch { get; set; }
+        public DbSet<TblUsers> tbl_Users { get; set; }
+        public DbSet<TblLog> tbl_Log { get; set; }
+        public DbSet<TblSurvey> tbl_Survey { get; set; }
+        public DbSet<TblRegLink> tbl_RegLink { get;   set;  }
 
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<tblTeamSkillMatch>().HasKey(ts => new { ts.TeamId, ts.SkillId });
-            modelBuilder.Entity<tblUserSkillMatch>().HasKey(us => new { us.UserId, us.SkillId });
-            modelBuilder.Entity<tblTeamHackers>().HasKey(ts => new { ts.TeamId, ts.UserId });
+            modelBuilder.Entity<TblTeamSkillMatch>().HasKey(ts => new { ts.TeamId, ts.SkillId });
+            modelBuilder.Entity<TblUserSkillMatch>().HasKey(us => new { us.UserId, us.SkillId });
+            modelBuilder.Entity<TblTeamHackers>().HasKey(ts => new { ts.TeamId, ts.UserId });
 
         }
     }

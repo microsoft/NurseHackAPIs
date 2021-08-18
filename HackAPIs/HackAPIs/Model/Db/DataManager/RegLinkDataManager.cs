@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class RegLinkDataManager : IDataRepositoy<tblRegLink, RegLinks>
+    public class RegLinkDataManager : IDataRepositoy<TblRegLink, RegLinks>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -22,32 +22,32 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext = nurseHackContext;
         }
 
-        public tblRegLink GetAll()
+        public TblRegLink GetAll()
         {
                         throw new NotImplementedException();
         }
 
-        public tblRegLink Get(long id, int type)
+        public TblRegLink Get(long id, int type)
         {
-            tblRegLink tblReg = null;
+            TblRegLink tblReg = null;
             tblReg = _nurseHackContext.tbl_RegLink
                 .SingleOrDefault(b => b.RegLinkId == id);
            
             return tblReg;
         }
 
-        public tblRegLink GetByCode(Guid uniqueCode)
+        public TblRegLink GetByCode(Guid uniqueCode)
         {
-            tblRegLink tblReg = null;
+            TblRegLink tblReg = null;
             tblReg = _nurseHackContext.tbl_RegLink
                 .SingleOrDefault(b => b.UniqueCode == uniqueCode);
 
             return tblReg;
         }
 
-        public tblRegLink GetByColumn(long id, string columnName, string columnValue)
+        public TblRegLink GetByColumn(long id, string columnName, string columnValue)
         {
-            tblRegLink tblReg = null;
+            TblRegLink tblReg = null;
             if (columnName.Equals("UniqueCode"))
             {
                 tblReg = _nurseHackContext.tbl_RegLink
@@ -57,27 +57,27 @@ namespace HackAPIs.Model.Db.DataManager
             return tblReg;
         }     
 
-        IEnumerable<tblRegLink> IDataRepositoy<tblRegLink, RegLinks>.GetAll()
+        IEnumerable<TblRegLink> IDataRepositoy<TblRegLink, RegLinks>.GetAll()
         {
             throw new NotImplementedException();
         }
 
-        tblRegLink IDataRepositoy<tblRegLink, RegLinks>.GetByObject(tblRegLink entity)
+        TblRegLink IDataRepositoy<TblRegLink, RegLinks>.GetByObject(TblRegLink entity)
         {
             throw new NotImplementedException();
         }
 
-        RegLinks IDataRepositoy<tblRegLink, RegLinks>.GetDto(long id)
+        RegLinks IDataRepositoy<TblRegLink, RegLinks>.GetDto(long id)
         {
             throw new NotImplementedException();
         }
 
-        void IDataRepositoy<tblRegLink, RegLinks>.Add(tblRegLink entity)
+        void IDataRepositoy<TblRegLink, RegLinks>.Add(TblRegLink entity)
         {
             throw new NotImplementedException();
         }
 
-        void IDataRepositoy<tblRegLink, RegLinks>.Update(tblRegLink entityToUpdate, tblRegLink entity, int type)
+        void IDataRepositoy<TblRegLink, RegLinks>.Update(TblRegLink entityToUpdate, TblRegLink entity, int type)
         {
             if (entity.UsedByEmail != null)
             {
@@ -93,7 +93,7 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext.SaveChanges();
         }
 
-        void IDataRepositoy<tblRegLink, RegLinks>.Delete(tblRegLink entity)
+        void IDataRepositoy<TblRegLink, RegLinks>.Delete(TblRegLink entity)
         {
             throw new NotImplementedException();
         }

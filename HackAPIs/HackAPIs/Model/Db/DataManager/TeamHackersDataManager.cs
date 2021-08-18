@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class TeamHackersDataManager : IDataRepositoy<tblTeamHackers, TeamHackers>
+    public class TeamHackersDataManager : IDataRepositoy<TblTeamHackers, TeamHackers>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -18,33 +18,33 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext = nurseHackContext;
         }
 
-        public void Add(tblTeamHackers entity)
+        public void Add(TblTeamHackers entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(tblTeamHackers entity)
+        public void Delete(TblTeamHackers entity)
         {
             throw new NotImplementedException();
         }
 
-        public tblTeamHackers Get(long id, int type)
+        public TblTeamHackers Get(long id, int type)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<tblTeamHackers> GetAll()
+        public IEnumerable<TblTeamHackers> GetAll()
         {
             return _nurseHackContext.tbl_TeamHackers
                 .ToList();
         }
 
-        public tblTeamHackers GetByColumn(long id, string columnName, string colunmValue)
+        public TblTeamHackers GetByColumn(long id, string columnName, string colunmValue)
         {
             throw new NotImplementedException();
         }
 
-        public tblTeamHackers GetByObject(tblTeamHackers tblTeamHackers)
+        public TblTeamHackers GetByObject(TblTeamHackers tblTeamHackers)
         {
             _nurseHackContext.Entry(tblTeamHackers)
                    .Reload();
@@ -56,7 +56,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public void Update(tblTeamHackers entityToUpdate, tblTeamHackers entity, int type)
+        public void Update(TblTeamHackers entityToUpdate, TblTeamHackers entity, int type)
         {
             throw new NotImplementedException();
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HackAPIs.Db.Model
 {
-    public class tblSkills
+    public class TblSkills
     {
         [Key]
         public int SkillId { get; set; }

@@ -7,9 +7,11 @@ using HackAPIs.ViewModel.Db;
 using HackAPIs.ViewModel.Teams;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HackAPIs.Controllers
 {
+    [Authorize]
     [Route("api/teams")]
     [ApiController]
     public class TeamsController : ControllerBase
