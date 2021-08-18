@@ -58,5 +58,5 @@ jobs:
       with:
         app-name: 'HackAPI-V2'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_dc40e97aa7964810979b843fcfa5508d }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DC40E97AA7964810979B843FCFA5508D }}
         package: .
