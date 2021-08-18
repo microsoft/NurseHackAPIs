@@ -1,7 +1,6 @@
 # Project Nurse Hack API
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+[![Build and deploy ASP.Net Core app to Azure Web App - HackAPI-V2](https://github.com/microsoft/NurseHackAPIs/actions/workflows/main_HackAPI-V2.yml/badge.svg?branch=main)](https://github.com/microsoft/NurseHackAPIs/actions/workflows/main_HackAPI-V2.yml)
 
 As the maintainer of this project, please make a few updates:
 
