@@ -18,8 +18,7 @@ namespace HackAPIs.Controllers
     [Authorize]
     [Route("api/users")]
     [ApiController]
-    [Authorize]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private readonly IDataRepositoy<TblUsers, Users> _dataRepository;
         private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;

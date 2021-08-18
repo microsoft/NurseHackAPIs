@@ -30,7 +30,7 @@ namespace HackAPIs.Services.Teams
         }
 
         /*
-            Get all users of the domain including members and guests
+            Get all users of the domain including members and guests WUUUUUUUUTTTTT!!!!!!!!!
         */
         public async Task<JObject> GetDomainUsers()
         {

@@ -3,10 +3,6 @@ using HackAPIs.Model.Db.Repository;
 using HackAPIs.ViewModel.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HackAPIs.Controllers
 {
@@ -14,7 +10,7 @@ namespace HackAPIs.Controllers
     [Route("api/survey")]
     [ApiController]
     [Authorize]
-    public class SurveyController : Controller
+    public class SurveyController : ControllerBase
     {
         private readonly IDataRepositoy<TblSurvey, Survey> _dataRepository;
 

@@ -36,8 +36,7 @@ namespace HackAPIs
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
-            //  services.AddControllers();
-            ConnStr = Configuration["ConnStr"];
+            // TODO: This is literally the worst :(
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
             UtilConst.SMTP = Configuration["EmailSMTPAddress"];
             UtilConst.SMTPPassword = Configuration["svc-NH4H-devupconf-org"];
@@ -56,10 +55,10 @@ namespace HackAPIs
             UtilConst.Tenant = Configuration["Tenant"];
             UtilConst.TeamDomain = Configuration["TeamDomain"];
             UtilConst.GitHubToken = Configuration["GitHubToken"];
-
+            // end worst code ever
 
             services.AddDbContext<NurseHackContext>(options =>
-                options.UseSqlServer(ConnStr));
+                options.UseSqlServer(Configuration["ConnStr"]));
 
             services.AddScoped<IDataRepositoy<TblSkills, Skills>,SkillDataManager>();
             services.AddScoped<IDataRepositoy<TblUsers, Users>, UserDataManager>();
