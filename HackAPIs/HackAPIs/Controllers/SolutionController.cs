@@ -19,32 +19,24 @@ namespace HackAPIs.Controllers
     [Route("api/solutions")]
     [ApiController]
     [Authorize]
-    public class SolutionController : Controller
+    public class SolutionController : ControllerBase
     {
         private readonly IDataRepositoy<TblTeams, Solutions> _dataRepository;
-
         private readonly IDataRepositoy<TblSkills, Skills> _skilldataRepository;
-        
         private readonly IDataRepositoy<TblUsers, Users> _userDataRepository;
-
         private readonly GitHubService _githubService;
 
-        private DateTime getEasternTime()
-        {
-            var timeUtc = DateTime.UtcNow;
-            TimeZoneInfo easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-            return(TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone));
-        }
         public SolutionController(IDataRepositoy<TblTeams, Solutions> dataRepositoy,
-            IDataRepositoy<TblSkills, Skills> skilldataRepositoy,
-            IDataRepositoy<TblUsers, Users> userDataRepository,
-            GitHubService gitHubService)
+         IDataRepositoy<TblSkills, Skills> skilldataRepositoy,
+         IDataRepositoy<TblUsers, Users> userDataRepository,
+         GitHubService gitHubService)
         {
             _dataRepository = dataRepositoy;
             _skilldataRepository = skilldataRepositoy;
             _userDataRepository = userDataRepository;
             _githubService = gitHubService;
         }
+
         // GET: api/solutions
         [HttpGet]
         public IActionResult Get()
@@ -52,9 +44,7 @@ namespace HackAPIs.Controllers
             var tblTeams = _dataRepository.GetAll()
                 .Where(a => a.Active);
 
-
-              return Ok(tblTeams);
-            
+            return Ok(tblTeams);
         }
 
         // GET: api/solutions/5
@@ -66,8 +56,6 @@ namespace HackAPIs.Controllers
             {
                 return NotFound("Solution not found.");
             }
-
-
 
             return Ok(tblTeams);
         }
@@ -91,7 +79,7 @@ namespace HackAPIs.Controllers
                 solutionHackers.TeamName = oneTeam.TeamName;
 
                 ArrayList HackerList = new ArrayList();
-                List<HackerExpanded> hackers= new List<HackerExpanded>();
+                List<HackerExpanded> hackers = new List<HackerExpanded>();
                 IEnumerator enumerator = oneTeam.tblTeamHackers.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
@@ -110,13 +98,11 @@ namespace HackAPIs.Controllers
             return Ok(solutionList);
         }
 
-
-
         // GET: api/solutions/hackers/5
         [HttpGet("hackers/{id}", Name = "GetSolutionHackers")]
         public IActionResult GetSolutionHackers(long id)
         {
-            var tblTeams = _dataRepository.Get(id,2);
+            var tblTeams = _dataRepository.Get(id, 2);
             if (tblTeams == null)
             {
                 return NotFound("Solution not found.");
@@ -132,14 +118,12 @@ namespace HackAPIs.Controllers
             {
                 TblTeamHackers hacker = (TblTeamHackers)enumerator.Current;
                 HackerList.Add(hacker.UserId);
-                TblUsers user = (TblUsers)_userDataRepository.Get(hacker.UserId,1);
+                TblUsers user = (TblUsers)_userDataRepository.Get(hacker.UserId, 1);
                 HackerExpanded thisHacker = new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead };
                 hackers.Add(thisHacker);
             }
             solutionHackers.UserID = HackerList;
             solutionHackers.Hackers = hackers;
-
-            
 
             return Ok(solutionHackers);
         }
@@ -199,15 +183,13 @@ namespace HackAPIs.Controllers
 
             ArrayList HackerList = new ArrayList();
             enumerator = tblTeams.tblTeamHackers.GetEnumerator();
-            
+
             while (enumerator.MoveNext())
             {
                 TblTeamHackers hacker = (TblTeamHackers)enumerator.Current;
                 HackerList.Add(hacker.UserId);
             }
             SolutionHackersSkills.UserID = HackerList;
-
-
 
             return Ok(SolutionHackersSkills);
         }
@@ -247,7 +229,7 @@ namespace HackAPIs.Controllers
             */
             ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
 
-            var github_ids = CreateGitHubTeam(tblTeams.TeamName, tblTeams.TeamDescription);
+            var github_ids = await _githubService.CreateRepoAndTeam(tblTeams.TeamName, tblTeams.TeamDescription);
 
             tblTeams.GitHubTeamId = github_ids.TeamId;
             tblTeams.GitHubRepoId = github_ids.RepoId;
@@ -256,11 +238,11 @@ namespace HackAPIs.Controllers
 
             _dataRepository.Add(tblTeams);
 
-            AddUserToGHTeam(tblTeams.CreatedBy, tblTeams.TeamName, github_ids.TeamId);
+            await AddUserToGHTeam(tblTeams.CreatedBy, tblTeams.TeamName, github_ids.TeamId);
 
             return Ok(tblTeams);
         }
-        
+
         // PUT: api/solutions/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] TblTeams tblTeams)
@@ -270,7 +252,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("Solution is null.");
             }
 
-            var solutionToUpdate = _dataRepository.Get(id,1);
+            var solutionToUpdate = _dataRepository.Get(id, 1);
             if (solutionToUpdate == null)
             {
                 return NotFound("The Solution record couldn't be found.");
@@ -296,7 +278,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("Solution is null.");
             }
 
-            var solutionToUpdate = _dataRepository.Get(id,1);
+            var solutionToUpdate = _dataRepository.Get(id, 1);
             if (solutionToUpdate == null)
             {
                 return NotFound("The Solution record couldn't be found.");
@@ -320,7 +302,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("Solution is null.");
             }
 
-            var solutionToUpdate = _dataRepository.Get(id,1);
+            var solutionToUpdate = _dataRepository.Get(id, 1);
             if (solutionToUpdate == null)
             {
                 return NotFound("The Solution record couldn't be found.");
@@ -335,15 +317,10 @@ namespace HackAPIs.Controllers
             return Ok("Success");
         }
 
-        private Github CreateGitHubTeam(string teamName, string teamDesc)
-        {
-            return _githubService.CreateRepoAndTeam(teamName, teamDesc);
-        }
-
-        private void AddUserToGHTeam(string createdBy, string teamName, int teamId)
+        private async Task AddUserToGHTeam(string createdBy, string teamName, int teamId)
         {
             var user = _userDataRepository.GetByColumn(1, "UserRegEmail", createdBy);
-            _githubService.AddUser(user.GitHubUser, user.GitHubId, teamId, teamName);
+            await _githubService.AddUser(user.GitHubUser, user.GitHubId, teamId, teamName);
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using HackAPIs.ViewModel.Util;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Text;
@@ -13,36 +12,35 @@ namespace HackAPIs.Services.Util
 {
     public class GitHubService
     {
-        // TODO: Make 'NurseHack4Health' dynamic
-        const string GITHUBURL = "https://api.github.com/orgs/NurseHack4Health/";
-        const string ORG = "NurseHack4Health";
-        const string USERAGENT = "WhiteZeus";
+        private readonly HttpClient _httpClient;
+        private GitHubServiceOptions _config;
 
-        private Github githubObj = new Github();
-        private int RepoId { get; set; }
-
-        public Github CreateRepoAndTeam(string name, string description)
+        public GitHubService(HttpClient client, IOptions<GitHubServiceOptions> options)
         {
-            CreateTeam(name);
-            CreateRepo(name, description);
-
-            return githubObj;
+            _httpClient = client;
+            _config = options.Value;
         }
 
-        private async void CreateTeam(string name)
+        public async Task<Github> CreateRepoAndTeam(string name, string description)
         {
-            JObject jsonObject = null;
-            var client = CreateHttpClient();
+            var result = new Github();
+            result.TeamId = await CreateTeam(name);
+            result.RepoId = await CreateRepo(name, description, result.TeamId);
 
+            return result;
+        }
+
+        private async Task<int> CreateTeam(string name)
+        {
             try
             {
                 string payload = JsonConvert.SerializeObject(new GitHubTeamPayload { name = name });
-                HttpResponseMessage res = client.PostAsync(GITHUBURL + "teams", new StringContent(payload, Encoding.UTF8, "application/json")).Result;
-                client.Dispose();
-                jsonObject = await DeserializeResponse(res);
+                HttpResponseMessage res = await _httpClient.PostAsync(_config.Url + "teams", new StringContent(payload, Encoding.UTF8, "application/json"));
+                var jsonObject = await DeserializeResponse(res);
 
                 // Team ID
-                githubObj.TeamId = Int32.Parse(jsonObject["id"].ToString());
+                var teamId = Int32.Parse(jsonObject["id"].ToString());
+                return teamId;
             } catch (Exception ex)
             {
                 throw new GitHubException(ex.Message);
@@ -50,60 +48,55 @@ namespace HackAPIs.Services.Util
 
         }
 
-        private async void CreateRepo(string name, string desc)
+        private async Task<int> CreateRepo(string name, string desc, int teamId)
         {
-            JObject jsonObject = null;
-            var client = CreateHttpClient();
-
-            client.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
+            _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
 
             try
             {
-                string payload = JsonConvert.SerializeObject(new GitHubRepoPayload { name = name, description = desc, team_id = githubObj.TeamId, license_template = "mit", auto_init = true });
-                HttpResponseMessage res = client.PostAsync(GITHUBURL + "repos", new StringContent(payload, Encoding.UTF8, "application/json")).Result;
-                client.Dispose();
-                jsonObject = await DeserializeResponse(res);
-                githubObj.RepoId = Int32.Parse(jsonObject["id"].ToString());
+                string payload = JsonConvert.SerializeObject(new GitHubRepoPayload { name = name, description = desc, team_id = teamId, license_template = "mit", auto_init = true });
+                HttpResponseMessage res = await _httpClient.PostAsync(_config.Url + "repos", new StringContent(payload, Encoding.UTF8, "application/json"));
+                var jsonObject = await DeserializeResponse(res);
+                var id = Int32.Parse(jsonObject["id"].ToString());
+                return id;
             } catch (Exception ex)
             {
-                throw new GitHubException(ex.Message);
+                throw new GitHubException(ex.Message);                
+            }
+            finally
+            {
+                _httpClient.DefaultRequestHeaders.Remove("Accept");
             }
         }
 
-        public async void AddUser(string gitHubUser, long gitHubUserId, int teamId, string teamName)
+        public async Task AddUser(string gitHubUser, long gitHubUserId, int teamId, string teamName)
         {
             int[] teamIds = { teamId };
-            var userIsInOrg = await FindUserInOrg(gitHubUser, ORG);
+            var userIsInOrg = await FindUserInOrg(gitHubUser, _config.Org);
             var ghslug = teamName.Replace(" ", "-"); //to match GitHub Slugname
 
-            var client = CreateHttpClient();
-            
             try
             {
                 if (userIsInOrg)
                 {
                     string payload = JsonConvert.SerializeObject(new GitHubUserPayload { team_slug = ghslug, username = gitHubUser, role = "member"});
-                    HttpResponseMessage res = client.PutAsync(GITHUBURL + "teams/" + ghslug + "/memberships/" + gitHubUser, new StringContent(payload, Encoding.UTF8, "application/json")).Result;
+                    HttpResponseMessage res = await _httpClient.PutAsync(_config.Url + "teams/" + ghslug + "/memberships/" + gitHubUser, new StringContent(payload, Encoding.UTF8, "application/json"));
                 }
                 else
                 {
                     string payload = JsonConvert.SerializeObject(new GitHubUserPayload { team_ids = teamIds, invitee_id = gitHubUserId });
-                    HttpResponseMessage res = client.PostAsync(GITHUBURL + "invitations", new StringContent(payload, Encoding.UTF8, "application/json")).Result;
+                    HttpResponseMessage res = await _httpClient.PostAsync(_config.Url + "invitations", new StringContent(payload, Encoding.UTF8, "application/json"));
                 }
             } catch 
             {
                 throw new GitHubException();
             }
-            
-            client.Dispose();
         }
 
         private async Task<bool> FindUserInOrg(string githubUser, string org)
         {
-            JObject jsonObject;
-            var client = CreateHttpClient();
-            HttpResponseMessage res = client.GetAsync(GITHUBURL + "memberships/" + githubUser).Result;
-            jsonObject = await DeserializeResponse(res);
+            HttpResponseMessage res = await _httpClient.GetAsync(_config.Url + "memberships/" + githubUser);
+            var jsonObject = await DeserializeResponse(res);
 
             if(jsonObject["message"] != null)
             {
@@ -111,24 +104,8 @@ namespace HackAPIs.Services.Util
             } else
             {
                 var state = jsonObject["state"].ToString();
-
-                if (state == "active")
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return state == "active" ? true : false;
             }
-        }
-
-        private HttpClient CreateHttpClient()
-        {
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", UtilConst.GitHubToken);
-            client.DefaultRequestHeaders.Add("User-Agent", USERAGENT);
-            return client;
         }
 
         private async Task<JObject> DeserializeResponse(HttpResponseMessage response)

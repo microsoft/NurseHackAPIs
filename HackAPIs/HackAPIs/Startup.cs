@@ -36,6 +36,8 @@ namespace HackAPIs
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
               .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
+            services.Configure<GitHubServiceOptions>(Configuration.GetSection("GitHub"));
+
             // TODO: This is literally the worst :(
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
             UtilConst.SMTP = Configuration["EmailSMTPAddress"];
@@ -67,7 +69,11 @@ namespace HackAPIs
             services.AddScoped<IDataRepositoy<TblLog, Log>, LogDataManager>();
             services.AddScoped<IDataRepositoy<TblSurvey, Survey>, SurveyDataManager>();
             services.AddScoped<IDataRepositoy<TblRegLink, RegLinks>, RegLinkDataManager>();
-            services.AddScoped<GitHubService>();
+            services.AddHttpClient<GitHubService>((o) =>
+            {
+                o.DefaultRequestHeaders.Add("Authorization", UtilConst.GitHubToken);
+                o.DefaultRequestHeaders.Add("User-Agent", Configuration["GitHub:UserAgent"]);
+            });
 
             services.AddControllers();
 
