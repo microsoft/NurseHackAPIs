@@ -33,7 +33,7 @@ namespace HackAPIs.Controllers
 
             Skills s = new Skills { SkillId = 1, SkillName = "Welcome to NurseHack API Portal" };
             skills.Add(s);
-            return skills;
+            return await Task.FromResult(skills);
         }
 
         /*

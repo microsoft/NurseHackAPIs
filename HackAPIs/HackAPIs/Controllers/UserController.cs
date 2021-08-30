@@ -255,7 +255,6 @@ namespace HackAPIs.Controllers
             {
                 return NotFound("The User record couldn't be found.");
             }
-            Log(id+"", "Record Exist");
             if (!ModelState.IsValid)
             {
                 return BadRequest();
@@ -267,17 +266,12 @@ namespace HackAPIs.Controllers
                 {
                     Log(id + "", "Inactivation of user is requested");
                     await _teamsService.RemoveTeamMember(_teamConfig.MSTeam1, userToUpdate.ADUserId);
-                } catch (Exception ex)
-                {
-
-
-                }
+                } catch (Exception) {}
 
                 type = 4;
 
                 try
                 {
-
                     if (tblUsers.UserRole.Contains("Hacker"))
                     {
                         MailChimpService mailChimpService = new MailChimpService();
@@ -287,8 +281,7 @@ namespace HackAPIs.Controllers
                         Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: " + mailChimpId);
 
                     }
-                } catch (Exception ex)
-                { }
+                } catch (Exception) { }
             }
             else if (userToUpdate.ADUserId == null)
             {
@@ -311,10 +304,7 @@ namespace HackAPIs.Controllers
                         Log(id + "", "Email was sent to : "+ tblUsers.UserMSTeamsEmail);
 
 
-                    } catch (Exception ex)
-                    {
-
-                    }
+                    } catch (Exception) { }
 
                     try
                     {
@@ -340,15 +330,12 @@ namespace HackAPIs.Controllers
                             Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);
 
                         }
-                    } catch (Exception ex)
-                    {
-
-                    }
+                    } catch (Exception) { }
            
                 }
                 catch (Exception ex)
                 {
-                    
+                    return BadRequest(ex.Message);
                 }
             }
             _dataRepository.Update(userToUpdate, tblUsers, type);
@@ -383,7 +370,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/users/5
         [HttpPut("solutions/{id}")]
-        public IActionResult UserTeams(int id, [FromBody] TblUsers tblUsers, [FromQuery] string teamName, [FromQuery] int isFromCreate)
+        public async Task<IActionResult> UserTeams(int id, [FromBody] TblUsers tblUsers, [FromQuery] string teamName, [FromQuery] int isFromCreate)
         {
             if (tblUsers == null)
             {
@@ -407,7 +394,7 @@ namespace HackAPIs.Controllers
             if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)
             {
                 var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, 1);
-                AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
+                await AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
             }
 
             return Ok("Success");
@@ -464,9 +451,9 @@ namespace HackAPIs.Controllers
             _dataRepositoryLog.Add(log);
         }
 
-        private void AddToGHTeam(string ghuser, long ghuserid, int teamid, string teamname)
+        private async Task AddToGHTeam(string ghuser, long ghuserid, int teamid, string teamname)
         {
-            _gitHubService.AddUser(ghuser, ghuserid, teamid, teamname);
+            await _gitHubService.AddUser(ghuser, ghuserid, teamid, teamname);
         }
     }
 }
