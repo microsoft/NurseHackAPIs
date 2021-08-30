@@ -15,6 +15,7 @@ using HackAPIs.Model.Db;
 using HackAPIs.Services.Util;
 using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Octokit;
 
 namespace HackAPIs 
 {
@@ -37,6 +38,13 @@ namespace HackAPIs
               .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
             services.Configure<GitHubServiceOptions>(Configuration.GetSection("GitHub"));
+            services.AddSingleton<GitHubClient>(o =>
+            {
+                var client = new GitHubClient(new ProductHeaderValue("nh4h-apis"));
+                client.Credentials = new Credentials(Configuration["GitHubToken"]);
+                return client;
+            });
+            services.AddSingleton<GitHubService>();
 
             // TODO: This is literally the worst :(
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
@@ -69,11 +77,6 @@ namespace HackAPIs
             services.AddScoped<IDataRepositoy<TblLog, Log>, LogDataManager>();
             services.AddScoped<IDataRepositoy<TblSurvey, Survey>, SurveyDataManager>();
             services.AddScoped<IDataRepositoy<TblRegLink, RegLinks>, RegLinkDataManager>();
-            services.AddHttpClient<GitHubService>((o) =>
-            {
-                o.DefaultRequestHeaders.Add("Authorization", UtilConst.GitHubToken);
-                o.DefaultRequestHeaders.Add("User-Agent", Configuration["GitHub:UserAgent"]);
-            });
 
             services.AddControllers();
 
