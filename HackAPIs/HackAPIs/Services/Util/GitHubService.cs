@@ -1,46 +1,43 @@
-﻿using HackAPIs.ViewModel.Util;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.Options;
 using System;
-using System.Net.Http;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
+using Octokit;
 
 namespace HackAPIs.Services.Util
 {
     public class GitHubService
     {
-        private readonly HttpClient _httpClient;
+        private readonly GitHubClient _gitClient;
         private GitHubServiceOptions _config;
 
-        public GitHubService(HttpClient client, IOptions<GitHubServiceOptions> options)
+        public GitHubService(IOptions<GitHubServiceOptions> options, GitHubClient client)
         {
-            _httpClient = client;
             _config = options.Value;
+            _gitClient = client;
         }
 
-        public async Task<Github> CreateRepoAndTeam(string name, string description)
-        {
-            var result = new Github();
-            result.TeamId = await CreateTeam(name);
-            result.RepoId = await CreateRepo(name, description, result.TeamId);
-
-            return result;
-        }
-
-        private async Task<int> CreateTeam(string name)
+        public async Task<(int,long)> CreateRepoAndTeam(string name, string description)
         {
             try
             {
-                string payload = JsonConvert.SerializeObject(new GitHubTeamPayload { name = name });
-                HttpResponseMessage res = await _httpClient.PostAsync(_config.Url + "teams", new StringContent(payload, Encoding.UTF8, "application/json"));
-                var jsonObject = await DeserializeResponse(res);
+                int teamId = await CreateTeam(name);
+                long repoId = await CreateRepo(name, description, teamId);
 
-                // Team ID
-                var teamId = Int32.Parse(jsonObject["id"].ToString());
-                return teamId;
+                return (teamId, repoId);
+            }
+            catch (Exception)
+            {
+                return (-1, -1);
+            }
+        }
+
+        public async Task<int> CreateTeam(string name)
+        {
+            try
+            {
+                var team = await _gitClient.Organization.Team.Create(_config.Org, new NewTeam(name));
+                return team.Id;
             } catch (Exception ex)
             {
                 throw new GitHubException(ex.Message);
@@ -48,70 +45,39 @@ namespace HackAPIs.Services.Util
 
         }
 
-        private async Task<int> CreateRepo(string name, string desc, int teamId)
+        private async Task<long> CreateRepo(string name, string desc, int teamId)
         {
-            _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
-
             try
             {
-                string payload = JsonConvert.SerializeObject(new GitHubRepoPayload { name = name, description = desc, team_id = teamId, license_template = "mit", auto_init = true });
-                HttpResponseMessage res = await _httpClient.PostAsync(_config.Url + "repos", new StringContent(payload, Encoding.UTF8, "application/json"));
-                var jsonObject = await DeserializeResponse(res);
-                var id = Int32.Parse(jsonObject["id"].ToString());
-                return id;
+                var createRepo = new NewRepository(name);
+                createRepo.TeamId = teamId;
+                var repo = await _gitClient.Repository.Create(_config.Org, createRepo);
+
+                return repo.Id;
             } catch (Exception ex)
             {
                 throw new GitHubException(ex.Message);                
-            }
-            finally
-            {
-                _httpClient.DefaultRequestHeaders.Remove("Accept");
             }
         }
 
         public async Task AddUser(string gitHubUser, long gitHubUserId, int teamId, string teamName)
         {
-            int[] teamIds = { teamId };
-            var userIsInOrg = await FindUserInOrg(gitHubUser, _config.Org);
-            var ghslug = teamName.Replace(" ", "-"); //to match GitHub Slugname
+            var userIsInOrg = await _gitClient.Organization.Member.CheckMember(_config.Org, gitHubUser);
 
             try
             {
                 if (userIsInOrg)
                 {
-                    string payload = JsonConvert.SerializeObject(new GitHubUserPayload { team_slug = ghslug, username = gitHubUser, role = "member"});
-                    HttpResponseMessage res = await _httpClient.PutAsync(_config.Url + "teams/" + ghslug + "/memberships/" + gitHubUser, new StringContent(payload, Encoding.UTF8, "application/json"));
+                    await _gitClient.Organization.Team.AddOrEditMembership(teamId, gitHubUser, new UpdateTeamMembership(TeamRole.Member));
                 }
                 else
                 {
-                    string payload = JsonConvert.SerializeObject(new GitHubUserPayload { team_ids = teamIds, invitee_id = gitHubUserId });
-                    HttpResponseMessage res = await _httpClient.PostAsync(_config.Url + "invitations", new StringContent(payload, Encoding.UTF8, "application/json"));
+                    await _gitClient.Organization.Member.AddOrUpdateOrganizationMembership(_config.Org, gitHubUser, new OrganizationMembershipUpdate { Role = MembershipRole.Member });
                 }
             } catch 
             {
                 throw new GitHubException();
             }
-        }
-
-        private async Task<bool> FindUserInOrg(string githubUser, string org)
-        {
-            HttpResponseMessage res = await _httpClient.GetAsync(_config.Url + "memberships/" + githubUser);
-            var jsonObject = await DeserializeResponse(res);
-
-            if(jsonObject["message"] != null)
-            {
-                return false;                
-            } else
-            {
-                var state = jsonObject["state"].ToString();
-                return state == "active" ? true : false;
-            }
-        }
-
-        private async Task<JObject> DeserializeResponse(HttpResponseMessage response)
-        {
-            string json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject(json) as JObject;
         }
 
         [Serializable]

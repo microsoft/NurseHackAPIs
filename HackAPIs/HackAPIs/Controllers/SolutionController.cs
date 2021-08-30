@@ -229,16 +229,16 @@ namespace HackAPIs.Controllers
             */
             ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
 
-            var github_ids = await _githubService.CreateRepoAndTeam(tblTeams.TeamName, tblTeams.TeamDescription);
+            (int TeamId, long RepoId) = await _githubService.CreateRepoAndTeam(tblTeams.TeamName, tblTeams.TeamDescription);
 
-            tblTeams.GitHubTeamId = github_ids.TeamId;
-            tblTeams.GitHubRepoId = github_ids.RepoId;
+            tblTeams.GitHubTeamId = TeamId;
+            tblTeams.GitHubRepoId = (int)RepoId;
             tblTeams.Active = true;
             tblTeams.CreatedDate = DateTime.Now;
 
             _dataRepository.Add(tblTeams);
 
-            await AddUserToGHTeam(tblTeams.CreatedBy, tblTeams.TeamName, github_ids.TeamId);
+            await AddUserToGHTeam(tblTeams.CreatedBy, tblTeams.TeamName, TeamId);
 
             return Ok(tblTeams);
         }
