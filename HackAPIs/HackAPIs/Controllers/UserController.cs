@@ -12,6 +12,7 @@ using HackAPIs.ViewModel.Teams;
 using HackAPIs.Services.Util;
 using HackAPIs.Model.Db;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace HackAPIs.Controllers
 {
@@ -22,22 +23,27 @@ namespace HackAPIs.Controllers
     {
         private readonly IDataRepositoy<TblUsers, Users> _dataRepository;
         private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;
-        private readonly GitHubService _gitHubService;
         private readonly IDataRepositoy<TblTeamHackers, TeamHackers> _teamHackersdataRepository;
         private readonly IDataRepositoy<TblTeams, Solutions> _teamDataRepository;
+        private readonly GitHubService _gitHubService;
+        private readonly TeamsService _teamsService;
+        private readonly TeamsServiceOptions _teamConfig;
 
         public UserController(IDataRepositoy<TblUsers, Users> dataRepositoy,
             IDataRepositoy<TblTeamHackers, TeamHackers> teamHackersdataRepository,
             IDataRepositoy<TblTeams, Solutions> teamDataRepository,
             IDataRepositoy<TblLog, Log> dataRepositoyLog,
-            GitHubService gitHubService)
+            GitHubService gitHubService,
+            TeamsService teamsService,
+            IOptions<TeamsServiceOptions> teamOptions)
         {
             _dataRepository = dataRepositoy;
             _dataRepositoryLog = dataRepositoyLog;
             _teamHackersdataRepository = teamHackersdataRepository;
             _teamDataRepository = teamDataRepository;
             _gitHubService = gitHubService;
-
+            _teamsService = teamsService;
+            _teamConfig = teamOptions.Value;
         }
 
         // GET: api/users
@@ -249,7 +255,6 @@ namespace HackAPIs.Controllers
             {
                 return NotFound("The User record couldn't be found.");
             }
-            Log(id+"", "Record Exist");
             if (!ModelState.IsValid)
             {
                 return BadRequest();
@@ -260,21 +265,13 @@ namespace HackAPIs.Controllers
                 try
                 {
                     Log(id + "", "Inactivation of user is requested");
-                    TeamsService teamService = new TeamsService(_dataRepository);
-                    TeamMember member = new TeamMember();
-                    member.MemberID = userToUpdate.ADUserId;
-                    var usr = teamService.RemoveTeamMember(member);
-                } catch (Exception ex)
-                {
-
-
-                }
+                    await _teamsService.RemoveTeamMember(_teamConfig.MSTeam1, userToUpdate.ADUserId);
+                } catch (Exception) {}
 
                 type = 4;
 
                 try
                 {
-
                     if (tblUsers.UserRole.Contains("Hacker"))
                     {
                         MailChimpService mailChimpService = new MailChimpService();
@@ -284,22 +281,20 @@ namespace HackAPIs.Controllers
                         Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: " + mailChimpId);
 
                     }
-                } catch (Exception ex)
-                { }
+                } catch (Exception) { }
             }
             else if (userToUpdate.ADUserId == null)
             {
                 try
                 {
                     Log(id + "", "Azure AD is Null");
-                    TeamsService teamService = new TeamsService(_dataRepository);
                     GuestUser guest = new GuestUser();
                     guest.InvitedUserEmailAddress = tblUsers.UserMSTeamsEmail;
                     guest.UserId = userToUpdate.UserId;
-                    guest = await teamService.InviteGuestUser(guest);
-                    tblUsers.ADUserId = guest.ADUserId;
-                    await teamService.UpdateMembers(guest.ADUserId, tblUsers.UserDisplayName);
-                    Log(id + "", "Added Azure ID"+guest.ADUserId);
+                    var invite = await _teamsService.InviteGuestUser(guest);
+                    tblUsers.ADUserId = invite.InvitedUser.Id;
+                    await _teamsService.UpdateMembers(tblUsers.ADUserId, tblUsers.UserDisplayName);
+                    Log(id + "", "Added Azure ID"+tblUsers.ADUserId);
 
                     try
                     {
@@ -309,10 +304,7 @@ namespace HackAPIs.Controllers
                         Log(id + "", "Email was sent to : "+ tblUsers.UserMSTeamsEmail);
 
 
-                    } catch (Exception ex)
-                    {
-
-                    }
+                    } catch (Exception) { }
 
                     try
                     {
@@ -338,15 +330,12 @@ namespace HackAPIs.Controllers
                             Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);
 
                         }
-                    } catch (Exception ex)
-                    {
-
-                    }
+                    } catch (Exception) { }
            
                 }
                 catch (Exception ex)
                 {
-                    
+                    return BadRequest(ex.Message);
                 }
             }
             _dataRepository.Update(userToUpdate, tblUsers, type);
@@ -381,7 +370,7 @@ namespace HackAPIs.Controllers
 
         // PUT: api/users/5
         [HttpPut("solutions/{id}")]
-        public IActionResult UserTeams(int id, [FromBody] TblUsers tblUsers, [FromQuery] string teamName, [FromQuery] int isFromCreate)
+        public async Task<IActionResult> UserTeams(int id, [FromBody] TblUsers tblUsers, [FromQuery] string teamName, [FromQuery] int isFromCreate)
         {
             if (tblUsers == null)
             {
@@ -405,7 +394,7 @@ namespace HackAPIs.Controllers
             if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)
             {
                 var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, 1);
-                AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
+                await AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
             }
 
             return Ok("Success");
@@ -462,9 +451,9 @@ namespace HackAPIs.Controllers
             _dataRepositoryLog.Add(log);
         }
 
-        private void AddToGHTeam(string ghuser, long ghuserid, int teamid, string teamname)
+        private async Task AddToGHTeam(string ghuser, long ghuserid, int teamid, string teamname)
         {
-            _gitHubService.AddUser(ghuser, ghuserid, teamid, teamname);
+            await _gitHubService.AddUser(ghuser, ghuserid, teamid, teamname);
         }
     }
 }

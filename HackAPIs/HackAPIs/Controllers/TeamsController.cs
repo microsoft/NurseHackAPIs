@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using HackAPIs.Services.Db;
 using HackAPIs.Services.Teams;
 using HackAPIs.ViewModel.Db;
@@ -8,6 +7,7 @@ using HackAPIs.ViewModel.Teams;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace HackAPIs.Controllers
 {
@@ -18,13 +18,12 @@ namespace HackAPIs.Controllers
     {
 
         private readonly ILogger<TeamsController> _logger;
-        private readonly NurseHackContext _dbContext;
+        private readonly TeamsService _teamsService;
 
-        public TeamsController(ILogger<TeamsController> logger, NurseHackContext dbContext)
+        public TeamsController(ILogger<TeamsController> logger, NurseHackContext dbContext, TeamsService teamsService)
         {
             _logger = logger;
-            _dbContext = dbContext;
-
+            _teamsService = teamsService;
         }
 
         [HttpGet]
@@ -34,7 +33,7 @@ namespace HackAPIs.Controllers
 
             Skills s = new Skills { SkillId = 1, SkillName = "Welcome to NurseHack API Portal" };
             skills.Add(s);
-            return skills;
+            return await Task.FromResult(skills);
         }
 
         /*
@@ -42,13 +41,17 @@ namespace HackAPIs.Controllers
          */
 
         [HttpGet("domainusers")]
-        public async Task<string> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            TeamsService teamService = new TeamsService();
-
-            string json = JsonConvert.SerializeObject(await teamService.GetDomainUsers());
-            return json;
-
+            try
+            {
+                var results = await _teamsService.GetDomainUsers();                
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /*
@@ -56,12 +59,17 @@ namespace HackAPIs.Controllers
         */
 
         [HttpPost("admember")]
-        public async Task<string> CreateADMember(MemberUser member)
+        public async Task<IActionResult> CreateADMember(MemberUser member)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.CreateMemberUser(member));
-            return json;
-
+            try
+            {
+                var user = await _teamsService.CreateMemberUser(member);
+                return Created($"https://admember/{user.Id}", user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /*
@@ -69,12 +77,17 @@ namespace HackAPIs.Controllers
         */
 
         [HttpDelete("{id}")]
-        public async Task<string> DeleteADMember(string Id)
+        public async Task<IActionResult> DeleteADMember(string userId)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.DeleteUser(Id));
-            return json;
-
+            try
+            {
+                await _teamsService.DeleteUser(userId);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /*
@@ -82,24 +95,34 @@ namespace HackAPIs.Controllers
        */
 
         [HttpPost("guestmember")]
-        public async Task<string> CreateGuestMember(GuestUser guest)
+        public async Task<IActionResult> CreateGuestMember(GuestUser guest)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.InviteGuestUser(guest));
-            return json;
-
+            try
+            {
+                var result = await _teamsService.InviteGuestUser(guest);
+                return Created($"https://guestmember/{result.Id}", result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         /*
          *  Get all users of a Team
          */
 
         [HttpGet("teammembers/{teamID}")]
-        public async Task<string> GetTeamUsers(string teamID)
+        public async Task<IActionResult> GetTeamUsers(string teamId)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.GetTeamMembers(teamID));
-            return json;
-
+            try
+            {
+                var results = await _teamsService.GetTeamMembers(teamId);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /*
@@ -108,16 +131,24 @@ namespace HackAPIs.Controllers
         */
 
         [HttpPost("teammember")]
-        public async Task<string> AddMember(TeamMember member)
+        public async Task<IActionResult> AddMember(TeamMember member)
         {
-            string json = "";
-            TeamsService teamService = new TeamsService();
-            if (member.Role.Contains("owner"))
-                json = JsonConvert.SerializeObject(await teamService.AddTeamOwner(member));
-            else
-                json = JsonConvert.SerializeObject(await teamService.AddTeamMember(member));
-            return json;
+            if (string.IsNullOrEmpty(member.TeamID)) throw new ArgumentNullException("member.TeamID");
+            if (string.IsNullOrEmpty(member.UserID)) throw new ArgumentNullException("member.UserID");
+            if (string.IsNullOrEmpty(member.Role)) throw new ArgumentNullException("member.Role");
 
+            try
+            {
+                if (member.Role.Contains("owner"))
+                    await _teamsService.AddTeamOwner(member.TeamID, member.UserID);
+                else
+                    await _teamsService.AddTeamMember(member.TeamID, member.UserID);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /*
@@ -125,11 +156,17 @@ namespace HackAPIs.Controllers
         *
         */
         [HttpDelete("teammember")]
-        public async Task<string> RemoveMember(TeamMember member)
+        public async Task<IActionResult> RemoveMember(TeamMember member)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.RemoveTeamMember(member));
-            return json;
+            try
+            {
+                await _teamsService.RemoveTeamMember(member.TeamID, member.UserID);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             // Unscribe the member from the MailChimp Audience list
 
@@ -140,12 +177,17 @@ namespace HackAPIs.Controllers
        *
        */
         [HttpGet("channels/{teamID}")]
-        public async Task<string> GetTeamChannels(string teamID)
+        public async Task<IActionResult> GetTeamChannels(string teamID)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.GetTeamChannels(teamID));
-            return json;
-
+            try
+            {
+                var results = await _teamsService.GetTeamChannels(teamID);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
@@ -154,11 +196,19 @@ namespace HackAPIs.Controllers
            *
            */
         [HttpGet("channel")]
-        public async Task<string> GetTeamChannelInfo(TeamChannel teamChannel)
+        public async Task<IActionResult> GetTeamChannelInfo(TeamChannel teamChannel)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.GetChannelInfo(teamChannel));
-            return json;
+            ValidateTeamChannel(teamChannel);
+
+            try
+            {
+                var result = await _teamsService.GetChannelInfo(teamChannel.TeamID, teamChannel.ChannelId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
@@ -169,12 +219,23 @@ namespace HackAPIs.Controllers
         */
 
         [HttpPost("channel")]
-        public async Task<string> CreateChannel(TeamChannel teamChannel)
+        public async Task<IActionResult> CreateChannel(TeamChannel teamChannel)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.CreateTeamChannel(teamChannel));
-            return json;
+            ValidateTeamChannelCreate(teamChannel);
 
+            try
+            {
+                var result = await _teamsService.CreateTeamChannel(
+                    teamChannel.TeamID,
+                    teamChannel.ChannelName,
+                    teamChannel.ChannelDescription);
+                return Created($"https://channel/{result.Id}", result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
@@ -183,12 +244,19 @@ namespace HackAPIs.Controllers
         *
         */
         [HttpDelete("channel")]
-        public async Task<string> DeleteChannel(TeamChannel teamChannel)
+        public async Task<IActionResult> DeleteChannel(TeamChannel teamChannel)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.DeleteTeamChannel(teamChannel));
-            return json;
+            ValidateTeamChannel(teamChannel);
 
+            try
+            {
+                await _teamsService.DeleteTeamChannel(teamChannel.TeamID, teamChannel.ChannelId);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /*
@@ -197,12 +265,39 @@ namespace HackAPIs.Controllers
         */
 
         [HttpPost("channel/message")]
-        public async Task<string> SendChannelMessage(TeamChannel teamChannel)
+        public async Task<IActionResult> SendChannelMessage(TeamChannel teamChannel)
         {
-            TeamsService teamService = new TeamsService();
-            string json = JsonConvert.SerializeObject(await teamService.SendMessageToChannel(teamChannel));
-            return json;
+            ValidateTeamChannelMessage(teamChannel);
 
+            try
+            {
+                var result = await _teamsService.SendMessageToChannel(teamChannel.TeamID, teamChannel.ChannelId, teamChannel.ChannelMessage);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private void ValidateTeamChannelMessage(TeamChannel teamChannel)
+        {
+            if (string.IsNullOrEmpty(teamChannel.TeamID)) throw new ArgumentNullException("teamChannel.TeamID");
+            if (string.IsNullOrEmpty(teamChannel.ChannelName)) throw new ArgumentNullException("teamChannel.ChannelName");
+            if (string.IsNullOrEmpty(teamChannel.ChannelMessage)) throw new ArgumentNullException("teamChannel.ChannelMessage");
+        }
+
+        private void ValidateTeamChannel(TeamChannel teamChannel)
+        {
+            if (string.IsNullOrEmpty(teamChannel.TeamID)) throw new ArgumentNullException("teamChannel.TeamID");
+            if (string.IsNullOrEmpty(teamChannel.ChannelId)) throw new ArgumentNullException("teamChannel.ChannelId");
+        }
+
+        private void ValidateTeamChannelCreate(TeamChannel teamChannel)
+        {
+            if (string.IsNullOrEmpty(teamChannel.TeamID)) throw new ArgumentNullException("teamChannel.TeamID");
+            if (string.IsNullOrEmpty(teamChannel.ChannelName)) throw new ArgumentNullException("teamChannel.ChannelName");
+            if (string.IsNullOrEmpty(teamChannel.ChannelDescription)) throw new ArgumentNullException("teamChannel.ChannelDescription");
         }
 
     }
