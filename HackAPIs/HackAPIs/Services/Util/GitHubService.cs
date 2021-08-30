@@ -36,7 +36,11 @@ namespace HackAPIs.Services.Util
         {
             try
             {
-                var team = await _gitClient.Organization.Team.Create(_config.Org, new NewTeam(name));
+                var team = await _gitClient.Organization.Team.Create(_config.Org, new NewTeam(name) 
+                    { 
+                        Privacy = TeamPrivacy.Closed, 
+                        Permission = Permission.Admin 
+                    });
                 return team.Id;
             } catch (Exception ex)
             {
@@ -49,9 +53,7 @@ namespace HackAPIs.Services.Util
         {
             try
             {
-                var createRepo = new NewRepository(name);
-                createRepo.TeamId = teamId;
-                var repo = await _gitClient.Repository.Create(_config.Org, createRepo);
+                var repo = await _gitClient.Repository.Create(_config.Org, new NewRepository(name) { TeamId = teamId, AutoInit = true, LicenseTemplate = "mit" });
 
                 return repo.Id;
             } catch (Exception ex)
