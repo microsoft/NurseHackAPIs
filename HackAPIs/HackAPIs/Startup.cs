@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Graph;
 using HackAPIs.Model.Db.DataManager;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Services.Db;
@@ -16,14 +17,13 @@ using HackAPIs.Services.Util;
 using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Octokit;
+using HackAPIs.Services.Teams;
+using Azure.Identity;
 
 namespace HackAPIs 
 {
     public class Startup
     {
-
-        private string ConnStr = null;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,8 +34,7 @@ namespace HackAPIs
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-              .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
 
             services.Configure<GitHubServiceOptions>(Configuration.GetSection("GitHub"));
             services.AddSingleton<GitHubClient>(o =>
@@ -46,6 +45,22 @@ namespace HackAPIs
             });
             services.AddSingleton<GitHubService>();
 
+            services.Configure<TeamsServiceOptions>(Configuration.GetSection("Teams"));
+            services.AddSingleton<TeamsService>(t =>
+            {
+                var tenantId = Configuration["AzureAd:TenantId"];
+                var clientId = Configuration["AzureAd:ClientId"];
+                var secret = Configuration["AzureAd:ClientSecret"];
+                var scope = Configuration["GraphAPI:Scope"];
+
+                var creds = new ClientSecretCredential(tenantId, clientId, secret);
+                var client = new GraphServiceClient(creds, new[] { scope });
+
+                var options = new TeamsServiceOptions();
+                Configuration.GetSection("Teams").Bind(options);
+                return new TeamsService(options, client);
+            });
+            
             // TODO: This is literally the worst :(
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
             UtilConst.SMTP = Configuration["EmailSMTPAddress"];
@@ -54,8 +69,6 @@ namespace HackAPIs
             UtilConst.StorageConn = Configuration["EmailTemplateStorage"];
             UtilConst.Container = Configuration["EmailTemplateContainer"];
             UtilConst.Blob = Configuration["EmailTemplateBlob"];
-            UtilConst.MSTeam1 = Configuration["MSTeam1"];
-            UtilConst.MSTeam2 = Configuration["MSTeam2"];
             UtilConst.MailChimpKey = Configuration["MailChimpKey"];
             UtilConst.MailChimpURL = Configuration["MailChimpURL"];
             UtilConst.MailChimpAudience = Configuration["MailChimpAudience"];
@@ -63,7 +76,6 @@ namespace HackAPIs
             UtilConst.ClientId = Configuration["ClientId"];
             UtilConst.ClientSecret = Configuration["ClientSecret"];
             UtilConst.Tenant = Configuration["Tenant"];
-            UtilConst.TeamDomain = Configuration["TeamDomain"];
             UtilConst.GitHubToken = Configuration["GitHubToken"];
             // end worst code ever
 

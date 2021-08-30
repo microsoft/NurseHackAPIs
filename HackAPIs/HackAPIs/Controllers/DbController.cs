@@ -47,7 +47,7 @@ namespace HackAPIs.Controllers
         public async Task<string> AddMember(TeamMember member)
         {
             DbService dbService = new DbService();
-            return "";
+            return await Task.FromResult("");
      //       return await dbService.GetSolutionMember(solutionID);
 
         }
@@ -56,7 +56,7 @@ namespace HackAPIs.Controllers
         public async Task<string> RemoveMember(TeamMember member)
         {
             DbService dbService = new DbService();
-            return "";
+            return await Task.FromResult("");
             //     return await dbService.RemoveSolutionMember(solutionID);
 
         }

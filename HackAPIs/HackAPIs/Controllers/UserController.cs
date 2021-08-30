@@ -12,6 +12,7 @@ using HackAPIs.ViewModel.Teams;
 using HackAPIs.Services.Util;
 using HackAPIs.Model.Db;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace HackAPIs.Controllers
 {
@@ -22,22 +23,27 @@ namespace HackAPIs.Controllers
     {
         private readonly IDataRepositoy<TblUsers, Users> _dataRepository;
         private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;
-        private readonly GitHubService _gitHubService;
         private readonly IDataRepositoy<TblTeamHackers, TeamHackers> _teamHackersdataRepository;
         private readonly IDataRepositoy<TblTeams, Solutions> _teamDataRepository;
+        private readonly GitHubService _gitHubService;
+        private readonly TeamsService _teamsService;
+        private readonly TeamsServiceOptions _teamConfig;
 
         public UserController(IDataRepositoy<TblUsers, Users> dataRepositoy,
             IDataRepositoy<TblTeamHackers, TeamHackers> teamHackersdataRepository,
             IDataRepositoy<TblTeams, Solutions> teamDataRepository,
             IDataRepositoy<TblLog, Log> dataRepositoyLog,
-            GitHubService gitHubService)
+            GitHubService gitHubService,
+            TeamsService teamsService,
+            IOptions<TeamsServiceOptions> teamOptions)
         {
             _dataRepository = dataRepositoy;
             _dataRepositoryLog = dataRepositoyLog;
             _teamHackersdataRepository = teamHackersdataRepository;
             _teamDataRepository = teamDataRepository;
             _gitHubService = gitHubService;
-
+            _teamsService = teamsService;
+            _teamConfig = teamOptions.Value;
         }
 
         // GET: api/users
@@ -260,10 +266,7 @@ namespace HackAPIs.Controllers
                 try
                 {
                     Log(id + "", "Inactivation of user is requested");
-                    TeamsService teamService = new TeamsService(_dataRepository);
-                    TeamMember member = new TeamMember();
-                    member.MemberID = userToUpdate.ADUserId;
-                    var usr = teamService.RemoveTeamMember(member);
+                    await _teamsService.RemoveTeamMember(_teamConfig.MSTeam1, userToUpdate.ADUserId);
                 } catch (Exception ex)
                 {
 
@@ -292,14 +295,13 @@ namespace HackAPIs.Controllers
                 try
                 {
                     Log(id + "", "Azure AD is Null");
-                    TeamsService teamService = new TeamsService(_dataRepository);
                     GuestUser guest = new GuestUser();
                     guest.InvitedUserEmailAddress = tblUsers.UserMSTeamsEmail;
                     guest.UserId = userToUpdate.UserId;
-                    guest = await teamService.InviteGuestUser(guest);
-                    tblUsers.ADUserId = guest.ADUserId;
-                    await teamService.UpdateMembers(guest.ADUserId, tblUsers.UserDisplayName);
-                    Log(id + "", "Added Azure ID"+guest.ADUserId);
+                    var invite = await _teamsService.InviteGuestUser(guest);
+                    tblUsers.ADUserId = invite.InvitedUser.Id;
+                    await _teamsService.UpdateMembers(tblUsers.ADUserId, tblUsers.UserDisplayName);
+                    Log(id + "", "Added Azure ID"+tblUsers.ADUserId);
 
                     try
                     {
