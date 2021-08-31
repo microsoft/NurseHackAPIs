@@ -46,7 +46,7 @@ namespace HackAPIs
             services.AddSingleton<GitHubService>();
 
             services.Configure<TeamsServiceOptions>(Configuration.GetSection("Teams"));
-            services.AddSingleton<TeamsService>(t =>
+            services.AddScoped<TeamsService>(t =>
             {
                 var graph = Configuration.GetSection("GraphAPI");                
                 var tenantId = graph["TenantId"];
