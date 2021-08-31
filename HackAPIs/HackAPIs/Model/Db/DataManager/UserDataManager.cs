@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Services.Db;
 using HackAPIs.Db.Model;
@@ -11,7 +10,7 @@ using System.Linq;
 
 namespace HackAPIs.Model.Db.DataManager
 {
-    public class UserDataManager : IDataRepositoy<TblUsers,Users>
+    public class UserDataManager : IDataRepositoy<TblUsers, Users>
     {
         readonly NurseHackContext _nurseHackContext;
 
@@ -33,7 +32,7 @@ namespace HackAPIs.Model.Db.DataManager
             {
                 tblUsers = _nurseHackContext.tbl_Users
                     .SingleOrDefault(b => b.UserId == id);
-            } 
+            }
             else if (type == 3) // User and Skills
             {
                 tblUsers = _nurseHackContext.tbl_Users
@@ -74,16 +73,17 @@ namespace HackAPIs.Model.Db.DataManager
             return tblUsers;
         }
 
-        public TblUsers GetByColumn(long id, string columnName,string columnValue)
+        public TblUsers GetByColumn(long id, string columnName, string columnValue)
         {
             TblUsers tblUsers = null;
             if (columnName.Equals("UserMSTeamsEmail"))
             {
                 //  .SingleOrDefault(b => b.UserMSTeamsEmail == columnValue);
-               
+
                 tblUsers = _nurseHackContext.tbl_Users
                            .SingleOrDefault(b => b.UserMSTeamsEmail == columnValue);
-            } else if (columnName.Equals("UserRegEmail"))
+            }
+            else if (columnName.Equals("UserRegEmail"))
             {
                 tblUsers = _nurseHackContext.tbl_Users
                         .FirstOrDefault(b => b.UserRegEmail == columnValue);
@@ -121,51 +121,35 @@ namespace HackAPIs.Model.Db.DataManager
                 entityToUpdate = _nurseHackContext.tbl_Users
                     .Single(b => b.UserId == entityToUpdate.UserId);
 
-                if (entity.UserDisplayName != null)
-                    entityToUpdate.UserDisplayName = entity.UserDisplayName;
-                if (entity.UserMSTeamsEmail != null)
-                    entityToUpdate.UserMSTeamsEmail = entity.UserMSTeamsEmail;
-                if (entity.UserRegEmail != null)
-                    entityToUpdate.UserRegEmail = entity.UserRegEmail;
-                if (entity.UserRole != null)
-                    entityToUpdate.UserRole = entity.UserRole;
-                if (entity.UserTimeCommitment != null)
-                    entityToUpdate.UserTimeCommitment = entity.UserTimeCommitment;
-                if (entity.Active != null)
-                    entityToUpdate.Active = entity.Active;
-                if (entity.MSFTOptIn != null)
-                    entityToUpdate.MSFTOptIn = entity.MSFTOptIn;
-                if (entity.JNJOptIn != null)
-                    entityToUpdate.JNJOptIn = entity.JNJOptIn;
-                if (entity.SONSIELOptIn != null)
-                    entityToUpdate.SONSIELOptIn = entity.SONSIELOptIn;
-                if (entity.MailchimpId != null)
-                    entityToUpdate.MailchimpId = entity.MailchimpId;
+                if (!string.IsNullOrEmpty(entity.UserDisplayName)) entityToUpdate.UserDisplayName = entity.UserDisplayName;
+                if (!string.IsNullOrEmpty(entity.UserMSTeamsEmail)) entityToUpdate.UserMSTeamsEmail = entity.UserMSTeamsEmail;
+                if (!string.IsNullOrEmpty(entity.UserRegEmail)) entityToUpdate.UserRegEmail = entity.UserRegEmail;
+                if (!string.IsNullOrEmpty(entity.UserRole)) entityToUpdate.UserRole = entity.UserRole;
+                if (!string.IsNullOrEmpty(entity.UserTimeCommitment)) entityToUpdate.UserTimeCommitment = entity.UserTimeCommitment;
+                if (!string.IsNullOrEmpty(entity.MailchimpId)) entityToUpdate.MailchimpId = entity.MailchimpId;
+                entityToUpdate.Active = entity.Active;
+                entityToUpdate.MSFTOptIn = entity.MSFTOptIn;
+                entityToUpdate.JNJOptIn = entity.JNJOptIn;
+                entityToUpdate.SONSIELOptIn = entity.SONSIELOptIn;
 
 
                 if (type == 1) // Updating the new Azure AD ID from the Azure AD
                 {
-                    if (entity.ADUserId != null)
-                        entityToUpdate.ADUserId = entity.ADUserId;
-                } else if (type == 4) // Updating the existing Azure AD ID from the Azure AD
+                    if (!string.IsNullOrEmpty(entity.ADUserId)) entityToUpdate.ADUserId = entity.ADUserId;
+                }
+                else if (type == 4) // Updating the existing Azure AD ID from the Azure AD
                 {
                     entityToUpdate.ADUserId = entity.ADUserId;
                 }
-                if (entity.UserOptOut != null)
-                    entityToUpdate.UserOptOut = entity.UserOptOut;
-                if (entity.MySkills != null)
-                    entityToUpdate.MySkills = entity.MySkills;
+                entityToUpdate.UserOptOut = entity.UserOptOut;
+                if (!string.IsNullOrEmpty(entity.MySkills)) entityToUpdate.MySkills = entity.MySkills;
                 entityToUpdate.ModifiedDate = DateTime.Now;
-
-
             }
             else if (type == 2) // User Skills
             {
                 entityToUpdate = _nurseHackContext.tbl_Users
                     .Include(a => a.tblUserSkillMatch)
                     .Single(b => b.UserId == entityToUpdate.UserId);
-
-
 
                 var deletedSkills = entityToUpdate.tblUserSkillMatch.Except(entity.tblUserSkillMatch).ToList();
                 var addedSkills = entity.tblUserSkillMatch.Except(entityToUpdate.tblUserSkillMatch).ToList();
@@ -181,11 +165,7 @@ namespace HackAPIs.Model.Db.DataManager
                     {
                         _nurseHackContext.Entry(addedSkill).State = EntityState.Added;
                     }
-                    catch (Exception ex)
-                    {
-
-                    }
-
+                    catch (Exception) { }
                 }
 
             }
@@ -208,10 +188,8 @@ namespace HackAPIs.Model.Db.DataManager
                     try
                     {
                         _nurseHackContext.Entry(addedTeam).State = EntityState.Added;
-                    } catch (Exception ex)
-                    {
-
                     }
+                    catch (Exception) { }
                 }
             }
             else if (type == 5) // Github id
@@ -221,13 +199,13 @@ namespace HackAPIs.Model.Db.DataManager
                 entityToUpdate.GitHubId = entity.GitHubId;
                 entityToUpdate.GitHubUser = entity.GitHubUser;
             }
-                _nurseHackContext.SaveChanges();
-                    
+            _nurseHackContext.SaveChanges();
+
         }
 
         public void Delete(TblUsers entity)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

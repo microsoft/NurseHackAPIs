@@ -60,6 +60,9 @@ namespace HackAPIs
                 Configuration.GetSection("Teams").Bind(options);
                 return new TeamsService(options, client);
             });
+
+            services.Configure<MailChimpOptions>(Configuration.GetSection("MailChimp"));
+            services.AddHttpClient<MailChimpService>();
             
             // TODO: This is literally the worst :(
             UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
@@ -69,13 +72,6 @@ namespace HackAPIs
             UtilConst.StorageConn = Configuration["EmailTemplateStorage"];
             UtilConst.Container = Configuration["EmailTemplateContainer"];
             UtilConst.Blob = Configuration["EmailTemplateBlob"];
-            UtilConst.MailChimpKey = Configuration["MailChimpKey"];
-            UtilConst.MailChimpURL = Configuration["MailChimpURL"];
-            UtilConst.MailChimpAudience = Configuration["MailChimpAudience"];
-            UtilConst.MailChimpUser = Configuration["MailChimpUser"];
-            UtilConst.ClientId = Configuration["ClientId"];
-            UtilConst.ClientSecret = Configuration["ClientSecret"];
-            UtilConst.Tenant = Configuration["Tenant"];
             UtilConst.GitHubToken = Configuration["GitHubToken"];
             // end worst code ever
 

@@ -28,6 +28,7 @@ namespace HackAPIs.Controllers
         private readonly GitHubService _gitHubService;
         private readonly TeamsService _teamsService;
         private readonly TeamsServiceOptions _teamConfig;
+        private readonly MailChimpService _mailChimp;
 
         public UserController(IDataRepositoy<TblUsers, Users> dataRepositoy,
             IDataRepositoy<TblTeamHackers, TeamHackers> teamHackersdataRepository,
@@ -35,7 +36,8 @@ namespace HackAPIs.Controllers
             IDataRepositoy<TblLog, Log> dataRepositoyLog,
             GitHubService gitHubService,
             TeamsService teamsService,
-            IOptions<TeamsServiceOptions> teamOptions)
+            IOptions<TeamsServiceOptions> teamOptions,
+            MailChimpService mailChimp)
         {
             _dataRepository = dataRepositoy;
             _dataRepositoryLog = dataRepositoyLog;
@@ -44,6 +46,7 @@ namespace HackAPIs.Controllers
             _gitHubService = gitHubService;
             _teamsService = teamsService;
             _teamConfig = teamOptions.Value;
+            _mailChimp = mailChimp;
         }
 
         // GET: api/users
@@ -274,9 +277,8 @@ namespace HackAPIs.Controllers
                 {
                     if (tblUsers.UserRole.Contains("Hacker"))
                     {
-                        MailChimpService mailChimpService = new MailChimpService();
-                        mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                            tblUsers.UserDisplayName, userToUpdate.MailchimpId, "unsubscribed", 2);
+                        mailChimpId = await _mailChimp.UpdateMemberInList(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                            tblUsers.UserDisplayName, userToUpdate.MailchimpId, "unsubscribed");
                         tblUsers.MailchimpId = mailChimpId;
                         Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: " + mailChimpId);
 
@@ -312,19 +314,15 @@ namespace HackAPIs.Controllers
                         // Add to MailChimp audience
                         if (tblUsers.UserRole.Contains("Hacker"))
                         {
-                            MailChimpService mailChimpService = new MailChimpService();
-
                             if (userToUpdate.MailchimpId != null )
                             {
-                                mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                           tblUsers.UserDisplayName, userToUpdate.MailchimpId, "subscribed", 2);
+                                mailChimpId = await _mailChimp.UpdateMemberInList(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                                    tblUsers.UserDisplayName, userToUpdate.MailchimpId, "subscribed");
                             }
                             else
                             {
-
-                                //               mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName.Substring(0, tblUsers.UserDisplayName.IndexOf(" ")),
-                                mailChimpId = await mailChimpService.InvokeMailChimp(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                                 tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed", 1);
+                                mailChimpId = await _mailChimp.AddMemberToList(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
+                                    tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed");
                                 tblUsers.MailchimpId = mailChimpId;
                             }
                             Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);

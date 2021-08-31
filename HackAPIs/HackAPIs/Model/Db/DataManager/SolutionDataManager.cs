@@ -4,10 +4,8 @@ using HackAPIs.Services.Db;
 using HackAPIs.Db.Model;
 using HackAPIs.ViewModel.Db;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace HackAPIs.Model.Db.DataManager
 {
@@ -129,8 +127,6 @@ namespace HackAPIs.Model.Db.DataManager
                     .Include(a => a.tblTeamSkillMatch)
                     .Single(b => b.TeamId == entityToUpdate.TeamId);
 
-
-
                 var deletedSkills = entityToUpdate.tblTeamSkillMatch.Except(entity.tblTeamSkillMatch).ToList();
                 var addedSkills = entity.tblTeamSkillMatch.Except(entityToUpdate.tblTeamSkillMatch).ToList();
 
@@ -145,15 +141,8 @@ namespace HackAPIs.Model.Db.DataManager
                     {
                         _nurseHackContext.Entry(addedSkill).State = EntityState.Added;
                     }
-                    catch (Exception ex)
-                    {
-
-                    }
-
+                    catch (Exception) { }
                 }
-
-
-
             }
             else if (type == 3)
             {
@@ -175,14 +164,10 @@ namespace HackAPIs.Model.Db.DataManager
                     {
                         _nurseHackContext.Entry(addedTeam).State = EntityState.Added;
                     }
-                    catch (Exception ex)
-                    {
-
-                    }
+                    catch (Exception) { }
                 }
             }
             _nurseHackContext.SaveChanges();
-
         }
 
         public void Delete(TblTeams entity)

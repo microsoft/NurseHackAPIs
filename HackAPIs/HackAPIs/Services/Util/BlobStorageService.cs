@@ -15,7 +15,6 @@ namespace HackAPIs.Services.Util
 {
     public class BlobStorageService
     {
-        private StorageAccount storageAccount;
         private BlobContainerClient blobContainer;
         private BlobClient blobClient;
         public string GetBlob(BlobStorage blobStorage)
