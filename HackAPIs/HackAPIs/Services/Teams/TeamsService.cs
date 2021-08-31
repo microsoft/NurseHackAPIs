@@ -61,23 +61,15 @@ namespace HackAPIs.Services.Teams
             var invite = new Invitation
             {
                 InviteRedirectUrl = user.InviteRedirectUrl,
-                InvitedUserEmailAddress = user.InvitedUserEmailAddress
+                InvitedUserEmailAddress = user.InvitedUserEmailAddress,
+                SendInvitationMessage = true,
+                InvitedUserDisplayName = user.DisplayName
             };
             var result = await _graphClient.Invitations.Request().AddAsync(invite);
             await AddTeamMember(_config.MSTeam1, result.InvitedUser.Id);
             await AddTeamMember(_config.MSTeam2, result.InvitedUser.Id);
 
             return result;
-        }
-
-
-        /*
-           Updates Azure AD Member
-        */
-        public async Task<User> UpdateMembers(string userId, string displayName)
-        {
-            var user = new User { DisplayName = displayName };
-            return await _graphClient.Users[userId].Request().UpdateAsync(user);
         }
 
         /*

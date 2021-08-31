@@ -58,9 +58,10 @@ namespace HackAPIs.Controllers
         }
 
         [HttpGet("githubid/{id}")]
-        public IActionResult GetGitHubId(long id){
+        public IActionResult GetGitHubId(long id)
+        {
             var user = _dataRepository.Get(id, 1);
-            
+
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -73,20 +74,20 @@ namespace HackAPIs.Controllers
         [HttpGet("solutions/nousers", Name = "GetUserNoSolutions")]
         public IActionResult GetUserNoSolutions()
         {
-        
+
             var tblUsers = _dataRepository.GetAll();
-      
+
             IEnumerator usersEnumerator = tblUsers.GetEnumerator();
 
             var tblTeamHackers = _teamHackersdataRepository.GetAll();
             IEnumerator teamHackersEnumerator = tblTeamHackers.GetEnumerator();
 
             List<Users> users = new List<Users>();
-                
+
             while (usersEnumerator.MoveNext())
             {
                 TblUsers oneUser = (TblUsers)usersEnumerator.Current;
-                
+
                 Boolean isExist = false;
                 while (teamHackersEnumerator.MoveNext())
                 {
@@ -115,9 +116,9 @@ namespace HackAPIs.Controllers
                     }
 
                 }
-               
+
             }
-           
+
             return Ok(users);
         }
 
@@ -188,7 +189,7 @@ namespace HackAPIs.Controllers
             return Ok(userSkillMatch);
         }
 
-      
+
 
         // POST: api/users/regemail
         [HttpPost("regemail", Name = "GetUserByRegEmail")]
@@ -246,7 +247,7 @@ namespace HackAPIs.Controllers
         public async Task<IActionResult> Put(int id, [FromBody] TblUsers tblUsers)
         {
             int type = 1;
-            string mailChimpId = "";
+            string mailChimpId;
 
             if (tblUsers == null)
             {
@@ -269,67 +270,60 @@ namespace HackAPIs.Controllers
                 {
                     Log(id + "", "Inactivation of user is requested");
                     await _teamsService.RemoveTeamMember(_teamConfig.MSTeam1, userToUpdate.ADUserId);
-                } catch (Exception) {}
+                }
+                catch (Exception) { }
 
                 type = 4;
 
                 try
                 {
-                    if (tblUsers.UserRole.Contains("Hacker"))
-                    {
-                        mailChimpId = await _mailChimp.UpdateMemberInList(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                            tblUsers.UserDisplayName, userToUpdate.MailchimpId, "unsubscribed");
-                        tblUsers.MailchimpId = mailChimpId;
-                        Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: " + mailChimpId);
-
-                    }
-                } catch (Exception) { }
+                    mailChimpId = await _mailChimp.AddOrUpdateMember(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName, ViewModel.Util.MemberStatus.unsubscribed);
+                    tblUsers.MailchimpId = mailChimpId;
+                    Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: " + mailChimpId);
+                }
+                catch (Exception) { }
             }
             else if (userToUpdate.ADUserId == null)
             {
                 try
                 {
                     Log(id + "", "Azure AD is Null");
-                    GuestUser guest = new GuestUser();
-                    guest.InvitedUserEmailAddress = tblUsers.UserMSTeamsEmail;
-                    guest.UserId = userToUpdate.UserId;
+                    GuestUser guest = new GuestUser
+                    {
+                        InvitedUserEmailAddress = tblUsers.UserMSTeamsEmail,
+                        UserId = userToUpdate.UserId,
+                        DisplayName = userToUpdate.UserDisplayName
+                    };
                     var invite = await _teamsService.InviteGuestUser(guest);
                     tblUsers.ADUserId = invite.InvitedUser.Id;
-                    await _teamsService.UpdateMembers(tblUsers.ADUserId, tblUsers.UserDisplayName);
-                    Log(id + "", "Added Azure ID"+tblUsers.ADUserId);
+                    Log(id + "", "Added Azure ID" + tblUsers.ADUserId);
+
+                    //try
+                    //{
+                    //    EmailService emailService = new EmailService();
+
+                    //    emailService.InvokeEmail(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName);
+                    //    Log(id + "", "Email was sent to : "+ tblUsers.UserMSTeamsEmail);
+
+
+                    //} catch (Exception) { }
 
                     try
                     {
-                        EmailService emailService = new EmailService();
+                        mailChimpId = await _mailChimp.AddOrUpdateMember(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName, ViewModel.Util.MemberStatus.subscribed);
 
-                        emailService.InvokeEmail(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName);
-                        Log(id + "", "Email was sent to : "+ tblUsers.UserMSTeamsEmail);
-
-
-                    } catch (Exception) { }
-
-                    try
-                    {
-
-                        // Add to MailChimp audience
-                        if (tblUsers.UserRole.Contains("Hacker"))
+                        switch (tblUsers.UserRole) // TODO: add tags based on role
                         {
-                            if (userToUpdate.MailchimpId != null )
-                            {
-                                mailChimpId = await _mailChimp.UpdateMemberInList(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                                    tblUsers.UserDisplayName, userToUpdate.MailchimpId, "subscribed");
-                            }
-                            else
-                            {
-                                mailChimpId = await _mailChimp.AddMemberToList(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName,
-                                    tblUsers.UserDisplayName, tblUsers.MailchimpId, "subscribed");
-                                tblUsers.MailchimpId = mailChimpId;
-                            }
-                            Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);
-
+                            default:
+                                await _mailChimp.AddMemberTag(mailChimpId, "DevTest");
+                                break;
                         }
-                    } catch (Exception) { }
-           
+
+                        Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);
+
+                    }
+                    catch (Exception) { }
+
                 }
                 catch (Exception ex)
                 {
@@ -436,7 +430,7 @@ namespace HackAPIs.Controllers
            return Ok(user);
        }
        */
-       
+
         private void Log(string id, string type)
         {
             TblLog log = new TblLog

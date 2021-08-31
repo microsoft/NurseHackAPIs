@@ -3,7 +3,9 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,15 +22,24 @@ namespace HackAPIs.Services.Util
             _config = options.Value;
 
             var authHeader = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_config.User + ":" + _config.Key));
-            
+
             client.BaseAddress = new Uri(_config.Url);
             client.DefaultRequestHeaders.Add("Authorization", $"Basic {authHeader}");
             _client = client;
         }
-
-        public async Task<string> AddMemberToList(string email, string fName, string lName, string mailChimpId, string memberStatus)
+        public async Task<JObject> GetMembers()
         {
-            var payload = GetBodyContent(email, fName, lName, mailChimpId, memberStatus);
+            var reqUrl = "lists/" + _config.Audience + "/members";
+
+            HttpResponseMessage res = await _client.GetAsync(reqUrl);
+
+            string json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject(json) as JObject;
+        }
+
+        public async Task<string> AddMemberToList(string email, string displayName, MemberStatus memberStatus)
+        {
+            var payload = GetBodyContent(email, displayName, memberStatus);
             var reqUrl = "lists/" + _config.Audience + "/members";
 
             HttpResponseMessage res = await _client.PostAsync(reqUrl, payload);
@@ -40,13 +51,13 @@ namespace HackAPIs.Services.Util
                 return respObj["id"].ToString();
             }
 
-            return res.StatusCode.ToString();
+            return res.ReasonPhrase;
         }
 
-        public async Task<string> UpdateMemberInList(string email, string fName, string lName, string mailChimpId, string memberStatus)
+        public async Task<string> UpdateMemberInList(string email, string displayName, string mailChimpId, MemberStatus memberStatus)
         {
-            var payload = GetBodyContent(email, fName, lName, mailChimpId, memberStatus);
-            var reqUrl = "lists/" + _config.Audience + "/members/"+ mailChimpId;
+            var payload = GetBodyContent(email, displayName, memberStatus);
+            var reqUrl = "lists/" + _config.Audience + "/members/" + mailChimpId;
 
             HttpResponseMessage res = await _client.PutAsync(reqUrl, payload);
             if (res.IsSuccessStatusCode)
@@ -56,37 +67,79 @@ namespace HackAPIs.Services.Util
                 return respObj["id"].ToString();
             }
 
-            return res.StatusCode.ToString();
+            return res.ReasonPhrase;
         }
 
-        public async Task<JObject> GetMembers()
+        public async Task<string> AddOrUpdateMember(string email, string displayName, MemberStatus status)
         {
-            var reqUrl = "lists/" + _config.Audience + "/members";
+            var mailChimpId = GetMailChimpId(email);
+            var payload = GetBodyContent(email, displayName, status);
 
-            HttpResponseMessage res = await _client.GetAsync(reqUrl);
-           
-            string json = await res.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject(json) as JObject;
-        }
+            var reqUrl = "lists/" + _config.Audience + "/members/" + mailChimpId;
 
-        public StringContent GetBodyContent(string email, string FName, string LName, string mailChimpId, string memberStatus)
-        {
-            var mc = new MailChimp
+            var res = await _client.PutAsync(reqUrl, payload);
+            if (res.IsSuccessStatusCode)
             {
-                UserID = mailChimpId,
-                mailChimpPayload = new MailChimpPayload
+                string json = await res.Content.ReadAsStringAsync();
+                var respObj = JsonConvert.DeserializeObject(json) as JObject;
+                return respObj["id"].ToString();
+            }
+
+            return res.ReasonPhrase;
+        }
+
+
+        public async Task<bool> AddMemberTag(string mailChimpId, string tag)
+        {
+            var reqUrl = "lists/" + _config.Audience + "/members/" + mailChimpId + "/tags";
+            var payload = new
+            {
+                tags = new[]
                 {
-                    email_address = email,
-                    status = memberStatus,
-                    merge_fields = new Fields
+                    new Tag
                     {
-                        FNAME = FName,
-                        LNAME = LName
+                        Name = tag,
+                        Status = "active"
                     }
                 }
             };
 
-            return new StringContent(JsonConvert.SerializeObject(mc), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage res = await _client.PostAsync(reqUrl, content);
+            if (res.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public StringContent GetBodyContent(string email, string displayName, MemberStatus status)
+        {
+            var payload = new MailChimp
+            {
+                Email = email,
+                FullName = displayName,
+                Status = status,
+                MergeFields = new Fields
+                {
+                    FNAME = displayName,
+                    LNAME = displayName
+                }
+            };
+
+            return new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+        }
+
+        private string GetMailChimpId(string email)
+        {
+            string result;
+            using (var md5 = MD5.Create())
+            {
+                var input = Encoding.ASCII.GetBytes(email);
+                result = string.Concat(md5.ComputeHash(input).Select(x => x.ToString("X2")));
+            }
+            return result.ToLower();
         }
     }
 }
