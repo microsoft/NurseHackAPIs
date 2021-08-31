@@ -1,9 +1,8 @@
 ﻿using HackAPIs.ViewModel.Util;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,136 +11,82 @@ namespace HackAPIs.Services.Util
 {
     public class MailChimpService
     {
-        private string ApiExt = "";
-        public enum authenticationType
+
+        private readonly HttpClient _client;
+        private readonly MailChimpOptions _config;
+
+        public MailChimpService(IOptions<MailChimpOptions> options, HttpClient client)
         {
-            Basic,
-            NTLM
-        }
+            _config = options.Value;
 
-        public enum AudienceMemberType
-        {
-            New,
-            Update,
-            subscribed,
-            unsubscribed
-        }
-
-        //   public bool HttpPost(string body, out HttpStatusCode statusCode, out string response)
-        public async Task<JObject> AddMemberToList(MailChimp mailChimp)
-        {
-            JObject jsonObject = null;
-            ApiExt = "lists/" + mailChimp.Audience + "/members";
-            HttpClient client = new HttpClient();
-            client = new HttpClient();
-
-            String authHeaer = System.Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(mailChimp.User + ":" + mailChimp.Key));
-            client.DefaultRequestHeaders.Add("Authorization", authenticationType.Basic + " " + authHeaer);
-
-        //    HttpResponseMessage res = await client.GetAsync(mailChimp.URL);
-
-            string payload = JsonConvert.SerializeObject(mailChimp.mailChimpPayload);
-
-            HttpResponseMessage res = client.PostAsync(mailChimp.URL+ApiExt, new StringContent(payload, Encoding.UTF8, "application/json")).Result;
-            client.Dispose();
-            string json = await res.Content.ReadAsStringAsync();
+            var authHeader = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_config.User + ":" + _config.Key));
             
-            jsonObject = JsonConvert.DeserializeObject(json) as JObject;
-
-            //     HttpStatusCode statusCode = res.StatusCode;
-            return jsonObject;
+            client.BaseAddress = new Uri(_config.Url);
+            client.DefaultRequestHeaders.Add("Authorization", $"Basic {authHeader}");
+            _client = client;
         }
 
-        public async Task<JObject> UpdateMemberInList(MailChimp mailChimp)
+        public async Task<string> AddMemberToList(string email, string fName, string lName, string mailChimpId, string memberStatus)
         {
-            JObject jsonObject = null;
-            ApiExt = "lists/" + mailChimp.Audience + "/members/"+ mailChimp.UserID;
-            HttpClient client = new HttpClient();
-            client = new HttpClient();
+            var payload = GetBodyContent(email, fName, lName, mailChimpId, memberStatus);
+            var reqUrl = "lists/" + _config.Audience + "/members";
 
-            String authHeaer = System.Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(mailChimp.User + ":" + mailChimp.Key));
-            client.DefaultRequestHeaders.Add("Authorization", authenticationType.Basic + " " + authHeaer);
+            HttpResponseMessage res = await _client.PostAsync(reqUrl, payload);
 
-            //    HttpResponseMessage res = await client.GetAsync(mailChimp.URL);
+            if (res.IsSuccessStatusCode)
+            {
+                string json = await res.Content.ReadAsStringAsync();
+                var respObj = JsonConvert.DeserializeObject(json) as JObject;
+                return respObj["id"].ToString();
+            }
 
-            string payload = JsonConvert.SerializeObject(mailChimp.mailChimpPayload);
-
-            HttpResponseMessage res = client.PutAsync(mailChimp.URL + ApiExt, new StringContent(payload, Encoding.UTF8, "application/json")).Result;
-            client.Dispose();
-            string json = await res.Content.ReadAsStringAsync();
-            jsonObject = JsonConvert.DeserializeObject(json) as JObject;
-
-            //     HttpStatusCode statusCode = res.StatusCode;
-            return jsonObject;
+            return res.StatusCode.ToString();
         }
-        public async Task<JObject> GetMembers(MailChimp mailChimp)
+
+        public async Task<string> UpdateMemberInList(string email, string fName, string lName, string mailChimpId, string memberStatus)
         {
-            JObject jsonObject = null;
+            var payload = GetBodyContent(email, fName, lName, mailChimpId, memberStatus);
+            var reqUrl = "lists/" + _config.Audience + "/members/"+ mailChimpId;
 
-            ApiExt = "lists/" + mailChimp.Audience + "/members";
-     //       ApiExt = "lists";
-            HttpClient client = new HttpClient();
-            client = new HttpClient();
+            HttpResponseMessage res = await _client.PutAsync(reqUrl, payload);
+            if (res.IsSuccessStatusCode)
+            {
+                string json = await res.Content.ReadAsStringAsync();
+                var respObj = JsonConvert.DeserializeObject(json) as JObject;
+                return respObj["id"].ToString();
+            }
 
-            String authHeaer = System.Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(mailChimp.User + ":" + mailChimp.Key));
-            client.DefaultRequestHeaders.Add("Authorization", authenticationType.Basic + " " + authHeaer);
+            return res.StatusCode.ToString();
+        }
 
-            HttpResponseMessage res = await client.GetAsync(mailChimp.URL + ApiExt);
+        public async Task<JObject> GetMembers()
+        {
+            var reqUrl = "lists/" + _config.Audience + "/members";
 
+            HttpResponseMessage res = await _client.GetAsync(reqUrl);
            
-            client.Dispose();
             string json = await res.Content.ReadAsStringAsync();
-            jsonObject = JsonConvert.DeserializeObject(json) as JObject;
-
-            //     HttpStatusCode statusCode = res.StatusCode;
-            return jsonObject;
+            return JsonConvert.DeserializeObject(json) as JObject;
         }
 
-        public async Task<string> InvokeMailChimp(string email, string FName, string LName, string mailChimpId, string memberStatus, int type)
+        public StringContent GetBodyContent(string email, string FName, string LName, string mailChimpId, string memberStatus)
         {
-            string id = "";
-            JObject jObject = null;
-            try
+            var mc = new MailChimp
             {
-                MailChimpService mailChimpService = new MailChimpService();
-
-                MailChimp mailChimp = new MailChimp
+                UserID = mailChimpId,
+                mailChimpPayload = new MailChimpPayload
                 {
-                    Audience = UtilConst.MailChimpAudience,
-                    Key = UtilConst.MailChimpKey,
-                    URL = UtilConst.MailChimpURL,
-                    User = UtilConst.MailChimpUser,
-                    UserID = mailChimpId,
-                    mailChimpPayload = new MailChimpPayload
+                    email_address = email,
+                    status = memberStatus,
+                    merge_fields = new Fields
                     {
-                        email_address = email,
-                        status = memberStatus,
-
-                        merge_fields = new Fields
-                        {
-                            FNAME = FName,
-                            LNAME = LName
-                        }
+                        FNAME = FName,
+                        LNAME = LName
                     }
+                }
+            };
 
-                };
-
-                if (type == 1)
-                    jObject = await mailChimpService.AddMemberToList(mailChimp);
-                else if (type == 2)
-                    jObject = await mailChimpService.UpdateMemberInList(mailChimp);
-
-                id = jObject["id"].ToString();
-
-
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            return id;
+            return new StringContent(JsonConvert.SerializeObject(mc), Encoding.UTF8, "application/json");
         }
     }
 }

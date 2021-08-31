@@ -13,7 +13,6 @@ namespace HackAPIs.Services.Util
 {
     public class EmailService
     {
-        static bool mailSent = false;
         public string SendEmail(UserEmail userEmail)
         {
             string rtn = "";
@@ -50,7 +49,7 @@ namespace HackAPIs.Services.Util
                 string userState = userEmail.State;
                 client.SendAsync(message, userState);
                 rtn = "Email was sent successfully";
-            } catch (Exception ex)
+            } catch (Exception)
             {
                 rtn = "Failed to sent the email";
             }
@@ -75,16 +74,12 @@ namespace HackAPIs.Services.Util
             {
                 Console.WriteLine("Message sent.");
             }
-            mailSent = true;
         }
 
         public void InvokeEmail(string email, string userName)
         {
-
             try
             {
-                
-
                 UserEmail userEmail = new UserEmail
                 {
                     UserName = userName,
@@ -104,10 +99,7 @@ namespace HackAPIs.Services.Util
 
                 SendEmail(userEmail);
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch (Exception) { /* YUMMY exception swallowing in my tummy!! */ }
         }
     }
 }
