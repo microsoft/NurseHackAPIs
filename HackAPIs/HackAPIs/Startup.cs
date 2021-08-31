@@ -48,10 +48,12 @@ namespace HackAPIs
             services.Configure<TeamsServiceOptions>(Configuration.GetSection("Teams"));
             services.AddSingleton<TeamsService>(t =>
             {
-                var tenantId = Configuration["AzureAd:TenantId"];
-                var clientId = Configuration["AzureAd:ClientId"];
-                var secret = Configuration["AzureAd:ClientSecret"];
-                var scope = Configuration["GraphAPI:Scope"];
+                var aad = Configuration.GetSection("AzureAd");
+                var graph = Configuration.GetSection("GraphAPI");
+                var tenantId = aad["TenantId"];
+                var clientId = aad["ClientId"];
+                var secret = aad["ClientSecret"];
+                var scope = graph["Scope"];
 
                 var creds = new ClientSecretCredential(tenantId, clientId, secret);
                 var client = new GraphServiceClient(creds, new[] { scope });
