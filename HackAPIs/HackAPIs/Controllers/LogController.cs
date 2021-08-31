@@ -26,85 +26,12 @@ namespace HackAPIs.Controllers
 
         public LogController(IDataRepositoy<TblLog, Log> dataRepositoyLog)
         {
-           
-
             _dataRepositoryLog = dataRepositoyLog;
-           
-        }
-
-        [HttpGet("blob", Name = "GetBlobFile")]
-        public string Index()
-        {
-            /*
-             BlobStorageService blobStorageService = new BlobStorageService();
-             BlobStorage blobStorage = new BlobStorage { Connection = UtilConst.StorageConn, Container = UtilConst.Container, Blob = UtilConst.Blob };
-             return blobStorageService.GetBlob(blobStorage);
-            */
-            //EmailService emailService = new EmailService();
-
-            //UserEmail userEmail = new UserEmail
-            //{
-            //    UserName = "Guru",
-            //    Title = "NurseHack4Health",
-            //    URL = "https://nursehack4health.org",
-            //    Description = "New Registration",
-            //    Subject = "Hello From HackAPI",
-            //    State = "Test Message",
-            //    FromAddress = UtilConst.SMTPFromAddress,
-            //    ToAddress = "gurub100@gmail.com",
-            //    SMTPAddress = UtilConst.SMTP,
-            //    SMTPUser = UtilConst.SMTPUser,
-            //    SMTPPassword = UtilConst.SMTPPassword,
-            //    IsHtmlBody = true,
-            //    FromDisplayName = "Email"
-            //};
-
-            //return emailService.SendEmail(userEmail);
-            return "";
-        }
-
-        [HttpGet("subscribe", Name = "MailChimp")]
-        public async Task<string> MailChimp()
-        {
-            /*
-             BlobStorageService blobStorageService = new BlobStorageService();
-             BlobStorage blobStorage = new BlobStorage { Connection = UtilConst.StorageConn, Container = UtilConst.Container, Blob = UtilConst.Blob };
-             return blobStorageService.GetBlob(blobStorage);
-            */
-
-            //     MailChimp mailChimp = new MailChimp
-            //     {
-            //         mailChimpPayload = new MailChimpPayload
-            //         {
-            //             email_address = "dupton2000@hotmail.com",
-            //             status = "subscribed",
-            ////             status_if_new = "subscribed",
-            //             merge_fields = new Fields
-            //             {
-            //                 FNAME = "Raja",
-            //                 LNAME = "Rao"
-            //             }
-            //         }
-
-            //     };
-
-            //     //            JObject jObject =  await mailChimpService.UpdateMemberInList(mailChimp);
-            //     //            string id = jObject["id"].ToString();
-
-            //     string id = await mailChimpService.InvokeMailChimp("dupton2000@hotmail.com", "Dave",
-            //                      "Dave Hotmail","", "subscribed", 1);
-            //     //            return mailChimpService.GetMembers(mailChimp);
-            //     return id;
-
-            //       return mailChimpService.MemberSubcribe(mailChimp);
-            //            return emailService.SendEmail(userEmail);
-            return await Task.FromResult("");
         }
 
         [HttpPost("save", Name = "save")]
         public async Task<string> log()
         {
-
             TblLog log = new TblLog
             {
                 Label = "100",
@@ -114,8 +41,6 @@ namespace HackAPIs.Controllers
             };
             _dataRepositoryLog.Add(log);
             return await Task.FromResult("success");
-
-      
         }
     }
     

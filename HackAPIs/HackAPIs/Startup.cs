@@ -65,17 +65,6 @@ namespace HackAPIs
             services.Configure<MailChimpOptions>(Configuration.GetSection("MailChimp"));
             services.AddHttpClient<MailChimpService>();
             
-            // TODO: This is literally the worst :(
-            UtilConst.SMTPFromAddress = Configuration["EmailFromAddress"];
-            UtilConst.SMTP = Configuration["EmailSMTPAddress"];
-            UtilConst.SMTPPassword = Configuration["svc-NH4H-devupconf-org"];
-            UtilConst.SMTPUser = Configuration["SMTPUser"]; 
-            UtilConst.StorageConn = Configuration["EmailTemplateStorage"];
-            UtilConst.Container = Configuration["EmailTemplateContainer"];
-            UtilConst.Blob = Configuration["EmailTemplateBlob"];
-            UtilConst.GitHubToken = Configuration["GitHubToken"];
-            // end worst code ever
-
             services.AddDbContext<NurseHackContext>(options =>
                 options.UseSqlServer(Configuration["ConnStr"]));
 
