@@ -14,5 +14,6 @@ namespace HackAPIs.ViewModel.Teams
         public int UserId { get; set; }
         public Boolean Active { get; set; }
         public string ADUserId { get; set; }
+        public string DisplayName { get; set; }
     }
 }
