@@ -12,6 +12,8 @@ using HackAPIs.ViewModel.Teams;
 using HackAPIs.ViewModel.Util;
 using HackAPIs.Services.Util;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Microsoft.Graph;
 
 namespace HackAPIs.Controllers
 {
@@ -25,16 +27,22 @@ namespace HackAPIs.Controllers
         private readonly IDataRepositoy<TblSkills, Skills> _skilldataRepository;
         private readonly IDataRepositoy<TblUsers, Users> _userDataRepository;
         private readonly GitHubService _githubService;
+        private readonly TeamsService _teamsService;
+        private readonly TeamsServiceOptions _teamConfig;
 
         public SolutionController(IDataRepositoy<TblTeams, Solutions> dataRepositoy,
          IDataRepositoy<TblSkills, Skills> skilldataRepositoy,
          IDataRepositoy<TblUsers, Users> userDataRepository,
-         GitHubService gitHubService)
+         GitHubService gitHubService,
+         TeamsService teamsService,
+         IOptions<TeamsServiceOptions> teamOptions)
         {
             _dataRepository = dataRepositoy;
             _skilldataRepository = skilldataRepositoy;
             _userDataRepository = userDataRepository;
             _githubService = gitHubService;
+            _teamsService = teamsService;
+            _teamConfig = teamOptions.Value;
         }
 
         // GET: api/solutions
@@ -209,25 +217,12 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
-            /*
-                        var teampre = "Team-";
-                        tblTeams.TeamName = teampre + tblTeams.TeamName;                    
-
-                        try
-                        {
-                            TeamsService teamsService = new TeamsService();
-                            TeamChannel teamChannel = new TeamChannel();
-                            teamChannel.ChannelName = tblTeams.TeamName;
-                            teamChannel.ChannelDescription = tblTeams.TeamDescription;
-                            teamChannel = await teamsService.CreateTeamChannel(teamChannel);
-                            tblTeams.MSTeamsChannel = teamChannel.ChannelWebURL;
-                        } catch (Exception ex)
-                        {
-
+            // Feature flag in appsettings Teams:ChannelAutoCreate = true|false
+            if (_teamConfig.ChannelAutoCreate)
+            {
+                var channel = await _teamsService.CreateTeamChannel(_teamConfig.MSTeam1, tblTeams.TeamName, tblTeams.TeamDescription);
+                tblTeams.MSTeamsChannel = channel.WebUrl;
             }
-            */
-            ///todo - Make this work from a Keyvault flag.  CreateChannel T/F
 
             (int TeamId, long RepoId) = await _githubService.CreateRepoAndTeam(tblTeams.TeamName, tblTeams.TeamDescription);
 
