@@ -260,7 +260,7 @@ namespace HackAPIs.Controllers
         }
 
         /*
-        *  Create a Team Channel
+        *  Create a Team Channel Message
         *
         */
 
