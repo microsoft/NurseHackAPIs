@@ -6,5 +6,6 @@
     [ActivityGroupBadge] VARCHAR(150) NULL, 
     [ActivityCount] INT NOT NULL, 
     [UserRoleId] INT NOT NULL, 
+    [UserRole]           VARCHAR (50)  NULL,
     CONSTRAINT [FK_tbl_ActivityGroup_tbl_UserRole] FOREIGN KEY ([UserRoleId]) REFERENCES [tbl_UserRole]([UserRoleId])
 )

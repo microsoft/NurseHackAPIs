@@ -63,6 +63,7 @@
     <Folder Include="Security\" />
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Triggers" />
+    <Folder Include="dbo\Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\tbl_TeamSkillMatch.sql" />
@@ -82,6 +83,7 @@
     <Build Include="dbo\Tables\tbl_Log.sql" />
     <Build Include="dbo\Triggers\trig_tbl_Users_update.sql" />
     <Build Include="dbo\Triggers\trig_tbl_Users_insert.sql" />
+    <Build Include="dbo\Views\TeamView.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="NH4H_2021.refactorlog" />

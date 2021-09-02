@@ -19,6 +19,8 @@
     [CreatedBy]           NVARCHAR (50)   NULL,
     [ModifiedDate]        DATETIME2 (7)   NULL,
     [ModifiedBy]          NVARCHAR (50)   NULL,
+    [GithubTeamId]        INT             NULL,
+    [GithubRepoId]        BIGINT          NULL,
     CONSTRAINT [PK_tbl_Teams] PRIMARY KEY CLUSTERED ([TeamId] ASC)
 );
 

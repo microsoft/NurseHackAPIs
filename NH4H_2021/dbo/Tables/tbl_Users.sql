@@ -18,6 +18,9 @@
     [CreatedBy]          NVARCHAR (50)   NULL,
     [ModifiedDate]       DATETIME2 (7)   NULL,
     [ModifiedBy]         NVARCHAR (50)   NULL,
+    [GitHubUser]         NVARCHAR (50)   NULL,
+    [GitHubId]           BIGINT          CONSTRAINT [DF_tbl_Users_GitHubId] DEFAULT ((0)) NULL
+
     CONSTRAINT [PK_tbl_Users] PRIMARY KEY CLUSTERED ([UserId] ASC), 
     CONSTRAINT [FK_tbl_Users_UserRole] FOREIGN KEY ([UserRoleId]) REFERENCES [dbo].[tbl_UserRole]([UserRoleId]), 
     CONSTRAINT [CK_tbl_Users_UserRegEmail] UNIQUE(UserRegEmail)
