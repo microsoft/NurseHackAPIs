@@ -220,7 +220,11 @@ namespace HackAPIs.Controllers
             // Feature flag in appsettings Teams:ChannelAutoCreate = true|false
             if (_teamConfig.ChannelAutoCreate)
             {
-                var channel = await _teamsService.CreateTeamChannel(_teamConfig.MSTeam1, tblTeams.TeamName, tblTeams.TeamDescription);
+                var teamName = string.IsNullOrEmpty(tblTeams.ChallengeName) ?
+                    tblTeams.TeamName :
+                    string.Concat(tblTeams.ChallengeName, " - ", tblTeams.TeamName);
+
+                var channel = await _teamsService.CreateTeamChannel(_teamConfig.MSTeam1, teamName, tblTeams.TeamDescription);
                 tblTeams.MSTeamsChannel = channel.WebUrl;
             }
 
