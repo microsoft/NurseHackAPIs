@@ -30,16 +30,25 @@ jobs:
         include-prerelease: true
 
     - name: Build with dotnet
-      run: dotnet build ./HackAPIs --configuration Release
+      run: dotnet build --configuration Release
 
-    - name: dotnet publish
+    - name: create API artifact
       run: dotnet publish ./HackAPIs -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-    - name: Upload artifact for deployment job
+    - name: create DB artifact
+      run: dotnet publish ./NH4H_2021 -c Release -o ${{env.DOTNET_ROOT}}/mydatabase
+
+    - name: Upload API artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
         name: .net-app
         path: ${{env.DOTNET_ROOT}}/myapp
+
+    - name: Upload DB artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: database
+        path: ${{env.DOTNET_ROOT}}/mydatabase
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,3 +73,7 @@ jobs:
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: .
+
+    - name: logout
+      run: |
+        az logout
