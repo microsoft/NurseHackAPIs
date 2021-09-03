@@ -27,7 +27,8 @@ resource hackDBServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
 }
 
 resource hackSQLDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
-  name: '${hackDBServer.name}/${sqlDatabaseName}'
+  parent: hackDBServer
+  name: sqlDatabaseName
   location: location
   sku: {
     name: databaseSkuName
