@@ -33,7 +33,7 @@ jobs:
       run: dotnet build ./HackAPIs --configuration Release
 
     - name: Build DACPAC
-      run: dotnet build ./NH4H_2021/NH4H_2021.sqlproj --configuration Release /p:NetCoreBuild=true /p:NETCoreTargetsPath='${{env.DOTNET_ROOT}}/NH4H_2021/BuildDirectory'
+      run: dotnet build ./NH4H_2021/NH4H_2021.sqlproj --configuration Release /p:NetCoreBuild=true /p:NETCoreTargetsPath=${{ github.workspace }}/NH4H_2021/BuildDirectory
 
     - name: create API artifact
       run: dotnet publish ./HackAPIs -c Release -o ${{env.DOTNET_ROOT}}/myapp
