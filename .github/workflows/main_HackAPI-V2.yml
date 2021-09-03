@@ -29,14 +29,14 @@ jobs:
         dotnet-version: '3.1.301'
         include-prerelease: true
 
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
+    - name: Build API
+      run: dotnet build ./HackAPIs --configuration Release
+
+    - name: Build DACPAC
+      run: dotnet build ./NH4H_2021/NH4H_2021.sqlproj --configuration Release /p:NetCoreBuild=true /p:NETCoreTargetsPath='${{env.DOTNET_ROOT}}/NH4H_2021/BuildDirectory'
 
     - name: create API artifact
       run: dotnet publish ./HackAPIs -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
-    - name: create DB artifact
-      run: dotnet publish ./NH4H_2021 -c Release -o ${{env.DOTNET_ROOT}}/mydatabase
 
     - name: Upload API artifact for deployment job
       uses: actions/upload-artifact@v2
@@ -48,7 +48,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: database
-        path: ${{env.DOTNET_ROOT}}/mydatabase
+        path: '**/*.dacpac'
 
   deploy:
     runs-on: ubuntu-latest
