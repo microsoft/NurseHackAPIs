@@ -7,12 +7,14 @@ on:
   push:
     branches:
       - main
+      - deploy-scripts
   workflow_dispatch:
 
 env:
   SOLUTION: '**/*.sln'
   BUILDPLATFORM: 'Any CPU'
   BUILDCONFIGURATION: 'Release'
+  AZURE_WEBAPP_NAME: 'hackapi-flrxxtaqbjtf2'
 
 jobs:
   build:
@@ -47,6 +49,10 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Download artifact from build job
       uses: actions/download-artifact@v2
       with:
@@ -56,7 +62,5 @@ jobs:
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'HackAPI-V2'
-        slot-name: 'production'
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DC40E97AA7964810979B843FCFA5508D }}
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: .

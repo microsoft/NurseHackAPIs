@@ -43,5 +43,5 @@ resource hackSQLDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = 
     readScale: 'Disabled'
     requestedBackupStorageRedundancy: 'Local'
     isLedgerOn: false
-}
+  }
 }
