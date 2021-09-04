@@ -73,6 +73,12 @@ jobs:
       with:
         name: database
         path: ${{ github.workspace }}/database
+    
+    - uses: Azure/sql-action@v1
+      with:
+        server-name: flrxxtaqbjtf2-hackdb-server.database.windows.net
+        connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+        dacpac-package: '**/*.dacpac'
 
     - name: Deploy to Azure Web App
       id: deploy-to-webapp
