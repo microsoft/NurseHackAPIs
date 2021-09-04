@@ -36,4 +36,7 @@ module appService 'modules/appservice.bicep' = {
   }
 }
 
-output hackAPIHostName string = appService.outputs.appServiceAppHostName
+output appServiceAppName string = appService.outputs.appServiceAppName
+output sqlServerFQDN string = sqlDatabase.outputs.sqlServerFQDN
+output sqlServerName string =sqlDatabase.outputs.sqlServerName
+output sqlDbName string = sqlDatabase.outputs.sqlDbName

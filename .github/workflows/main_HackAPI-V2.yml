@@ -14,7 +14,6 @@ env:
   SOLUTION: '**/*.sln'
   BUILDPLATFORM: 'Any CPU'
   BUILDCONFIGURATION: 'Release'
-  AZURE_WEBAPP_NAME: 'hackapi-flrxxtaqbjtf2'
   AZURE_SUBSCRIPTION_ID: '1c642d88-5042-4d19-9d49-49be6612a40f'
   AZURE_RESOURCE_GROUP: 'phildemo'
 
@@ -35,12 +34,20 @@ jobs:
         
     # Deployment of template    
     - name: Deploy BICEP Template
+      id: deploy-bicep
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
         template: ./deploy/HackAPIs.bicep  # Set this to the location of your template file
         parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}' # Set this to the location of your parameters file
+
+    - name: Set output variables
+      run: |
+        echo 'AZURE_WEBAPP_NAME=${{ steps.deploy-bicep.outputs.appServiceAppName }}' >> $GITHUB_ENV
+        echo 'SQLSERVER=${{ steps.deploy-bicep.outputs.sqlServerName }}' >> $GITHUB_ENV
+        echo 'SQLFQDN=${{ steps.deploy-bicep.outputs.sqlServerFQDN }}' >> $GITHUB_ENV
+        echo 'SQLDB=${{ steps.deploy-bicep.outputs.sqlDbName }}' >> $GITHUB_ENV
 
   build:
     runs-on: ubuntu-latest
@@ -96,8 +103,8 @@ jobs:
     
     - uses: Azure/sql-action@v1
       with:
-        server-name: flrxxtaqbjtf2-hackdb-server.database.windows.net
-        connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+        server-name: ${{ env.SQLSERVER }}
+        connection-string: 'Server=tcp:${{ env.SQLFQDN }},1433;Initial Catalog=${{ env.SQLDB }};Persist Security Info=False;User ID=hackdb-admin;Password=${{ secrets.SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
         dacpac-package: '**/*.dacpac'    
 
   deploy_webapp:
