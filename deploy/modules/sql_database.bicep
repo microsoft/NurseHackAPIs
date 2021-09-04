@@ -52,3 +52,6 @@ resource hackSQLDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = 
     isLedgerOn: false
   }
 }
+
+output sqlServerFQDN string = hackDBServer.properties.fullyQualifiedDomainName
+output sqlDbName string = hackSQLDatabase.name

@@ -15,10 +15,36 @@ env:
   BUILDPLATFORM: 'Any CPU'
   BUILDCONFIGURATION: 'Release'
   AZURE_WEBAPP_NAME: 'hackapi-flrxxtaqbjtf2'
+  AZURE_SUBSCRIPTION_ID: '1c642d88-5042-4d19-9d49-49be6612a40f'
+  AZURE_RESOURCE_GROUP: 'phildemo'
 
 jobs:
+  provision:
+    name: Provision Azure Resources
+    runs-on: ubuntu-latest
+    steps:
+                
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS  }}
+    
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v1
+        
+    # Deployment of template    
+    - name: Deploy BICEP Template
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
+        template: ./deploy/HackAPIs.bicep  # Set this to the location of your template file
+        parameters: 'environmentType=nonprod' # Set this to the location of your parameters file
+
   build:
     runs-on: ubuntu-latest
+    needs: provision
 
     steps:
     - uses: actions/checkout@v2
@@ -58,7 +84,7 @@ jobs:
       name: 'production'
 
     steps:
-    - uses: azure/actions/login@v1
+    - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 

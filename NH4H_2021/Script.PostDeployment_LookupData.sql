@@ -9,10 +9,14 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
+-- UserRole Lookup Data
+IF (NOT EXISTS(SELECT * FROM [dbo].[tbl_UserRole]))
+BEGIN
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(1, 'Hacker')
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(2, 'Mentor')
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(3, 'Panelist')
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(4, 'Organizer')
+END
 
 
 /* Not required for this interation -- using alternate gamification system
