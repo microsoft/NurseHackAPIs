@@ -62,17 +62,24 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Download artifact from build job
+    - name: Download API artifact from build job
       uses: actions/download-artifact@v2
       with:
         name: .net-app
+        path: ${{ github.workspace }}/webapp
+    
+    - name: Download database artifact from build job
+      uses: actions/download-artifact@v2
+      with:
+        name: database
+        path: ${{ github.workspace }}/database
 
     - name: Deploy to Azure Web App
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        package: .
+        package: ./webapp
 
     - name: logout
       run: |
