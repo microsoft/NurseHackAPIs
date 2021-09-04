@@ -22,7 +22,14 @@ resource hackDBServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
     administratorLoginPassword:sqlAdminPassword
     version: '12.0'
     publicNetworkAccess: 'Enabled'
-    restrictOutboundNetworkAccess: 'Disabled'
+    restrictOutboundNetworkAccess: 'Disabled'    
+  }
+  resource allowAzure 'firewallRules' = {
+    name: 'AllowAllWindowsAzureIps'
+    properties: {
+      startIpAddress: '0.0.0.0'
+      endIpAddress: '0.0.0.0'
+    }
   }
 }
 

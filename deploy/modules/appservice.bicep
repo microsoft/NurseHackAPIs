@@ -29,6 +29,22 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
+    siteConfig: {
+      cors: {
+        supportCredentials: true
+        allowedOrigins: [
+          'https://nursehack4health.org'
+          'https://apps.nursehack4health.org'
+          'http://localhost'
+          'http://localhost:3000'
+          'http://localhost:3001'
+          'https://nursehack4health.github.io'
+          'https://teams.microsoft.com'
+          'https://localhost:3000'
+          'https://hackathonteambuife037d8e.z13.web.core.windows.net'
+        ]
+      }
+    }
   }
 }
 
