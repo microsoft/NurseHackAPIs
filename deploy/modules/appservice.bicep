@@ -41,7 +41,6 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
           'https://nursehack4health.github.io'
           'https://teams.microsoft.com'
           'https://localhost:3000'
-          'https://hackathonteambuife037d8e.z13.web.core.windows.net'
         ]
       }
     }

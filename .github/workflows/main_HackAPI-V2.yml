@@ -40,7 +40,7 @@ jobs:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
         template: ./deploy/HackAPIs.bicep  # Set this to the location of your template file
-        parameters: 'environmentType=nonprod' # Set this to the location of your parameters file
+        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}' # Set this to the location of your parameters file
 
   build:
     runs-on: ubuntu-latest
