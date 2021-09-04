@@ -47,6 +47,7 @@ jobs:
         parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}' # Set this to the location of your parameters file
 
   build:
+    name: Build - HackAPI & SQL
     runs-on: ubuntu-latest
     needs: provision
     outputs:
@@ -104,9 +105,13 @@ jobs:
     
     - uses: Azure/sql-action@v1
       with:
-        server-name: ${{ needs.build.outputs.sqlserver }}
+        server-name: ${{ needs.build.outputs.sqlfqdn }}
         connection-string: 'Server=tcp:${{ needs.build.outputs.sqlfqdn }},1433;Initial Catalog=${{ needs.build.outputs.dbname }};Persist Security Info=False;User ID=hackdb-admin;Password=${{ secrets.SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-        dacpac-package: '**/*.dacpac'    
+        dacpac-package: '**/*.dacpac'
+
+    - name: logout
+      run: |
+        az logout
 
   deploy_webapp:
     name: Deploy HackAPI
