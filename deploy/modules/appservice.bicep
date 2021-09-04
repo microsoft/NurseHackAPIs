@@ -30,6 +30,7 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
+      linuxFxVersion: 'DOTNETCORE|3.1'
       cors: {
         supportCredentials: true
         allowedOrigins: [
