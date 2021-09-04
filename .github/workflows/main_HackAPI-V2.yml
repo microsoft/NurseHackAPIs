@@ -21,8 +21,12 @@ jobs:
   provision:
     name: Provision Azure Resources
     runs-on: ubuntu-latest
-    steps:
-                
+    outputs:
+      azure-webapp-name: ${{ steps.deploy-bicep.outputs.appServiceAppName }}
+      sqlserver: ${{ steps.deploy-bicep.outputs.sqlServerName }}
+      sqlfqdn: ${{ steps.deploy-bicep.outputs.sqlServerFQDN }}
+      dbname: ${{ steps.deploy-bicep.outputs.sqlDbName }}
+    steps:                
     - name: Azure Login
       uses: azure/login@v1
       with:
@@ -42,17 +46,14 @@ jobs:
         template: ./deploy/HackAPIs.bicep  # Set this to the location of your template file
         parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}' # Set this to the location of your parameters file
 
-    - name: Set output variables
-      run: |
-        echo 'AZURE_WEBAPP_NAME=${{ steps.deploy-bicep.outputs.appServiceAppName }}' >> $GITHUB_ENV
-        echo 'SQLSERVER=${{ steps.deploy-bicep.outputs.sqlServerName }}' >> $GITHUB_ENV
-        echo 'SQLFQDN=${{ steps.deploy-bicep.outputs.sqlServerFQDN }}' >> $GITHUB_ENV
-        echo 'SQLDB=${{ steps.deploy-bicep.outputs.sqlDbName }}' >> $GITHUB_ENV
-
   build:
     runs-on: ubuntu-latest
     needs: provision
-
+    outputs:
+      azure-webapp-name: ${{ needs.provision.outputs.azure-webapp-name }}
+      sqlserver: ${{ needs.provision.outputs.sqlserver }}
+      sqlfqdn: ${{ needs.provision.outputs.sqlfqdn }}
+      dbname: ${{ needs.provision.outputs.dbname }}
     steps:
     - uses: actions/checkout@v2
 
@@ -88,7 +89,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     environment:
-      name: 'production'
+      name: 'production'    
 
     steps:
     - uses: azure/login@v1
@@ -103,8 +104,8 @@ jobs:
     
     - uses: Azure/sql-action@v1
       with:
-        server-name: ${{ env.SQLSERVER }}
-        connection-string: 'Server=tcp:${{ env.SQLFQDN }},1433;Initial Catalog=${{ env.SQLDB }};Persist Security Info=False;User ID=hackdb-admin;Password=${{ secrets.SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+        server-name: ${{ needs.build.outputs.sqlserver }}
+        connection-string: 'Server=tcp:${{ needs.build.outputs.sqlfqdn }},1433;Initial Catalog=${{ needs.build.outputs.dbname }};Persist Security Info=False;User ID=hackdb-admin;Password=${{ secrets.SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
         dacpac-package: '**/*.dacpac'    
 
   deploy_webapp:
@@ -130,7 +131,7 @@ jobs:
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        app-name: ${{ needs.build.outputs.azure-webapp-name }}
         package: ./webapp
 
     - name: logout
