@@ -1,4 +1,4 @@
-#New-AzKeyVault -VaultName HackKV -ResourceGroupName rg-hackathon-starter-kit -Location 'Central US'
+#New-AzKeyVault -VaultName HackKV -ResourceGroupName rg-hackathon-starter-kit -Location 'Central US' -EnabledForTemplateDeployment
 $kvname="HackKV"
 $secretsimport=Get-Content ./infile.json | ConvertFrom-Json -AsHashtable -Depth 1;
 foreach ($s in $secretsimport.keys){
@@ -8,5 +8,4 @@ foreach ($s in $secretsimport.keys){
         Set-AzKeyVaultSecret -VaultName $kvname -Name $s -SecretValue $secretvalue
         Write-Output $"Added {$s}";
     }
-
 }

@@ -7,6 +7,11 @@ param location string = resourceGroup().location
 ])
 param environmentType string
 
+@secure()
+param gitHubToken string
+@secure()
+param sqlConnection string
+
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B2'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
 
@@ -44,6 +49,16 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
           'https://localhost:3000'
         ]
       }
+      appSettings: [
+        {
+          name: 'GitHubToken'
+          value: gitHubToken
+        }
+        {
+          name: 'ConnStr'
+          value: sqlConnection
+        }
+      ]
     }
   }
 }

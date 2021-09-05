@@ -4,6 +4,8 @@ param location string = resourceGroup().location
 param sqlAdminUserName string = 'hackdb-admin'
 param hackAPIAppPlanName string = 'nh4happs-plan'
 param hackAPIAppName string = 'hackapi-${uniqueString(resourceGroup().id)}'
+param hackKeyVaultName string = 'HackKV'
+param hackKeyVaultResourceGroup string = 'rg-hackathon-starter-kit'
 
 @secure()
 param sqlAdminPassword string
@@ -13,6 +15,11 @@ param sqlAdminPassword string
   'prod'
 ])
 param environmentType string
+
+resource appConfigSecrets 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
+  name: hackKeyVaultName
+  scope: resourceGroup(hackKeyVaultResourceGroup)
+}
 
 module sqlDatabase 'modules/sql_database.bicep' = {
   name: 'hackAPI-database'
@@ -33,6 +40,8 @@ module appService 'modules/appservice.bicep' = {
     location: location
     hackAPIAppName: hackAPIAppName
     hackAPIAppPlanName: hackAPIAppPlanName
+    gitHubToken: appConfigSecrets.getSecret('GitHubToken')
+    sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=hackdb-admin;Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
   }
 }
 
