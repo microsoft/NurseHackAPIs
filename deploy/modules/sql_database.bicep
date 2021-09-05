@@ -53,6 +53,7 @@ resource hackSQLDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = 
   }
 }
 
+output sqlUserName string = sqlAdminUserName
 output sqlServerName string = hackDBServer.name
 output sqlServerFQDN string = hackDBServer.properties.fullyQualifiedDomainName
 output sqlDbName string = hackSQLDatabase.name

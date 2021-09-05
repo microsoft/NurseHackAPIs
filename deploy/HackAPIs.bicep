@@ -41,7 +41,7 @@ module appService 'modules/appservice.bicep' = {
     hackAPIAppName: hackAPIAppName
     hackAPIAppPlanName: hackAPIAppPlanName
     gitHubToken: appConfigSecrets.getSecret('GitHubToken')
-    sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=hackdb-admin;Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+    sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
   }
 }
 
@@ -49,3 +49,4 @@ output appServiceAppName string = appService.outputs.appServiceAppName
 output sqlServerFQDN string = sqlDatabase.outputs.sqlServerFQDN
 output sqlServerName string =sqlDatabase.outputs.sqlServerName
 output sqlDbName string = sqlDatabase.outputs.sqlDbName
+output sqlUserName string = sqlDatabase.outputs.sqlUserName

@@ -26,6 +26,7 @@ jobs:
       sqlserver: ${{ steps.deploy-bicep.outputs.sqlServerName }}
       sqlfqdn: ${{ steps.deploy-bicep.outputs.sqlServerFQDN }}
       dbname: ${{ steps.deploy-bicep.outputs.sqlDbName }}
+      sqluser: ${{ steps.deploy-bicep.outputs.sqlUserName }}
     steps:                
     - name: Azure Login
       uses: azure/login@v1
@@ -50,11 +51,6 @@ jobs:
     name: Build - HackAPI & SQL
     runs-on: ubuntu-latest
     needs: provision
-    outputs:
-      azure-webapp-name: ${{ needs.provision.outputs.azure-webapp-name }}
-      sqlserver: ${{ needs.provision.outputs.sqlserver }}
-      sqlfqdn: ${{ needs.provision.outputs.sqlfqdn }}
-      dbname: ${{ needs.provision.outputs.dbname }}
     steps:
     - uses: actions/checkout@v2
 
@@ -88,7 +84,7 @@ jobs:
   deploy_database:
     name: Deploy DACPAC
     runs-on: windows-latest
-    needs: build
+    needs: [build, provision]
     environment:
       name: 'production'    
 
@@ -105,8 +101,8 @@ jobs:
     
     - uses: Azure/sql-action@v1
       with:
-        server-name: ${{ needs.build.outputs.sqlfqdn }}
-        connection-string: 'Server=tcp:${{ needs.build.outputs.sqlfqdn }},1433;Initial Catalog=${{ needs.build.outputs.dbname }};Persist Security Info=False;User ID=hackdb-admin;Password=${{ secrets.SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+        server-name: ${{ needs.provision.outputs.sqlfqdn }}
+        connection-string: 'Server=tcp:${{ needs.provision.outputs.sqlfqdn }},1433;Initial Catalog=${{ needs.provision.outputs.dbname }};Persist Security Info=False;User ID=${{ needs.provision.outputs.sqluser }};Password=${{ secrets.SQL_ADMIN_PASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
         dacpac-package: '**/*.dacpac'
 
     - name: logout
@@ -116,7 +112,7 @@ jobs:
   deploy_webapp:
     name: Deploy HackAPI
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, provision]
     environment:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
@@ -136,7 +132,7 @@ jobs:
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
-        app-name: ${{ needs.build.outputs.azure-webapp-name }}
+        app-name: ${{ needs.provision.outputs.azure-webapp-name }}
         package: ./webapp
 
     - name: logout
