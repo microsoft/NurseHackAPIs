@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - deploy-scripts
   workflow_dispatch:
 
 env:
