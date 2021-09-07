@@ -5,7 +5,7 @@ param sqlAdminUserName string = 'hackdb-admin'
 param hackAPIAppPlanName string = 'nh4happs-plan'
 param hackAPIAppName string = 'hackapi-${uniqueString(resourceGroup().id)}'
 param hackKeyVaultName string = 'HackKV'
-param hackKeyVaultResourceGroup string = 'rg-hackathon-starter-kit'
+param hackKeyVaultResourceGroup string = 'rg-NH4H'
 
 @secure()
 param sqlAdminPassword string
