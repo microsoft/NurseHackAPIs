@@ -9,14 +9,17 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
+-- UserRole Lookup Data
+IF (NOT EXISTS(SELECT * FROM [dbo].[tbl_UserRole]))
+BEGIN
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(1, 'Hacker')
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(2, 'Mentor')
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(3, 'Panelist')
 INSERT INTO [dbo].[tbl_UserRole] ([UserRoleId],[UserRoleName]) VALUES(4, 'Organizer')
+END
 
 
-
-
+/* Not required for this interation -- using alternate gamification system
 INSERT INTO [dbo].[tbl_ActivityGroup] ([ActivityGroupId],[ActivityGroupName],[ActivityGroupDesc],[ActivityGroupBadge],[ActivityCount],[UserRoleId]) VALUES (1, 'Training', 'Participation in Training activites inlcuding but not limitied to Live Events and Technical Skills Challenge.', NULL, 5, 1)
 INSERT INTO [dbo].[tbl_Activity] ([ActivityId],[ActivityName],[ActivityDesc],[ActivityActionLink],[ActivityPoints],[ActivityBadge],[ActivityGroupId]) VALUES(1, 'Teams 101', 'Intro to Teams and NurseHack4Health Teams Enviornment', NULL, 1, NULL, 1)
 INSERT INTO [dbo].[tbl_Activity] ([ActivityId],[ActivityName],[ActivityDesc],[ActivityActionLink],[ActivityPoints],[ActivityBadge],[ActivityGroupId]) VALUES(2, 'Github 101', 'Intro to Github and how it will be used in NH4H.', NULL, 1, NULL, 1)
@@ -51,3 +54,4 @@ INSERT INTO [dbo].[tbl_Activity] ([ActivityId],[ActivityName],[ActivityDesc],[Ac
 INSERT INTO [dbo].[tbl_ActivityGroup] ([ActivityGroupId],[ActivityGroupName],[ActivityGroupDesc],[ActivityGroupBadge],[ActivityCount],[UserRoleId]) VALUES (6, 'Teams Participation', 'Activities related to MS Teams and Team Builder', NULL, 2, 3)
 INSERT INTO [dbo].[tbl_Activity] ([ActivityId],[ActivityName],[ActivityDesc],[ActivityActionLink],[ActivityPoints],[ActivityBadge],[ActivityGroupId]) VALUES(16, 'Logged into Teams', '', NULL, 1, NULL, 6)
 INSERT INTO [dbo].[tbl_Activity] ([ActivityId],[ActivityName],[ActivityDesc],[ActivityActionLink],[ActivityPoints],[ActivityBadge],[ActivityGroupId]) VALUES(17, 'Introduced Yourself', '', NULL, 1, NULL, 6)
+*/
