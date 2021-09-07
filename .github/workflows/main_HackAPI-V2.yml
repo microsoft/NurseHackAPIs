@@ -18,35 +18,6 @@ env:
   AZURE_RESOURCE_GROUP: 'phildemo'
 
 jobs:
-  provision:
-    name: Provision Azure Resources
-    runs-on: ubuntu-latest
-    outputs:
-      azure-webapp-name: ${{ steps.deploy-bicep.outputs.appServiceAppName }}
-      sqlserver: ${{ steps.deploy-bicep.outputs.sqlServerName }}
-      sqlfqdn: ${{ steps.deploy-bicep.outputs.sqlServerFQDN }}
-      dbname: ${{ steps.deploy-bicep.outputs.sqlDbName }}
-      sqluser: ${{ steps.deploy-bicep.outputs.sqlUserName }}
-    steps:                
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS  }}
-    
-    # Checkout
-    - name: Checkout
-      uses: actions/checkout@v1
-        
-    # Deployment of template    
-    - name: Deploy BICEP Template
-      id: deploy-bicep
-      uses: azure/arm-deploy@v1
-      with:
-        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
-        resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
-        template: ./deploy/HackAPIs.bicep  # Set this to the location of your template file
-        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}' # Set this to the location of your parameters file
-
   build:
     name: Build - HackAPI & SQL
     runs-on: ubuntu-latest
@@ -80,6 +51,35 @@ jobs:
       with:
         name: database
         path: '**/*.dacpac'
+
+  provision:
+    name: Provision Azure Resources
+    runs-on: ubuntu-latest    
+    outputs:
+      azure-webapp-name: ${{ steps.deploy-bicep.outputs.appServiceAppName }}
+      sqlserver: ${{ steps.deploy-bicep.outputs.sqlServerName }}
+      sqlfqdn: ${{ steps.deploy-bicep.outputs.sqlServerFQDN }}
+      dbname: ${{ steps.deploy-bicep.outputs.sqlDbName }}
+      sqluser: ${{ steps.deploy-bicep.outputs.sqlUserName }}
+    steps:                
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS  }}
+    
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v1
+        
+    # Deployment of template    
+    - name: Deploy BICEP Template
+      id: deploy-bicep
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
+        template: ./deploy/HackAPIs.bicep  # Set this to the location of your template file
+        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}' # Set this to the location of your parameters file
 
   deploy_database:
     name: Deploy DACPAC

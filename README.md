@@ -2,12 +2,11 @@
 
 [![Build and deploy ASP.Net Core app to Azure Web App - HackAPI-V2](https://github.com/microsoft/NurseHackAPIs/actions/workflows/main_HackAPI-V2.yml/badge.svg?branch=main)](https://github.com/microsoft/NurseHackAPIs/actions/workflows/main_HackAPI-V2.yml)
 
-As the maintainer of this project, please make a few updates:
-
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+## Deployment Guide
+- [ ] Create an Azure AD service principal with RBAC Contributor access to your target Azure Resourcew Group - follow [this guide](https://docs.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=userlevel#tabpanel_1_userlevel).
+- [ ] Update [main_HackAPI-V2.yml](./.github/workflows/main_HackAPI-V2.yml) - Set `Subscription` and `ResourceGroup` ENV variables.
+- [ ] Create Azure AD App Registration for API app
+- [ ] Update app service configuration
 
 ## Contributing
 
