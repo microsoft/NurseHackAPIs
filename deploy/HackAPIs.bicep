@@ -4,7 +4,7 @@ param location string = resourceGroup().location
 param sqlAdminUserName string = 'hackdb-admin'
 param hackAPIAppPlanName string = 'nh4happs-plan'
 param hackAPIAppName string = 'hackapi-${uniqueString(resourceGroup().id)}'
-param hackKeyVaultName string = 'HackKV'
+param hackKeyVaultName string = 'NH4HKV'
 param hackKeyVaultResourceGroup string = 'rg-NH4H'
 
 @secure()
