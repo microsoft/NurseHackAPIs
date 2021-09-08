@@ -1,6 +1,8 @@
 param hackAPIAppPlanName string = 'nh4happs-plan'
 param hackAPIAppName string = 'hackapi-${uniqueString(resourceGroup().id)}'
 param location string = resourceGroup().location
+param teamsCors string
+
 @allowed([
   'nonprod'
   'prod'
@@ -47,7 +49,7 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
           'https://nursehack4health.github.io'
           'https://teams.microsoft.com'
           'https://localhost:3000'
-          'https://hackathonteambuifee948ef.z13.web.core.windows.net'
+          teamsCors
         ]
       }
       appSettings: [
