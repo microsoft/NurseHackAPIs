@@ -298,22 +298,27 @@ namespace HackAPIs.Controllers
                     tblUsers.ADUserId = invite.InvitedUser.Id;
                     Log(id + "", "Added Azure ID" + tblUsers.ADUserId);
 
-                    //try
-                    //{
-                    //    EmailService emailService = new EmailService();
-
-                    //    emailService.InvokeEmail(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName);
-                    //    Log(id + "", "Email was sent to : "+ tblUsers.UserMSTeamsEmail);
-
-
-                    //} catch (Exception) { }
-
                     try
                     {
                         mailChimpId = await _mailChimp.AddOrUpdateMember(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName, ViewModel.Util.MemberStatus.subscribed);
 
-                        switch (tblUsers.UserRole) // TODO: add tags based on role
+                        switch (tblUsers.UserRole.ToLower()) // TODO: add tags based on role
                         {
+                            case "coach":
+                                await _mailChimp.AddMemberTag(mailChimpId, "Coach - Fall 21");
+                                break;
+                            case "developer":
+                                await _mailChimp.AddMemberTag(mailChimpId, "Developer - Fall 21");
+                                break;
+                            case "hacker":
+                                await _mailChimp.AddMemberTag(mailChimpId, "Hacker - Fall 21");
+                                break;
+                            case "panelist":
+                                await _mailChimp.AddMemberTag(mailChimpId, "Panelist - Fall 21");
+                                break;
+                            case "pitch coach":
+                                await _mailChimp.AddMemberTag(mailChimpId, "Pitch Coach - Fall 21");
+                                break;
                             default:
                                 await _mailChimp.AddMemberTag(mailChimpId, "DevTest");
                                 break;
