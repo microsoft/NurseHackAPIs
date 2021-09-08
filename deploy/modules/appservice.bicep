@@ -12,7 +12,7 @@ param gitHubToken string
 @secure()
 param sqlConnection string
 
-var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B2'
+var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
