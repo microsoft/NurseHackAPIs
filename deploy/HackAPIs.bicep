@@ -6,6 +6,7 @@ param hackAPIAppPlanName string = 'nh4happs-plan'
 param hackAPIAppName string = 'hackapi-${uniqueString(resourceGroup().id)}'
 param hackKeyVaultName string = 'NH4HKV'
 param hackKeyVaultResourceGroup string = 'rg-NH4H'
+param teamsCors string
 
 @secure()
 param sqlAdminPassword string
@@ -40,8 +41,11 @@ module appService 'modules/appservice.bicep' = {
     location: location
     hackAPIAppName: hackAPIAppName
     hackAPIAppPlanName: hackAPIAppPlanName
+    teamsCors: teamsCors
     gitHubToken: appConfigSecrets.getSecret('GitHubToken')
     sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+    graphClientSecret: appConfigSecrets.getSecret('LogicAppClientSecret')
+    mailChimpApiKey: appConfigSecrets.getSecret('MailChimpKey')
   }
 }
 

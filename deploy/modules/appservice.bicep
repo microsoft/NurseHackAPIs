@@ -9,10 +9,18 @@ param teamsCors string
 ])
 param environmentType string
 
+// App Settings
+param azureAdClientId string = '05acec15-d6fb-4dae-a9b3-5886a7709df9'
+param azureAdDomain string = 'nh4h.onmicrosoft.com'
+param azureAdTenant string = 'common'
+@secure()
+param graphClientSecret string
 @secure()
 param gitHubToken string
 @secure()
 param sqlConnection string
+@secure()
+param mailChimpApiKey string
 
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
@@ -60,8 +68,30 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
         {
           name: 'ConnStr'
           value: sqlConnection
+        }  
+        {
+          name: 'MailChimp__Key'
+          value: mailChimpApiKey
+        }              
+        {
+          name: 'AzureAd__ClientId'
+          value: azureAdClientId
         }
+        {
+          name: 'AzureAd__Domain'
+          value: azureAdDomain
+        }        
+        {
+          name: 'AzureAd__TenantId'
+          value: azureAdTenant
+        }
+        {
+          name: 'GraphAPI__ClientSecret'
+          value: graphClientSecret
+        }
+        
       ]
+      
     }
   }
 }

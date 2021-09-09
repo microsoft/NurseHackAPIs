@@ -15,6 +15,7 @@ env:
   BUILDCONFIGURATION: 'Release'
   AZURE_SUBSCRIPTION_ID: '96d816cf-e34a-48a3-af79-12e4f496010e'
   AZURE_RESOURCE_GROUP: 'rg-NH4H'
+  TEAMS_CORS: 'https://hackathonteambuifee948ef.z13.web.core.windows.net'
 
 jobs:
   build:
@@ -77,7 +78,7 @@ jobs:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
         template: ./deploy/HackAPIs.bicep  # Set this to the location of your template file
-        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} teamsCors=https://hackathonteambuifee948ef.z13.web.core.windows.net' # Set this to the location of your parameters file
+        parameters: 'environmentType=nonprod sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} teamsCors=${{ env.TEAMS_CORS }}' # Set this to the location of your parameters file
 
   deploy_database:
     name: Deploy DACPAC
