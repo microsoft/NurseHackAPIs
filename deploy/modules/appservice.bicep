@@ -1,7 +1,6 @@
 param hackAPIAppPlanName string = 'nh4happs-plan'
 param hackAPIAppName string = 'hackapi-${uniqueString(resourceGroup().id)}'
 param location string = resourceGroup().location
-param teamsCors string
 
 @allowed([
   'nonprod'
@@ -24,6 +23,7 @@ param mailChimpApiKey string
 
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2_v2' : 'B1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV2' : 'Basic'
+var teamsCors = 'https://hackathonteambuifee948ef.z13.web.${environment().suffixes.storage}'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: hackAPIAppPlanName
