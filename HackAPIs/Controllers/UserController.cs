@@ -261,7 +261,7 @@ namespace HackAPIs.Controllers
             }
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest("Failed to validate incoming object.");
             }
 
             if (!tblUsers.Active)

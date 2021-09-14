@@ -42,7 +42,7 @@ module appService 'modules/appservice.bicep' = {
     hackAPIAppPlanName: hackAPIAppPlanName
     gitHubToken: appConfigSecrets.getSecret('GitHubToken')
     sqlConnection: 'Server=tcp:${sqlDatabase.outputs.sqlServerFQDN},1433;Initial Catalog=${sqlDatabase.outputs.sqlDbName};Persist Security Info=False;User ID=${sqlAdminUserName};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-    graphClientSecret: appConfigSecrets.getSecret('LogicAppClientSecret')
+    graphClientSecret: appConfigSecrets.getSecret('GraphClientSecret')
     mailChimpApiKey: appConfigSecrets.getSecret('MailChimpKey')
   }
 }
