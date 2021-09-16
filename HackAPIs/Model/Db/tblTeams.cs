@@ -32,7 +32,7 @@ namespace HackAPIs.Db.Model
         public DateTime ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
 
-        public int GitHubRepoId { get; set; }
+        public long GitHubRepoId { get; set; }
         public int GitHubTeamId { get; set; }
 
         public virtual ICollection<TblTeamSkillMatch> tblTeamSkillMatch { get; set; }
