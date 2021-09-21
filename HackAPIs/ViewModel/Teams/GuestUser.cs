@@ -10,7 +10,7 @@ namespace HackAPIs.ViewModel.Teams
         
         public string InvitedUserEmailAddress { get; set; }
         
-        public string InviteRedirectUrl { get; set; } = "https://myapps.microsoft.com";
+        public string InviteRedirectUrl { get; set; } = "https://aka.ms/NH4HHackathonTeam";
         public int UserId { get; set; }
         public Boolean Active { get; set; }
         public string ADUserId { get; set; }
