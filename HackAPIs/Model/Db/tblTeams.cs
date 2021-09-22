@@ -17,7 +17,8 @@ namespace HackAPIs.Db.Model
         public string GithubURL { get; set; }
         public string ChallengeName { get; set; }
         public string SkillsWanted { get; set; }
-        public string MSTeamsChannel { get; set; }
+        public string MSTeamsChannelName { get; set; }
+        public string MSTeamsChannelUrl { get; set; }
         public string MSLabEnvironment { get; set; }
         public string MSLabTenantName { get; set; }
         public string MSLabAzureUsername { get; set; }

@@ -106,7 +106,8 @@ namespace HackAPIs.Model.Db.DataManager
                 entityToUpdate.TeamName = entity.TeamName;
                 entityToUpdate.TeamDescription = entity.TeamDescription;
                 entityToUpdate.GithubURL = entity.GithubURL;
-                entityToUpdate.MSTeamsChannel = entity.MSTeamsChannel;
+                entityToUpdate.MSTeamsChannelName = entity.MSTeamsChannelName;
+                entityToUpdate.MSTeamsChannelUrl = entity.MSTeamsChannelUrl;
                 entityToUpdate.MSLabEnvironment = entity.MSLabEnvironment;
                 entityToUpdate.MSLabTenantName = entity.MSLabTenantName;
                 entityToUpdate.MSLabAzureUsername = entity.MSLabAzureUsername;

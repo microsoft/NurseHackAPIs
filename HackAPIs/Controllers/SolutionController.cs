@@ -225,7 +225,8 @@ namespace HackAPIs.Controllers
                     string.Concat(tblTeams.ChallengeName, " - ", tblTeams.TeamName);
 
                 var channel = await _teamsService.CreateTeamChannel(_teamConfig.MSTeam1, teamName, tblTeams.TeamDescription);
-                tblTeams.MSTeamsChannel = channel.WebUrl;
+                tblTeams.MSTeamsChannelUrl = channel.WebUrl;
+                tblTeams.MSTeamsChannelName = channel.DisplayName;
             }
 
             (int TeamId, long RepoId) = await _githubService.CreateRepoAndTeam(tblTeams.TeamName, tblTeams.TeamDescription);
