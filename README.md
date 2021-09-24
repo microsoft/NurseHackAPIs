@@ -8,6 +8,13 @@
 - [ ] Create Azure AD App Registration for API app
 - [ ] Update app service configuration
 
+If implementing a logic app to call the API: 
+- [ ] Hack API Application Registration must have an App Role defined (Read.Write.All)
+- [ ] Logic App needs it's own Application Registration
+- [ ] w\ reply url set to https://logic-apis-eastus.consent.azure-apim.net/redirect
+- [ ] w\ application permissions (not delegate permissions) to hack api
+- [ ] w\ the manifest containing the Hack API App Role created above
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
