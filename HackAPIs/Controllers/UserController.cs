@@ -337,7 +337,7 @@ namespace HackAPIs.Controllers
             }
             _dataRepository.Update(userToUpdate, tblUsers, type);
             Log(id + "", "Completed the update of the record.");
-            return Ok("Success");
+            return Ok(tblUsers);
         }
 
 
