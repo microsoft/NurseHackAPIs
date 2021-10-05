@@ -390,8 +390,15 @@ namespace HackAPIs.Controllers
             // Leaving the Team && determining whether this is being called from new team creation. This stops from calling GH api twice
             if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)
             {
-                var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, 1);
-                await AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
+                try
+                {
+                    var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, 1);
+                    await AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
+                }
+                catch (GitHubException gex)
+                {
+                    return BadRequest(gex);
+                }
             }
 
             return Ok("Success");
