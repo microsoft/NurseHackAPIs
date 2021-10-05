@@ -42,9 +42,10 @@ namespace HackAPIs.Services.Util
                         Permission = Permission.Admin 
                     });
                 return team.Id;
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
-                throw new GitHubException(ex.Message);
+                throw new GitHubException("Error Creating GitHub Team.", ex);
             }
 
         }
@@ -56,51 +57,55 @@ namespace HackAPIs.Services.Util
                 var repo = await _gitClient.Repository.Create(_config.Org, new NewRepository(name) { TeamId = teamId, AutoInit = true, LicenseTemplate = "mit" });
 
                 return repo.Id;
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
-                throw new GitHubException(ex.Message);                
+                throw new GitHubException("Error creating GitHub repository.", ex);                
             }
         }
 
         public async Task AddUser(string gitHubUser, long gitHubUserId, int teamId, string teamName)
         {
-            var userIsInOrg = await _gitClient.Organization.Member.CheckMember(_config.Org, gitHubUser);
-
             try
-            {
-                if (userIsInOrg)
+            { 
+                var userIsInOrg = await _gitClient.Organization.Member.CheckMember(_config.Org, gitHubUser);
+
+                // Check if user is member of GH Org.
+                if (!userIsInOrg)
                 {
-                    await _gitClient.Organization.Team.AddOrEditMembership(teamId, gitHubUser, new UpdateTeamMembership(TeamRole.Member));
-                }
-                else
-                {
+                    // User not found. Add to org.
                     await _gitClient.Organization.Member.AddOrUpdateOrganizationMembership(_config.Org, gitHubUser, new OrganizationMembershipUpdate { Role = MembershipRole.Member });
                 }
-            } catch 
+
+                // Add user to team
+                await _gitClient.Organization.Team.AddOrEditMembership(teamId, gitHubUser, new UpdateTeamMembership(TeamRole.Member));
+            } 
+            catch (Exception ex)
             {
-                throw new GitHubException();
+                throw new GitHubException("Error adding user to GitHub Team.", ex);
             }
         }
+        
+    }
 
-        [Serializable]
-        private class GitHubException : Exception
+    [Serializable]
+    public class GitHubException : Exception
+    {
+        public GitHubException()
         {
-            public GitHubException()
-            {
-            }
+        }
 
-            public GitHubException(string message) : base(message)
-            {
-                Console.WriteLine(message);
-            }
+        public GitHubException(string message) : base(message)
+        {
+            Console.WriteLine(message);
+        }
 
-            public GitHubException(string message, Exception innerException) : base(message, innerException)
-            {
-            }
+        public GitHubException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
 
-            protected GitHubException(SerializationInfo info, StreamingContext context) : base(info, context)
-            {
-            }
+        protected GitHubException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
         }
     }
 }
