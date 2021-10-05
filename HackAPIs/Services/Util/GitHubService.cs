@@ -64,7 +64,7 @@ namespace HackAPIs.Services.Util
             }
         }
 
-        public async Task AddUser(string gitHubUser, long gitHubUserId, int teamId, string teamName)
+        public async Task AddUser(string gitHubUser, long gitHubUserId, int teamId)
         {
             try
             { 

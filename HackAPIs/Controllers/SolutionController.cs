@@ -238,7 +238,7 @@ namespace HackAPIs.Controllers
 
             _dataRepository.Add(tblTeams);
 
-            await AddUserToGHTeam(tblTeams.CreatedBy, tblTeams.TeamName, TeamId);
+            await AddUserToGHTeam(tblTeams.CreatedBy, TeamId);
 
             return Ok(tblTeams);
         }
@@ -317,10 +317,10 @@ namespace HackAPIs.Controllers
             return Ok("Success");
         }
 
-        private async Task AddUserToGHTeam(string createdBy, string teamName, int teamId)
+        private async Task AddUserToGHTeam(string createdBy, int teamId)
         {
             var user = _userDataRepository.GetByColumn(1, "UserRegEmail", createdBy);
-            await _githubService.AddUser(user.GitHubUser, user.GitHubId, teamId, teamName);
+            await _githubService.AddUser(user.GitHubUser, user.GitHubId, teamId);
         }
     }
 }

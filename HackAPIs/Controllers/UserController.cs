@@ -393,7 +393,7 @@ namespace HackAPIs.Controllers
                 try
                 {
                     var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, 1);
-                    await AddToGHTeam(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId, teamName);
+                    await _gitHubService.AddUser(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId);
                 }
                 catch (GitHubException gex)
                 {
@@ -455,9 +455,5 @@ namespace HackAPIs.Controllers
             _dataRepositoryLog.Add(log);
         }
 
-        private async Task AddToGHTeam(string ghuser, long ghuserid, int teamid, string teamname)
-        {
-            await _gitHubService.AddUser(ghuser, ghuserid, teamid, teamname);
-        }
     }
 }
