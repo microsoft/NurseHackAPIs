@@ -397,7 +397,7 @@ namespace HackAPIs.Controllers
                 }
                 catch (GitHubException gex)
                 {
-                    return BadRequest(gex);
+                    return BadRequest(gex.Message);
                 }
             }
 
