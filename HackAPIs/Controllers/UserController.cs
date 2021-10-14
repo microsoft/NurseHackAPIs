@@ -327,11 +327,15 @@ namespace HackAPIs.Controllers
                         Log(id + "", "Subscribed to MailChimp with ID: " + mailChimpId);
 
                     }
-                    catch (Exception) { }
+                    catch (Exception) 
+                    {
+                        Log(id + "", "MailChimp failed");
+                    }
 
                 }
                 catch (Exception ex)
                 {
+                    Log(id + "", "AAD invitation failed");
                     return BadRequest(ex.Message);
                 }
             }
