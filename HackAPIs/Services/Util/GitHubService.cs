@@ -22,7 +22,10 @@ namespace HackAPIs.Services.Util
             try
             {
                 int teamId = await CreateTeam(name);
-                long repoId = await CreateRepo(name, description, teamId);
+                long repoId = await CreateRepo(
+                    name,
+                    description.Length > 100 ? $"{description.Substring(0, 97)}..." : description, 
+                    teamId);
 
                 return (teamId, repoId);
             }

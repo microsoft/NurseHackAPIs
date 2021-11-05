@@ -149,7 +149,7 @@ namespace HackAPIs.Services.Teams
             var channel = new Channel
             {
                 DisplayName = displayName,
-                Description = description,
+                Description = description.Length > 100 ? $"{description.Substring(0,97)}..." : description,
                 MembershipType = memberType
             };
             var result = await _graphClient.Teams[teamId].Channels.Request().AddAsync(channel);
