@@ -97,30 +97,31 @@ namespace HackAPIs.Model.Db.DataManager
         {
             /*
              * Type 1 = PUT /solutions/$teamid (modify team)
+             * We are only updating description. Ignore all other fields
              */
             if (type == 1)
             {
                 entityToUpdate = _nurseHackContext.tbl_Teams
                     .Single(b => b.TeamId == entityToUpdate.TeamId);
-
                 entityToUpdate.TeamName = entity.TeamName;
                 entityToUpdate.TeamDescription = entity.TeamDescription;
-                entityToUpdate.GithubURL = entity.GithubURL;
-                entityToUpdate.MSTeamsChannelName = entity.MSTeamsChannelName;
-                entityToUpdate.MSTeamsChannelUrl = entity.MSTeamsChannelUrl;
-                entityToUpdate.MSLabEnvironment = entity.MSLabEnvironment;
-                entityToUpdate.MSLabTenantName = entity.MSLabTenantName;
-                entityToUpdate.MSLabAzureUsername = entity.MSLabAzureUsername;
-                entityToUpdate.MSLabSPNAppId = entity.MSLabSPNAppId;
-                entityToUpdate.MSLabSPNAppObjectId = entity.MSLabSPNAppObjectId;
-                entityToUpdate.MSLabSPNObjectId = entity.MSLabSPNObjectId;
-                entityToUpdate.MSLabSPNDisplayName = entity.MSLabSPNDisplayName;
-                entityToUpdate.MSLabSPNKey = entity.MSLabSPNKey;
                 entityToUpdate.ModifiedDate = entity.ModifiedDate;
-                entityToUpdate.ModifiedBy = entity.ModifiedBy;
                 entityToUpdate.Active = entity.Active;
                 entityToUpdate.ChallengeName = entity.ChallengeName;
                 entityToUpdate.SkillsWanted = entity.SkillsWanted;
+
+                //entityToUpdate.GithubURL = entity.GithubURL;
+                //entityToUpdate.MSTeamsChannelName = entity.MSTeamsChannelName;
+                //entityToUpdate.MSTeamsChannelUrl = entity.MSTeamsChannelUrl;
+                //entityToUpdate.MSLabEnvironment = entity.MSLabEnvironment;
+                //entityToUpdate.MSLabTenantName = entity.MSLabTenantName;
+                //entityToUpdate.MSLabAzureUsername = entity.MSLabAzureUsername;
+                //entityToUpdate.MSLabSPNAppId = entity.MSLabSPNAppId;
+                //entityToUpdate.MSLabSPNAppObjectId = entity.MSLabSPNAppObjectId;
+                //entityToUpdate.MSLabSPNObjectId = entity.MSLabSPNObjectId;
+                //entityToUpdate.MSLabSPNDisplayName = entity.MSLabSPNDisplayName;
+                //entityToUpdate.MSLabSPNKey = entity.MSLabSPNKey;
+                //entityToUpdate.ModifiedBy = entity.ModifiedBy;
             }
             else if (type == 2)
             {

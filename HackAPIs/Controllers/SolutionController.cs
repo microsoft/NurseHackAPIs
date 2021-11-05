@@ -267,6 +267,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
             tblTeams.ModifiedDate = DateTime.Now;
+            
             tblTeams.Active = true;
             _dataRepository.Update(solutionToUpdate, tblTeams, 1);
             return Ok("Success");
