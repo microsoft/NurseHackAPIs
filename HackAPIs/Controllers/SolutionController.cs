@@ -14,6 +14,7 @@ using HackAPIs.Services.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
+using HackAPIs.Model.Db;
 
 namespace HackAPIs.Controllers
 {
@@ -26,6 +27,7 @@ namespace HackAPIs.Controllers
         private readonly IDataRepositoy<TblTeams, Solutions> _dataRepository;
         private readonly IDataRepositoy<TblSkills, Skills> _skilldataRepository;
         private readonly IDataRepositoy<TblUsers, Users> _userDataRepository;
+        private readonly IDataRepositoy<TblLog, Log> _dataRepositoryLog;
         private readonly GitHubService _githubService;
         private readonly TeamsService _teamsService;
         private readonly TeamsServiceOptions _teamConfig;
@@ -33,6 +35,7 @@ namespace HackAPIs.Controllers
         public SolutionController(IDataRepositoy<TblTeams, Solutions> dataRepositoy,
          IDataRepositoy<TblSkills, Skills> skilldataRepositoy,
          IDataRepositoy<TblUsers, Users> userDataRepository,
+         IDataRepositoy<TblLog, Log> dataRepositoyLog,
          GitHubService gitHubService,
          TeamsService teamsService,
          IOptions<TeamsServiceOptions> teamOptions)
@@ -40,6 +43,7 @@ namespace HackAPIs.Controllers
             _dataRepository = dataRepositoy;
             _skilldataRepository = skilldataRepositoy;
             _userDataRepository = userDataRepository;
+            _dataRepositoryLog = dataRepositoyLog;
             _githubService = gitHubService;
             _teamsService = teamsService;
             _teamConfig = teamOptions.Value;
@@ -319,8 +323,27 @@ namespace HackAPIs.Controllers
 
         private async Task AddUserToGHTeam(string createdBy, int teamId)
         {
-            var user = _userDataRepository.GetByColumn(1, "UserRegEmail", createdBy);
-            await _githubService.AddUser(user.GitHubUser, user.GitHubId, teamId);
+            try
+            {
+                var user = _userDataRepository.GetByColumn(1, "UserRegEmail", createdBy);
+                await _githubService.AddUser(user.GitHubUser, user.GitHubId, teamId);
+            }
+            catch (Exception ex)
+            {
+                Log(teamId.ToString(), ex.Message);
+            }
+        }
+
+        private void Log(string id, string type)
+        {
+            TblLog log = new TblLog
+            {
+                Label = id,
+                Description = type,
+                CreationDate = DateTime.Now,
+                UpdateDate = DateTime.Now
+            };
+            _dataRepositoryLog.Add(log);
         }
     }
 }
