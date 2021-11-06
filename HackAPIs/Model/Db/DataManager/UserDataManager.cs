@@ -88,6 +88,11 @@ namespace HackAPIs.Model.Db.DataManager
                 tblUsers = _nurseHackContext.tbl_Users
                         .FirstOrDefault(b => b.UserRegEmail == columnValue);
             }
+            else if (columnName.Equals("ADUserId"))
+            {
+                tblUsers = _nurseHackContext.tbl_Users
+                    .FirstOrDefault(b => b.ADUserId == columnValue);
+            }
 
             return tblUsers;
         }
