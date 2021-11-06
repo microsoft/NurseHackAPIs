@@ -220,6 +220,19 @@ namespace HackAPIs.Controllers
             return Ok(user);
         }
 
+        [HttpPost("objectid", Name = "GetUserByObjectId")]
+        public IActionResult GetUserByObjectId([FromBody] TblUsers tblUsers)
+        {
+            var objectId = tblUsers.ADUserId;
+            var user = _dataRepository.GetByColumn(1, "ADUserId", objectId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
 
         // POST: api/users
         [HttpPost]
