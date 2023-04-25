@@ -7,6 +7,7 @@ using HackAPIs.ViewModel.Teams;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace HackAPIs.Controllers
@@ -19,11 +20,14 @@ namespace HackAPIs.Controllers
 
         private readonly ILogger<TeamsController> _logger;
         private readonly TeamsService _teamsService;
+        private readonly TeamsServiceOptions _teamConfig;
 
-        public TeamsController(ILogger<TeamsController> logger, NurseHackContext dbContext, TeamsService teamsService)
+        public TeamsController(ILogger<TeamsController> logger, NurseHackContext dbContext, 
+            TeamsService teamsService, IOptions<TeamsServiceOptions> teamOptions)
         {
             _logger = logger;
             _teamsService = teamsService;
+            _teamConfig = teamOptions.Value;
         }
 
         [HttpGet]
@@ -99,7 +103,12 @@ namespace HackAPIs.Controllers
         {
             try
             {
-                var result = await _teamsService.InviteGuestUser(guest);
+                var result = await _teamsService.AddAADUser(guest);
+                
+                // Keep parity with logic of previous code
+                await _teamsService.InviteUserToTeam(_teamConfig.MSTeam1, result.Id);
+                await _teamsService.InviteUserToTeam(_teamConfig.MSTeam1, result.Id);
+
                 return Created($"https://guestmember/{result.Id}", result);
             }
             catch (Exception ex)

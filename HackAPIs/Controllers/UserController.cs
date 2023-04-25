@@ -257,18 +257,18 @@ namespace HackAPIs.Controllers
 
         // PUT: api/users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] TblUsers tblUsers)
+        public async Task<IActionResult> Put(int id, [FromBody] TblUsers userFromRequest)
         {
             int type = 1;
             string mailChimpId;
 
-            if (tblUsers == null)
+            if (userFromRequest == null)
             {
                 return BadRequest("User is null.");
             }
 
-            var userToUpdate = _dataRepository.Get(id, 1);
-            if (userToUpdate == null)
+            var userFromDB = _dataRepository.Get(id, 1);
+            if (userFromDB == null)
             {
                 return NotFound("The User record couldn't be found.");
             }
@@ -277,12 +277,12 @@ namespace HackAPIs.Controllers
                 return BadRequest("Failed to validate incoming object.");
             }
 
-            if (!tblUsers.Active)
+            if (!userFromRequest.Active)
             {
                 try
                 {
                     Log(id + "", "Inactivation of user is requested");
-                    await _teamsService.RemoveTeamMember(_teamConfig.MSTeam1, userToUpdate.ADUserId);
+                    await _teamsService.RemoveTeamMember(_teamConfig.MSTeam1, userFromDB.ADUserId);
                 }
                 catch (Exception) { }
 
@@ -290,47 +290,64 @@ namespace HackAPIs.Controllers
 
                 try
                 {
-                    mailChimpId = await _mailChimp.AddOrUpdateMember(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName, ViewModel.Util.MemberStatus.unsubscribed);
-                    tblUsers.MailchimpId = mailChimpId;
+                    mailChimpId = await _mailChimp.AddOrUpdateMember(userFromRequest.UserMSTeamsEmail, userFromRequest.UserDisplayName, ViewModel.Util.MemberStatus.unsubscribed);
+                    userFromRequest.MailchimpId = mailChimpId;
                     Log(id + "", "MailChimp Unscribed request was completed for mailchinp ID: " + mailChimpId);
                 }
                 catch (Exception) { }
             }
-            else if (userToUpdate.ADUserId == null)
+            else if (userFromDB.ADUserId == null || !userFromDB.Active)
             {
                 try
                 {
                     Log(id + "", "Azure AD is Null");
-                    GuestUser guest = new GuestUser
+                    var aadUser = await _teamsService.GetAADUser(userFromRequest.UserMSTeamsEmail);
+
+                    if (aadUser == null)
                     {
-                        InvitedUserEmailAddress = tblUsers.UserMSTeamsEmail,
-                        UserId = userToUpdate.UserId,
-                        DisplayName = userToUpdate.UserDisplayName
-                    };
-                    var invite = await _teamsService.InviteGuestUser(guest);
-                    tblUsers.ADUserId = invite.InvitedUser.Id;
-                    Log(id + "", "Added Azure ID" + tblUsers.ADUserId);
+                        GuestUser guestTeamsUser = new GuestUser
+                        {
+                            InvitedUserEmailAddress = userFromRequest.UserMSTeamsEmail,
+                            UserId = userFromDB.UserId,
+                            DisplayName = userFromDB.UserDisplayName
+                        };
+                        var invite = await _teamsService.AddAADUser(guestTeamsUser);
+                        userFromRequest.ADUserId = invite.InvitedUser.Id;
+                    }
+                    else
+                    {
+                        userFromRequest.ADUserId = aadUser.Id;
+                    }
+
+                    foreach(var teamId in new[] {_teamConfig.MSTeam1, _teamConfig.MSTeam2 })
+                    {
+                        var members = await _teamsService.GetTeamMembers(teamId);
+                        if(!members.Any(x => x.Id == userFromRequest.ADUserId))
+                        {
+                            await _teamsService.InviteUserToTeam(teamId, userFromRequest.ADUserId);
+                        }
+                    }
 
                     try
                     {
-                        mailChimpId = await _mailChimp.AddOrUpdateMember(tblUsers.UserMSTeamsEmail, tblUsers.UserDisplayName, ViewModel.Util.MemberStatus.subscribed);
+                        mailChimpId = await _mailChimp.AddOrUpdateMember(userFromRequest.UserMSTeamsEmail, userFromRequest.UserDisplayName, ViewModel.Util.MemberStatus.subscribed);
 
-                        switch (tblUsers.UserRole.ToLower()) // TODO: add tags based on role
+                        switch (userFromRequest.UserRole.ToLower())
                         {
                             case "coach":
-                                await _mailChimp.AddMemberTag(mailChimpId, "Coach - Fall 21");
+                                await _mailChimp.AddMemberTag(mailChimpId, "Coach");
                                 break;
                             case "developer":
-                                await _mailChimp.AddMemberTag(mailChimpId, "Developer - Fall 21");
+                                await _mailChimp.AddMemberTag(mailChimpId, "Developer");
                                 break;
                             case "hacker":
-                                await _mailChimp.AddMemberTag(mailChimpId, "Hacker - Fall 21");
+                                await _mailChimp.AddMemberTag(mailChimpId, "Hacker");
                                 break;
                             case "panelist":
-                                await _mailChimp.AddMemberTag(mailChimpId, "Panelist - Fall 21");
+                                await _mailChimp.AddMemberTag(mailChimpId, "Panelist");
                                 break;
                             case "pitch coach":
-                                await _mailChimp.AddMemberTag(mailChimpId, "Pitch Coach - Fall 21");
+                                await _mailChimp.AddMemberTag(mailChimpId, "Pitch Coach");
                                 break;
                             default:
                                 await _mailChimp.AddMemberTag(mailChimpId, "DevTest");
@@ -352,9 +369,9 @@ namespace HackAPIs.Controllers
                     return BadRequest(ex.Message);
                 }
             }
-            _dataRepository.Update(userToUpdate, tblUsers, type);
+            _dataRepository.Update(userFromDB, userFromRequest, type);
             Log(id + "", "Completed the update of the record.");
-            return Ok(tblUsers);
+            return Ok(userFromRequest);
         }
 
 

@@ -56,7 +56,7 @@ namespace HackAPIs.Services.Teams
         /*
             Invite a guest user to the Azure AD domain
         */
-        public async Task<Invitation> InviteGuestUser(GuestUser user)
+        public async Task<Invitation> AddAADUser(GuestUser user)
         {
             var invite = new Invitation
             {
@@ -66,10 +66,21 @@ namespace HackAPIs.Services.Teams
                 InvitedUserDisplayName = user.DisplayName
             };
             var result = await _graphClient.Invitations.Request().AddAsync(invite);
-            await AddTeamMember(_config.MSTeam1, result.InvitedUser.Id);
-            await AddTeamMember(_config.MSTeam2, result.InvitedUser.Id);
 
             return result;
+        }
+
+        public async Task InviteUserToTeam(string teamId, string userId)
+        {
+            await AddTeamMember(teamId, userId);
+        }
+
+
+        public async Task<User> GetAADUser(string email)
+        {
+            var response = await _graphClient.Users.Request().Filter($"mail eq '{email}'").GetAsync();
+
+            return response.FirstOrDefault();
         }
 
         /*
