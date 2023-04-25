@@ -30,7 +30,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public TblSurvey Get(long id, int type)
+        public TblSurvey Get(long id, ExtendedDataType extendedData)
         {
             throw new NotImplementedException();
         }
@@ -40,7 +40,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public TblSurvey GetByColumn(long id, string columnName, string colunmValue)
+        public TblSurvey GetByColumn(long id, string columnName, string columnValue)
         {
             throw new NotImplementedException();
         }
@@ -55,7 +55,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public void Update(TblSurvey entityToUpdate, TblSurvey entity, int type)
+        public void Update(TblSurvey entityToUpdate, TblSurvey entity, ExtendedDataType extendedData)
         {
             throw new NotImplementedException();
         }

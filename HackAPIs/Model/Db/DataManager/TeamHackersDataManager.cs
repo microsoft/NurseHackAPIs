@@ -28,7 +28,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public TblTeamHackers Get(long id, int type)
+        public TblTeamHackers Get(long id, ExtendedDataType extendedData)
         {
             throw new NotImplementedException();
         }
@@ -39,7 +39,7 @@ namespace HackAPIs.Model.Db.DataManager
                 .ToList();
         }
 
-        public TblTeamHackers GetByColumn(long id, string columnName, string colunmValue)
+        public TblTeamHackers GetByColumn(long id, string columnName, string columnValue)
         {
             throw new NotImplementedException();
         }
@@ -56,7 +56,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public void Update(TblTeamHackers entityToUpdate, TblTeamHackers entity, int type)
+        public void Update(TblTeamHackers entityToUpdate, TblTeamHackers entity, ExtendedDataType extendedData)
         {
             throw new NotImplementedException();
         }

@@ -13,6 +13,7 @@ using HackAPIs.Services.Util;
 using HackAPIs.Model.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using HackAPIs.Model;
 
 namespace HackAPIs.Controllers
 {
@@ -60,7 +61,7 @@ namespace HackAPIs.Controllers
         [HttpGet("githubid/{id}")]
         public IActionResult GetGitHubId(long id)
         {
-            var user = _dataRepository.Get(id, 1);
+            var user = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
 
             if (user == null)
             {
@@ -126,7 +127,7 @@ namespace HackAPIs.Controllers
         [HttpGet("{id}", Name = "GetUser")]
         public IActionResult Get(int id)
         {
-            var user = _dataRepository.Get(id, 1);
+            var user = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -139,7 +140,7 @@ namespace HackAPIs.Controllers
         [HttpGet("solutions/{id}", Name = "GetUserSolutions")]
         public IActionResult GetUserSolutions(long id)
         {
-            var tblUsers = _dataRepository.Get(id, 2);
+            var tblUsers = _dataRepository.Get(id, ExtendedDataType.Solutions);
             if (tblUsers == null)
             {
                 return NotFound("User not found.");
@@ -167,7 +168,7 @@ namespace HackAPIs.Controllers
         [HttpGet("skills/{id}", Name = "GetUserSkills")]
         public IActionResult GetUserSkills(long id)
         {
-            var tblUsers = _dataRepository.Get(id, 3);
+            var tblUsers = _dataRepository.Get(id, ExtendedDataType.Skills);
             if (tblUsers == null)
             {
                 return NotFound("User not found.");
@@ -259,7 +260,7 @@ namespace HackAPIs.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] TblUsers userFromRequest)
         {
-            int type = 1;
+            ExtendedDataType extendedData = ExtendedDataType.BaseOnly;
             string mailChimpId;
 
             if (userFromRequest == null)
@@ -267,7 +268,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("User is null.");
             }
 
-            var userFromDB = _dataRepository.Get(id, 1);
+            var userFromDB = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (userFromDB == null)
             {
                 return NotFound("The User record couldn't be found.");
@@ -286,7 +287,7 @@ namespace HackAPIs.Controllers
                 }
                 catch (Exception) { }
 
-                type = 4;
+                extendedData = ExtendedDataType.UpdateADId;
 
                 try
                 {
@@ -369,7 +370,7 @@ namespace HackAPIs.Controllers
                     return BadRequest(ex.Message);
                 }
             }
-            _dataRepository.Update(userFromDB, userFromRequest, type);
+            _dataRepository.Update(userFromDB, userFromRequest, extendedData);
             Log(id + "", "Completed the update of the record.");
             return Ok(userFromRequest);
         }
@@ -384,7 +385,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("User is null.");
             }
 
-            var userToUpdate = _dataRepository.Get(id, 1);
+            var userToUpdate = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (userToUpdate == null)
             {
                 return NotFound("The User record couldn't be found.");
@@ -395,7 +396,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            _dataRepository.Update(userToUpdate, tblUsers, 2);
+            _dataRepository.Update(userToUpdate, tblUsers, ExtendedDataType.Solutions);
             return Ok("Success");
         }
 
@@ -408,7 +409,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("User is null.");
             }
 
-            var userToUpdate = _dataRepository.Get(id, 1);
+            var userToUpdate = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (userToUpdate == null)
             {
                 return NotFound("The User record couldn't be found.");
@@ -419,14 +420,14 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            _dataRepository.Update(userToUpdate, tblUsers, 3);
+            _dataRepository.Update(userToUpdate, tblUsers, ExtendedDataType.Skills);
 
             // Leaving the Team && determining whether this is being called from new team creation. This stops from calling GH api twice
             if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)
             {
                 try
                 {
-                    var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, 1);
+                    var team = _teamDataRepository.Get(tblUsers.tblTeamHackers.First().TeamId, ExtendedDataType.BaseOnly);
                     await _gitHubService.AddUser(tblUsers.GitHubUser, tblUsers.GitHubId, team.GitHubTeamId);
                 }
                 catch (GitHubException gex)
@@ -446,7 +447,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("User is null.");
             }
 
-            var userToUpdate = _dataRepository.Get(id, 1);
+            var userToUpdate = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (userToUpdate == null)
             {
                 return NotFound("The User record couldn't be found.");
@@ -457,7 +458,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            _dataRepository.Update(userToUpdate, tblUsers, 5);
+            _dataRepository.Update(userToUpdate, tblUsers, ExtendedDataType.GithubId);
 
             return Ok("Success");
         }

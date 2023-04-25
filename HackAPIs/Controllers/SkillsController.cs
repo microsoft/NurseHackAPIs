@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HackAPIs.Model.Db.Repository;
 using HackAPIs.Db.Model;
+using HackAPIs.Model;
 using HackAPIs.ViewModel.Db;
 using Microsoft.AspNetCore.Authorization;
 
@@ -76,7 +77,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("Skill is null.");
             }
 
-            var skillToUpdate = _dataRepository.Get(id,1);
+            var skillToUpdate = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (skillToUpdate == null)
             {
                 return NotFound("The Skill record couldn't be found.");
@@ -93,7 +94,7 @@ namespace HackAPIs.Controllers
                 SkillName = skills.SkillName
             };
 
-            _dataRepository.Update(skillToUpdate, tblSkills,1);
+            _dataRepository.Update(skillToUpdate, tblSkills, ExtendedDataType.BaseOnly);
             return Ok(skills);
         }
     }

@@ -25,7 +25,7 @@ namespace HackAPIs.Model.Db.DataManager
                 .ToList();
         }
 
-        public TblSkills Get(long id, int type)
+        public TblSkills Get(long id, ExtendedDataType extendedData)
         {
             var tblSkills = _nurseHackContext.tbl_Skills
                 .SingleOrDefault(b => b.SkillId == id);
@@ -51,7 +51,7 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext.SaveChanges();
         }
 
-        public void Update(TblSkills entityToUpdate, TblSkills entity, int type)
+        public void Update(TblSkills entityToUpdate, TblSkills entity, ExtendedDataType extendedData)
         {
             entityToUpdate = _nurseHackContext.tbl_Skills
                 .Single(b => b.SkillId == entityToUpdate.SkillId);
@@ -69,7 +69,7 @@ namespace HackAPIs.Model.Db.DataManager
 
   
 
-        public TblSkills GetByColumn(long id, string columnName, string colunmValue)
+        public TblSkills GetByColumn(long id, string columnName, string columnValue)
         {
             throw new System.NotImplementedException();
         }
