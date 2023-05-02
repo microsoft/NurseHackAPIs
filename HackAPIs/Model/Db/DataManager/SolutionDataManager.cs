@@ -24,16 +24,16 @@ namespace HackAPIs.Model.Db.DataManager
                 .ToList();
         }
 
-        public TblTeams Get(long id,int type)
+        public TblTeams Get(long id, ExtendedDataType extendedData)
         {
             _nurseHackContext.ChangeTracker.LazyLoadingEnabled = false;
             TblTeams tblTeams = null;
-            if (type == 1)
+            if (extendedData == ExtendedDataType.BaseOnly)
             {
                 tblTeams = _nurseHackContext.tbl_Teams
                     .SingleOrDefault(b => b.TeamId == id);
             }
-            else if (type == 2)
+            else if (extendedData == ExtendedDataType.Solutions)
             {
                 tblTeams = _nurseHackContext.tbl_Teams
                 .SingleOrDefault(b => b.TeamId == id);
@@ -46,7 +46,7 @@ namespace HackAPIs.Model.Db.DataManager
                     .Collection(b => b.tblTeamHackers)
                     .Load();
             } 
-            else if (type == 3)
+            else if (extendedData == ExtendedDataType.Skills)
             {
                 tblTeams = _nurseHackContext.tbl_Teams
                 .SingleOrDefault(b => b.TeamId == id);
@@ -58,7 +58,7 @@ namespace HackAPIs.Model.Db.DataManager
                 _nurseHackContext.Entry(tblTeams)
                     .Collection(b => b.tblTeamSkillMatch)
                     .Load();
-            } else if (type ==4)
+            } else if (extendedData == ExtendedDataType.UpdateADId)
             {
                 tblTeams = _nurseHackContext.tbl_Teams
                .SingleOrDefault(b => b.TeamId == id);
@@ -93,13 +93,13 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext.SaveChanges();
         }
 
-        public void Update(TblTeams entityToUpdate, TblTeams entity, int type)
+        public void Update(TblTeams entityToUpdate, TblTeams entity, ExtendedDataType extendedData)
         {
             /*
              * Type 1 = PUT /solutions/$teamid (modify team)
              * We are only updating description. Ignore all other fields
              */
-            if (type == 1)
+            if (extendedData == ExtendedDataType.BaseOnly)
             {
                 entityToUpdate = _nurseHackContext.tbl_Teams
                     .Single(b => b.TeamId == entityToUpdate.TeamId);
@@ -123,7 +123,7 @@ namespace HackAPIs.Model.Db.DataManager
                 //entityToUpdate.MSLabSPNKey = entity.MSLabSPNKey;
                 //entityToUpdate.ModifiedBy = entity.ModifiedBy;
             }
-            else if (type == 2)
+            else if (extendedData == ExtendedDataType.Solutions)
             {
                 entityToUpdate = _nurseHackContext.tbl_Teams
                     .Include(a => a.tblTeamSkillMatch)
@@ -146,7 +146,7 @@ namespace HackAPIs.Model.Db.DataManager
                     catch (Exception) { }
                 }
             }
-            else if (type == 3)
+            else if (extendedData == ExtendedDataType.Skills)
             {
                 entityToUpdate = _nurseHackContext.tbl_Teams
                     .Include(a => a.tblTeamHackers)
@@ -177,7 +177,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new System.NotImplementedException();
         }
 
-        public TblTeams GetByColumn(long id, string columnName, string colunmValue)
+        public TblTeams GetByColumn(long id, string columnName, string columnValue)
         {
             throw new System.NotImplementedException();
         }

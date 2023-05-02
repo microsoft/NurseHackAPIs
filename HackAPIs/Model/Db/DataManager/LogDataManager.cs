@@ -28,7 +28,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public TblLog Get(long id, int type)
+        public TblLog Get(long id, ExtendedDataType extendedData)
         {
             throw new NotImplementedException();
         }
@@ -38,7 +38,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public TblLog GetByColumn(long id, string columnName, string colunmValue)
+        public TblLog GetByColumn(long id, string columnName, string columnValue)
         {
             throw new NotImplementedException();
         }
@@ -53,7 +53,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        public void Update(TblLog entityToUpdate, TblLog entity, int type)
+        public void Update(TblLog entityToUpdate, TblLog entity, ExtendedDataType extendedData)
         {
             throw new NotImplementedException();
         }

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using HackAPIs.Model.Db;
+using HackAPIs.Model;
 
 namespace HackAPIs.Controllers
 {
@@ -63,7 +64,7 @@ namespace HackAPIs.Controllers
         [HttpGet("{id}", Name = "GetSolution")]
         public IActionResult Get(int id)
         {
-            var tblTeams = _dataRepository.Get(id, 1);
+            var tblTeams = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (tblTeams == null)
             {
                 return NotFound("Solution not found.");
@@ -84,7 +85,7 @@ namespace HackAPIs.Controllers
             while (teamEnumerator.MoveNext())
             {
                 TblTeams tblTeam = (TblTeams)teamEnumerator.Current;
-                TblTeams oneTeam = _dataRepository.Get(tblTeam.TeamId, 2);
+                TblTeams oneTeam = _dataRepository.Get(tblTeam.TeamId, ExtendedDataType.Solutions);
 
                 SolutionHackers solutionHackers = new SolutionHackers();
                 solutionHackers.TeamId = oneTeam.TeamId;
@@ -96,7 +97,7 @@ namespace HackAPIs.Controllers
                 while (enumerator.MoveNext())
                 {
                     TblTeamHackers hacker = (TblTeamHackers)enumerator.Current;
-                    TblUsers user = _userDataRepository.Get(hacker.UserId, 1);
+                    TblUsers user = _userDataRepository.Get(hacker.UserId, ExtendedDataType.BaseOnly);
                     hackers.Add(new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead });
                     HackerList.Add(hacker.UserId);
                 }
@@ -114,7 +115,7 @@ namespace HackAPIs.Controllers
         [HttpGet("hackers/{id}", Name = "GetSolutionHackers")]
         public IActionResult GetSolutionHackers(long id)
         {
-            var tblTeams = _dataRepository.Get(id, 2);
+            var tblTeams = _dataRepository.Get(id, ExtendedDataType.Solutions);
             if (tblTeams == null)
             {
                 return NotFound("Solution not found.");
@@ -130,7 +131,7 @@ namespace HackAPIs.Controllers
             {
                 TblTeamHackers hacker = (TblTeamHackers)enumerator.Current;
                 HackerList.Add(hacker.UserId);
-                TblUsers user = (TblUsers)_userDataRepository.Get(hacker.UserId, 1);
+                TblUsers user = (TblUsers)_userDataRepository.Get(hacker.UserId, ExtendedDataType.BaseOnly);
                 HackerExpanded thisHacker = new HackerExpanded() { name = user.UserDisplayName, islead = hacker.IsLead };
                 hackers.Add(thisHacker);
             }
@@ -144,7 +145,7 @@ namespace HackAPIs.Controllers
         [HttpGet("skills/{id}", Name = "GetSolutionSkills")]
         public IActionResult GetSolutionSkills(long id)
         {
-            var tblTeams = _dataRepository.Get(id, 3);
+            var tblTeams = _dataRepository.Get(id, ExtendedDataType.Skills);
             if (tblTeams == null)
             {
                 return NotFound("Solution not found.");
@@ -172,7 +173,8 @@ namespace HackAPIs.Controllers
         [HttpGet("hackers/skills/{id}", Name = "GetSolutionHackersSkills")]
         public IActionResult GetSolutionHackersSkills(long id)
         {
-            var tblTeams = _dataRepository.Get(id, 4);
+            // This was 4, but it should be skills
+            var tblTeams = _dataRepository.Get(id, ExtendedDataType.Skills);
             if (tblTeams == null)
             {
                 return NotFound("Solution not found.");
@@ -256,7 +258,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("Solution is null.");
             }
 
-            var solutionToUpdate = _dataRepository.Get(id, 1);
+            var solutionToUpdate = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (solutionToUpdate == null)
             {
                 return NotFound("The Solution record couldn't be found.");
@@ -269,7 +271,7 @@ namespace HackAPIs.Controllers
             tblTeams.ModifiedDate = DateTime.Now;
             
             tblTeams.Active = true;
-            _dataRepository.Update(solutionToUpdate, tblTeams, 1);
+            _dataRepository.Update(solutionToUpdate, tblTeams, ExtendedDataType.BaseOnly);
             return Ok("Success");
         }
 
@@ -283,7 +285,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("Solution is null.");
             }
 
-            var solutionToUpdate = _dataRepository.Get(id, 1);
+            var solutionToUpdate = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (solutionToUpdate == null)
             {
                 return NotFound("The Solution record couldn't be found.");
@@ -294,7 +296,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            _dataRepository.Update(solutionToUpdate, tblTeams, 2);
+            _dataRepository.Update(solutionToUpdate, tblTeams, ExtendedDataType.Solutions);
             return Ok("Success");
         }
 
@@ -307,7 +309,7 @@ namespace HackAPIs.Controllers
                 return BadRequest("Solution is null.");
             }
 
-            var solutionToUpdate = _dataRepository.Get(id, 1);
+            var solutionToUpdate = _dataRepository.Get(id, ExtendedDataType.BaseOnly);
             if (solutionToUpdate == null)
             {
                 return NotFound("The Solution record couldn't be found.");
@@ -318,7 +320,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            _dataRepository.Update(solutionToUpdate, tblTeams, 3);
+            _dataRepository.Update(solutionToUpdate, tblTeams, ExtendedDataType.Skills);
             return Ok("Success");
         }
 

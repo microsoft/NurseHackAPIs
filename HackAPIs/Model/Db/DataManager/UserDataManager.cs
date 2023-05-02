@@ -25,15 +25,15 @@ namespace HackAPIs.Model.Db.DataManager
                 .ToList();
         }
 
-        public TblUsers Get(long id, int type)
+        public TblUsers Get(long id, ExtendedDataType extendedData)
         {
             TblUsers tblUsers = null;
-            if (type == 1)
+            if (extendedData == ExtendedDataType.BaseOnly)
             {
                 tblUsers = _nurseHackContext.tbl_Users
                     .SingleOrDefault(b => b.UserId == id);
             }
-            else if (type == 3) // User and Skills
+            else if (extendedData == ExtendedDataType.Skills) // User and Skills
             {
                 tblUsers = _nurseHackContext.tbl_Users
                    .SingleOrDefault(b => b.UserId == id);
@@ -45,7 +45,7 @@ namespace HackAPIs.Model.Db.DataManager
                     .Collection(b => b.tblUserSkillMatch)
                     .Load();
             }
-            else if (type == 2) // User and Solutions
+            else if (extendedData == ExtendedDataType.Solutions) // User and Solutions
             {
                 tblUsers = _nurseHackContext.tbl_Users
                   .SingleOrDefault(b => b.UserId == id);
@@ -108,60 +108,54 @@ namespace HackAPIs.Model.Db.DataManager
             _nurseHackContext.SaveChanges();
         }
 
-        public void Update(TblUsers entityToUpdate, TblUsers entity, int type)
+        public void Update(TblUsers entityFromDB, TblUsers entityFromRequest, ExtendedDataType extendedData)
         {
             /**
              * Type 2 = PUT /user/skills/$userid (editing user's skills)
              * Type 3 = PUT /user/solution/$userid (adding/removing solution teams from a user)
              * Type 4 = PUT /user/github/$userid (add's a user's github id and username to the user object)
              */
-            if (type == 0)
+            if (extendedData == ExtendedDataType.BaseOnly || extendedData == ExtendedDataType.UpdateADId)
             {
-                entityToUpdate = _nurseHackContext.tbl_Users
-                    .Single(b => b.UserId == entityToUpdate.UserId);
-                entityToUpdate.ADUserId = entity.ADUserId;
-            }
-            if (type == 1 || type == 4)
-            {
-                entityToUpdate = _nurseHackContext.tbl_Users
-                    .Single(b => b.UserId == entityToUpdate.UserId);
+                entityFromDB = _nurseHackContext.tbl_Users
+                    .Single(b => b.UserId == entityFromDB.UserId);
 
-                if (!string.IsNullOrEmpty(entity.UserDisplayName)) entityToUpdate.UserDisplayName = entity.UserDisplayName;
-                if (!string.IsNullOrEmpty(entity.UserMSTeamsEmail)) entityToUpdate.UserMSTeamsEmail = entity.UserMSTeamsEmail;
-                if (!string.IsNullOrEmpty(entity.UserRegEmail)) entityToUpdate.UserRegEmail = entity.UserRegEmail;
-                if (!string.IsNullOrEmpty(entity.UserRole)) entityToUpdate.UserRole = entity.UserRole;
-                if (!string.IsNullOrEmpty(entity.UserTimeCommitment)) entityToUpdate.UserTimeCommitment = entity.UserTimeCommitment;
-                if (!string.IsNullOrEmpty(entity.MailchimpId)) entityToUpdate.MailchimpId = entity.MailchimpId;
-                entityToUpdate.Active = entity.Active;
-                entityToUpdate.MSFTOptIn = entity.MSFTOptIn;
-                entityToUpdate.JNJOptIn = entity.JNJOptIn;
-                entityToUpdate.SONSIELOptIn = entity.SONSIELOptIn;
+                if (!string.IsNullOrEmpty(entityFromRequest.UserDisplayName)) entityFromDB.UserDisplayName = entityFromRequest.UserDisplayName;
+                if (!string.IsNullOrEmpty(entityFromRequest.UserMSTeamsEmail)) entityFromDB.UserMSTeamsEmail = entityFromRequest.UserMSTeamsEmail;
+                if (!string.IsNullOrEmpty(entityFromRequest.UserRegEmail)) entityFromDB.UserRegEmail = entityFromRequest.UserRegEmail;
+                if (!string.IsNullOrEmpty(entityFromRequest.UserRole)) entityFromDB.UserRole = entityFromRequest.UserRole;
+                if (!string.IsNullOrEmpty(entityFromRequest.UserTimeCommitment)) entityFromDB.UserTimeCommitment = entityFromRequest.UserTimeCommitment;
+                if (!string.IsNullOrEmpty(entityFromRequest.MailchimpId)) entityFromDB.MailchimpId = entityFromRequest.MailchimpId;
+                entityFromDB.Active = entityFromRequest.Active;
+                entityFromDB.MSFTOptIn = entityFromRequest.MSFTOptIn;
+                entityFromDB.JNJOptIn = entityFromRequest.JNJOptIn;
+                entityFromDB.SONSIELOptIn = entityFromRequest.SONSIELOptIn;
 
 
-                if (type == 1) // Updating the new Azure AD ID from the Azure AD
+                if (extendedData == ExtendedDataType.BaseOnly) // Updating the new Azure AD ID from the Azure AD
                 {
-                    if (!string.IsNullOrEmpty(entity.ADUserId)) entityToUpdate.ADUserId = entity.ADUserId;
+                    if (!string.IsNullOrEmpty(entityFromRequest.ADUserId)) entityFromDB.ADUserId = entityFromRequest.ADUserId;
                 }
-                else if (type == 4) // Updating the existing Azure AD ID from the Azure AD
+                else if (extendedData == ExtendedDataType.UpdateADId) // Updating the existing Azure AD ID from the Azure AD
                 {
-                    entityToUpdate.ADUserId = entity.ADUserId;
+                    entityFromDB.ADUserId = entityFromRequest.ADUserId;
                 }
-                entityToUpdate.UserOptOut = entity.UserOptOut;
-                if (!string.IsNullOrEmpty(entity.MySkills)) entityToUpdate.MySkills = entity.MySkills;
-                entityToUpdate.ModifiedDate = DateTime.Now;
+                entityFromDB.UserOptOut = entityFromRequest.UserOptOut;
+                if (!string.IsNullOrEmpty(entityFromRequest.MySkills)) entityFromDB.MySkills = entityFromRequest.MySkills;
+                entityFromDB.ModifiedDate = DateTime.Now;
             }
-            else if (type == 2) // User Skills
+            else if (extendedData == ExtendedDataType.Skills) // User Skills
             {
-                entityToUpdate = _nurseHackContext.tbl_Users
+                entityFromDB = _nurseHackContext.tbl_Users
                     .Include(a => a.tblUserSkillMatch)
-                    .Single(b => b.UserId == entityToUpdate.UserId);
+                    .Single(b => b.UserId == entityFromDB.UserId);
 
-                var deletedSkills = entityToUpdate.tblUserSkillMatch.Except(entity.tblUserSkillMatch).ToList();
-                var addedSkills = entity.tblUserSkillMatch.Except(entityToUpdate.tblUserSkillMatch).ToList();
+                var deletedSkills = entityFromDB.tblUserSkillMatch.Except(entityFromRequest.tblUserSkillMatch).ToList();
+                var addedSkills = entityFromRequest.tblUserSkillMatch.Except(entityFromDB.tblUserSkillMatch).ToList();
 
                 deletedSkills.ForEach(skillToDelete =>
-                    entityToUpdate.tblUserSkillMatch.Remove(
-                        entityToUpdate.tblUserSkillMatch
+                    entityFromDB.tblUserSkillMatch.Remove(
+                        entityFromDB.tblUserSkillMatch
                             .First(b => b.SkillId == skillToDelete.SkillId)));
 
                 foreach (var addedSkill in addedSkills)
@@ -174,18 +168,18 @@ namespace HackAPIs.Model.Db.DataManager
                 }
 
             }
-            else if (type == 3) // User Solutions
+            else if (extendedData == ExtendedDataType.Solutions) // User Solutions
             {
-                entityToUpdate = _nurseHackContext.tbl_Users
+                entityFromDB = _nurseHackContext.tbl_Users
                     .Include(a => a.tblTeamHackers)
-                    .Single(b => b.UserId == entityToUpdate.UserId);
+                    .Single(b => b.UserId == entityFromDB.UserId);
 
-                var deletedTeams = entityToUpdate.tblTeamHackers.Except(entity.tblTeamHackers).ToList();
-                var addedTeams = entity.tblTeamHackers.Except(entityToUpdate.tblTeamHackers).ToList();
+                var deletedTeams = entityFromDB.tblTeamHackers.Except(entityFromRequest.tblTeamHackers).ToList();
+                var addedTeams = entityFromRequest.tblTeamHackers.Except(entityFromDB.tblTeamHackers).ToList();
 
                 deletedTeams.ForEach(teamToDelete =>
-                    entityToUpdate.tblTeamHackers.Remove(
-                        entityToUpdate.tblTeamHackers
+                    entityFromDB.tblTeamHackers.Remove(
+                        entityFromDB.tblTeamHackers
                             .First(b => b.TeamId == teamToDelete.TeamId)));
 
                 foreach (var addedTeam in addedTeams)
@@ -197,12 +191,12 @@ namespace HackAPIs.Model.Db.DataManager
                     catch (Exception) { }
                 }
             }
-            else if (type == 5) // Github id
+            else if (extendedData == ExtendedDataType.GithubId) // Github id
             {
-                entityToUpdate = _nurseHackContext.tbl_Users
-                    .Single(b => b.UserId == entityToUpdate.UserId);
-                entityToUpdate.GitHubId = entity.GitHubId;
-                entityToUpdate.GitHubUser = entity.GitHubUser;
+                entityFromDB = _nurseHackContext.tbl_Users
+                    .Single(b => b.UserId == entityFromDB.UserId);
+                entityFromDB.GitHubId = entityFromRequest.GitHubId;
+                entityFromDB.GitHubUser = entityFromRequest.GitHubUser;
             }
             _nurseHackContext.SaveChanges();
 

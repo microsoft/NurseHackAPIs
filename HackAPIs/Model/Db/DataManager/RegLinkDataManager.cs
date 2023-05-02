@@ -27,7 +27,7 @@ namespace HackAPIs.Model.Db.DataManager
                         throw new NotImplementedException();
         }
 
-        public TblRegLink Get(long id, int type)
+        public TblRegLink Get(long id, ExtendedDataType extendedData)
         {
             TblRegLink tblReg = null;
             tblReg = _nurseHackContext.tbl_RegLink
@@ -77,7 +77,7 @@ namespace HackAPIs.Model.Db.DataManager
             throw new NotImplementedException();
         }
 
-        void IDataRepositoy<TblRegLink, RegLinks>.Update(TblRegLink entityToUpdate, TblRegLink entity, int type)
+        void IDataRepositoy<TblRegLink, RegLinks>.Update(TblRegLink entityToUpdate, TblRegLink entity, ExtendedDataType extendedData)
         {
             if (entity.UsedByEmail != null)
             {
