@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Octokit;
 using HackAPIs.Services.Teams;
 using Azure.Identity;
+using Microsoft.Extensions.Options;
 
 namespace HackAPIs 
 {
@@ -46,6 +47,17 @@ namespace HackAPIs
             services.AddSingleton<GitHubService>();
 
             services.Configure<TeamsServiceOptions>(Configuration.GetSection("Teams"));
+
+            // Register a custom configuration provider to convert the comma-delimited setting to a List<string>
+            services.AddSingleton<IConfigureOptions<TeamsServiceOptions>>(provider =>
+            {
+                var configuration = provider.GetService<IConfiguration>();
+                return new ConfigureFromCommaSeparatedString<TeamsServiceOptions>(
+                    configuration.GetSection("Teams:TeamIds"));
+            });
+
+
+
             services.AddScoped<TeamsService>(t =>
             {
                 var graph = Configuration.GetSection("GraphAPI");                

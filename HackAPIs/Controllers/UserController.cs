@@ -283,7 +283,10 @@ namespace HackAPIs.Controllers
                 try
                 {
                     Log(id + "", "Inactivation of user is requested");
-                    await _teamsService.RemoveTeamMember(_teamConfig.MSTeam1, userFromDB.ADUserId);
+                    foreach(var teamId in _teamConfig.TeamIds)
+                    {
+                        await _teamsService.RemoveTeamMember(teamId, userFromDB.ADUserId);
+                    }
                 }
                 catch (Exception) { }
 
@@ -320,7 +323,7 @@ namespace HackAPIs.Controllers
                         userFromRequest.ADUserId = aadUser.Id;
                     }
 
-                    foreach(var teamId in new[] {_teamConfig.MSTeam1, _teamConfig.MSTeam2 })
+                    foreach(var teamId in _teamConfig.TeamIds)
                     {
                         var members = await _teamsService.GetTeamMembers(teamId);
                         if(!members.Any(x => x.Id == userFromRequest.ADUserId))

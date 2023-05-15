@@ -106,8 +106,10 @@ namespace HackAPIs.Controllers
                 var result = await _teamsService.AddAADUser(guest);
                 
                 // Keep parity with logic of previous code
-                await _teamsService.InviteUserToTeam(_teamConfig.MSTeam1, result.Id);
-                await _teamsService.InviteUserToTeam(_teamConfig.MSTeam1, result.Id);
+                foreach(var teamId in _teamConfig.TeamIds)
+                {
+                    await _teamsService.InviteUserToTeam(teamId, result.Id);
+                }
 
                 return Created($"https://guestmember/{result.Id}", result);
             }

@@ -230,7 +230,8 @@ namespace HackAPIs.Controllers
                     tblTeams.TeamName :
                     string.Concat(tblTeams.ChallengeName, " - ", tblTeams.TeamName);
 
-                var channel = await _teamsService.CreateTeamChannel(_teamConfig.MSTeam1, teamName, tblTeams.TeamDescription);
+                // TODO: Should this iterate over all of the teams?
+                var channel = await _teamsService.CreateTeamChannel(_teamConfig.TeamIds.FirstOrDefault(), teamName, tblTeams.TeamDescription);
                 tblTeams.MSTeamsChannelUrl = channel.WebUrl;
                 tblTeams.MSTeamsChannelName = channel.DisplayName;
             }
