@@ -42,7 +42,7 @@ namespace HackAPIs.Services.Util
                 var team = await _gitClient.Organization.Team.Create(_config.Org, new NewTeam(name) 
                     { 
                         Privacy = TeamPrivacy.Closed, 
-                        Permission = Permission.Admin 
+                        Permission = Permission.Push 
                     });
                 return team.Id;
             } 
