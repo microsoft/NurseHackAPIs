@@ -423,7 +423,7 @@ namespace HackAPIs.Controllers
                 return BadRequest();
             }
 
-            _dataRepository.Update(userToUpdate, tblUsers, ExtendedDataType.Skills);
+            _dataRepository.Update(userToUpdate, tblUsers, ExtendedDataType.Solutions);
 
             // Leaving the Team && determining whether this is being called from new team creation. This stops from calling GH api twice
             if (tblUsers.tblTeamHackers.Count != 0 && isFromCreate == 0)

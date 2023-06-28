@@ -1,0 +1,4 @@
+{
+    "dotnet.defaultSolution": "HackAPIs.sln",
+    "azureAutomation.directory.basePath": "c:\\Users\\chadvoelker"
+}
