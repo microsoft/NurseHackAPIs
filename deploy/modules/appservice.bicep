@@ -62,38 +62,6 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
           teamsCors
         ]
       }
-      appSettings: [
-        {
-          name: 'GitHubToken'
-          value: gitHubToken
-        }
-        {
-          name: 'ConnStr'
-          value: sqlConnection
-        }  
-        {
-          name: 'MailChimp__Key'
-          value: mailChimpApiKey
-        }              
-        {
-          name: 'AzureAd__ClientId'
-          value: azureAdClientId
-        }
-        {
-          name: 'AzureAd__Domain'
-          value: azureAdDomain
-        }        
-        {
-          name: 'AzureAd__TenantId'
-          value: azureAdTenant
-        }
-        {
-          name: 'GraphAPI__ClientSecret'
-          value: graphClientSecret
-        }
-        
-      ]
-      
     }
   }
 }
@@ -103,6 +71,13 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
   name: 'appsettings'
   properties: {
     APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
+    GitHubToken: gitHubToken
+    ConnStr: sqlConnection
+    MailChimp__Key: mailChimpApiKey
+    AzureAd__ClientId: azureAdClientId
+    AzureAd__Domain: azureAdDomain
+    AzureAd__TenantId: azureAdTenant
+    GraphAPI__ClientSecret: graphClientSecret
   }  
 }
 
