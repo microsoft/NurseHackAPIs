@@ -109,14 +109,6 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
   ]
 }
 
-resource appServiceSiteExtension 'Microsoft.Web/sites/siteextensions@2020-06-01' = {
-  parent: appServiceApp
-  name: 'Microsoft.ApplicationInsights.AzureWebSites'
-  dependsOn: [
-    appInsights
-  ]
-}
-
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appInsightName
   location: location
