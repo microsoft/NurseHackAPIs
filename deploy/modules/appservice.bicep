@@ -99,7 +99,7 @@ resource appServiceApp 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
-  parent: appService
+  parent: appServiceApp
   name: 'appsettings'
   properties: {
     APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
@@ -110,7 +110,7 @@ resource appServiceLogging 'Microsoft.Web/sites/config@2020-06-01' = {
 }
 
 resource appServiceSiteExtension 'Microsoft.Web/sites/siteextensions@2020-06-01' = {
-  parent: appService
+  parent: appServiceApp
   name: 'Microsoft.ApplicationInsights.AzureWebSites'
   dependsOn: [
     appInsights
